@@ -3,7 +3,7 @@ import * as CSSModules from 'react-css-modules';
 import {Tab, TabList, TabPanel, Tabs} from 'react-tabs'; // eslint-disable-line
 import {ActionHandler} from '../../actions';
 import {SpecEncodingAction} from '../../actions/shelf';
-import {ShelfFieldDef, ShelfId} from '../../models/shelf/spec';
+import {ShelfFieldDef, ShelfId, ValueDef} from '../../models/shelf/spec';
 import * as styles from './field-customizer.scss';
 import {PropertyEditor} from './property-editor';
 import {getFieldPropertyGroupIndex} from './property-editor-schema';
@@ -11,6 +11,7 @@ import {getFieldPropertyGroupIndex} from './property-editor-schema';
 export interface FieldCustomizerProps extends ActionHandler<SpecEncodingAction> {
   shelfId: ShelfId;
   fieldDef: ShelfFieldDef;
+  valueDef: ValueDef;
 }
 
 export interface CustomProp {

@@ -13,6 +13,7 @@ import {
 import {DraggableType, FieldParentType} from '../../constants';
 import {ShelfFieldDef, ShelfId} from '../../models';
 import {ShelfFunction} from '../../models/shelf';
+import {ValueDef} from '../../models/shelf/spec';
 import {isWildcardChannelId} from '../../models/shelf/spec/encoding';
 import {DraggedFieldIdentifier, Field} from '../field/index';
 import * as styles from './encoding-shelf.scss';
@@ -34,6 +35,8 @@ export interface EncodingShelfPropsBase extends ActionHandler<SpecEncodingAction
   id: ShelfId;
 
   fieldDef: ShelfFieldDef;
+
+  valueDef: ValueDef;
 
   schema: Schema;
 }
@@ -74,7 +77,8 @@ class EncodingShelfBase extends React.PureComponent<
   }
 
   public render() {
-    const {id, connectDropTarget, fieldDef, handleAction} = this.props;
+    const {id, connectDropTarget, fieldDef, handleAction, valueDef} = this.props;
+    console.log("VALUEDEF3", valueDef);
 
     const isWildcardShelf = isWildcard(id.channel);
     const channelName = isWildcardShelf ? 'any' : id.channel;
@@ -86,14 +90,13 @@ class EncodingShelfBase extends React.PureComponent<
             attachment="top left"
             targetAttachment="bottom left"
           >
-            {(fieldDef && !isWildcardChannelId(id)) ?
+            {channelName === 'color' || fieldDef && !isWildcardChannelId(id) ?
               <span onClick={this.toggleCustomizer} ref={this.fieldHandler}>
                 {channelName}{' '} <i className={'fa fa-caret-down'}/>
-              </span> :
-              <span>
+              </span> : <span>
                 {channelName}
               </span>
-            }
+}
 
             {this.state.customizerIsOpened &&
             <div ref={this.popupRefHandler}>
@@ -101,6 +104,7 @@ class EncodingShelfBase extends React.PureComponent<
                 shelfId={id}
                 fieldDef={fieldDef}
                 handleAction={handleAction}
+                valueDef={valueDef}
               />
             </div>
             }

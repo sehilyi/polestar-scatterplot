@@ -16,7 +16,6 @@ export const selectData = (state: State): InlineData => state.undoable.present.d
 export const selectDataset = (state: State): Dataset => state.undoable.present.dataset;
 export const selectSchema = (state: State): Schema => state.undoable.present.dataset.schema;
 
-
 const ALL_PRESET_WILDCARD_FIELDS: ShelfFieldDef[] = [
   {field: SHORT_WILDCARD, type: 'quantitative', description: 'Quantitative Fields'},
   {field: SHORT_WILDCARD, type: 'nominal', description: 'Categorical Fields'},

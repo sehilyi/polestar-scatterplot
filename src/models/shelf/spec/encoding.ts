@@ -1,5 +1,5 @@
 
-import {EncodingQuery, isAutoCountQuery, isFieldQuery} from 'compassql/build/src/query/encoding';
+import {EncodingQuery, isAutoCountQuery, isFieldQuery, ValueQuery} from 'compassql/build/src/query/encoding';
 import {FieldQuery} from 'compassql/build/src/query/encoding';
 import {ExpandedType} from 'compassql/build/src/query/expandedtype';
 import {isWildcard, SHORT_WILDCARD, Wildcard, WildcardProperty} from 'compassql/build/src/wildcard';
@@ -36,6 +36,10 @@ export function isWildcardChannelId(shelfId: ShelfId): shelfId is ShelfWildcardC
 
 export type ShelfMark = VLMark | SHORT_WILDCARD;
 
+export interface ValueDef {
+  value: number | string | boolean;
+}
+
 export interface ShelfFieldDef {
   field: WildcardProperty<string>;
 
@@ -58,13 +62,20 @@ export interface ShelfFieldDef {
   description?: string;
 }
 
-
 export interface ShelfAnyEncodingDef extends ShelfFieldDef {
   channel: SHORT_WILDCARD;
 }
 
+export type MarkChannel = keyof MarkEncoding;
+
+export interface MarkEncoding {
+  color?: ShelfFieldDef | ValueDef;
+  size?: ShelfFieldDef | ValueDef;
+  shape?: ShelfFieldDef | ValueDef;
+}
+
 export type SpecificEncoding = {
-  [P in Channel]?: ShelfFieldDef;
+  [P in Channel]?: ShelfFieldDef|ValueDef;
 };
 
 export function fromEncodingQueries(encodings: EncodingQuery[]): {
@@ -106,6 +117,14 @@ export function toFieldQuery(fieldDef: ShelfFieldDef, channel: Channel | SHORT_W
     channel,
     ...toFieldQueryFunctionMixins(fn),
     ...fieldDefWithoutFn
+  };
+}
+
+export function toValueQuery(valueDef: ValueDef, channel: Channel): ValueQuery {
+  const {value} = valueDef;
+  return {
+    channel,
+    value
   };
 }
 

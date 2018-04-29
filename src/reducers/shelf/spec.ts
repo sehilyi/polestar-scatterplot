@@ -6,7 +6,7 @@ import {FieldDef} from 'vega-lite/build/src/fielddef';
 import {Action} from '../../actions';
 import {
   SPEC_CLEAR, SPEC_FIELD_ADD, SPEC_FIELD_MOVE,
-  SPEC_FIELD_REMOVE, SPEC_FUNCTION_CHANGE, SPEC_FUNCTION_ENABLE_WILDCARD, SPEC_MARK_CHANGE_TYPE
+  SPEC_FIELD_REMOVE, SPEC_FUNCTION_CHANGE, SPEC_FUNCTION_ENABLE_WILDCARD, SPEC_MARK_CHANGE_TYPE, SPEC_VALUE_CHANGE
 } from '../../actions/shelf';
 import {SPEC_FUNCTION_ADD_WILDCARD, SPEC_FUNCTION_DISABLE_WILDCARD,
         SPEC_FUNCTION_REMOVE_WILDCARD} from '../../actions/shelf';
@@ -15,7 +15,7 @@ import {isWildcardChannelId} from '../../models';
 import {ShelfAnyEncodingDef, ShelfFieldDef, ShelfId, ShelfUnitSpec} from '../../models/shelf';
 import {sortFunctions} from '../../models/shelf';
 import {autoAddFieldQuery} from '../../models/shelf';
-import {DEFAULT_SHELF_UNIT_SPEC, fromSpecQuery} from '../../models/shelf/spec';
+import {DEFAULT_SHELF_UNIT_SPEC, fromSpecQuery, ValueDef} from '../../models/shelf/spec';
 import {insertItemToArray, modifyItemInArray, removeItemFromArray} from '../util';
 
 export function shelfSpecFieldAutoAddReducer(
@@ -89,6 +89,13 @@ export function shelfSpecReducer(
       const {shelfId, prop, value} = action.payload;
       return modifyEncoding(shelfSpec, shelfId, (fieldDef: Readonly<ShelfFieldDef | ShelfAnyEncodingDef>) => {
         return modifyFieldProp(fieldDef, prop, value);
+      });
+    }
+
+    case SPEC_VALUE_CHANGE: {
+      const {shelfId, value} = action.payload;
+      return modifyValueEncoding(shelfSpec, shelfId, (valueDef: Readonly<ValueDef>) => {
+        return modifyValueDef(shelfId, value);
       });
     }
 
@@ -230,6 +237,21 @@ function modifyEncoding(shelf: Readonly<ShelfUnitSpec>, shelfId: ShelfId, modifi
   }
 }
 
+type ValueDefModifier<T extends ValueDef> = (valueDef: Readonly<T>) => T;
+function modifyValueEncoding(shelf: Readonly<ShelfUnitSpec>, shelfId: ShelfId, modifier: ValueDefModifier<any>) {
+  if (isWildcardChannelId(shelfId)) {
+    throw new Error("Fuck you, you can't customize this shit");
+  } else {
+    return {
+      ...shelf,
+      encoding: {
+        ...shelf.encoding,
+        [shelfId.channel]: modifier(shelf.encoding[shelfId.channel] as ValueDef)
+      }
+    };
+  }
+}
+
 
 function removeEncoding(shelf: Readonly<ShelfUnitSpec>, shelfId: ShelfId):
   {fieldDef: ShelfFieldDef, shelf: Readonly<ShelfUnitSpec>} {
@@ -281,6 +303,20 @@ export function modifyFieldProp(
   return {
     ...fieldDefWithoutProp,
     ...(value !== undefined ? {[prop]: value} : {})
+  };
+}
+
+export function modifyValueDef(
+  shelfId: ShelfId,
+  newValue: any
+): Readonly<ValueDef> {
+  console.log("shelfId", shelfId);
+  console.log("newValue: ", newValue);
+  // return {
+  //   ...(newValue !== undefined ? {'value': newValue} : undefined)
+  // };
+  return {
+    value: newValue
   };
 }
 

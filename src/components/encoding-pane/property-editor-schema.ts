@@ -2,6 +2,8 @@ import {ExpandedType} from 'compassql/build/src/query/expandedtype';
 import {Channel} from 'vega-lite/build/src/channel';
 import * as vlSchema from 'vega-lite/build/vega-lite-schema.json';
 import {ShelfFieldDef, ShelfId} from '../../models/shelf/spec';
+import {contains} from 'vega-lite/build/src/util';
+import {Type} from 'vega-lite/build/src/type';
 
 export interface SchemaProperties {
   [key: string]: SchemaProperty;

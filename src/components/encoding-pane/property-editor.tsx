@@ -3,7 +3,12 @@ import * as CSSModules from 'react-css-modules';
 import Form from 'react-jsonschema-form';
 import {debounce} from 'throttle-debounce';
 import {ActionHandler} from '../../actions';
-import {SPEC_FIELD_NESTED_PROP_CHANGE, SPEC_FIELD_PROP_CHANGE, SpecEncodingAction} from '../../actions/shelf';
+import {
+  SPEC_FIELD_NESTED_PROP_CHANGE,
+  SPEC_FIELD_PROP_CHANGE,
+  SPEC_VALUE_CHANGE,
+  SpecEncodingAction
+} from '../../actions/shelf';
 import {ShelfFieldDef, ShelfId} from '../../models/shelf/spec';
 import {generateFormData, getPropertyEditorSchema} from './property-editor-schema';
 import * as styles from './property-editor.scss';
@@ -26,7 +31,7 @@ export class PropertyEditorBase extends React.PureComponent<PropertyEditorProps,
 
   public render() {
     const {prop, nestedProp, propTab, shelfId, fieldDef} = this.props;
-    const {schema, uiSchema} = getPropertyEditorSchema(prop, nestedProp, propTab);
+    const {schema, uiSchema} = getPropertyEditorSchema(prop, nestedProp, propTab, fieldDef);
     const formData = generateFormData(shelfId, fieldDef);
     return (
       <div styleName="property-editor">
@@ -44,9 +49,18 @@ export class PropertyEditorBase extends React.PureComponent<PropertyEditorProps,
   }
 
   protected changeFieldProperty(result: any) {
-    const {prop, nestedProp, shelfId, handleAction} = this.props;
+    const {prop, nestedProp, shelfId, handleAction, fieldDef} = this.props;
     const value = result.formData[Object.keys(result.formData)[0]];
-    if (nestedProp) {
+    console.log(value);
+    if (!fieldDef) {
+      handleAction({
+        type: SPEC_VALUE_CHANGE,
+        payload: {
+          shelfId,
+          value
+        }
+      });
+    } else if (nestedProp) {
       handleAction({
         type: SPEC_FIELD_NESTED_PROP_CHANGE,
         payload: {

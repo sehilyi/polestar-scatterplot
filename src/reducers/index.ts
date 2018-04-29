@@ -65,7 +65,7 @@ import {RELATED_VIEWS_HIDE_TOGGLE} from '../actions/related-views';
 import {RESET} from '../actions/reset';
 import {RESULT_LIMIT_INCREASE, RESULT_MODIFY_FIELD_PROP, RESULT_MODIFY_NESTED_FIELD_PROP} from '../actions/result';
 import {SHELF_PREVIEW_QUERY} from '../actions/shelf-preview';
-import {SHELF_AUTO_ADD_COUNT_CHANGE, SHELF_GROUP_BY_CHANGE} from '../actions/shelf/index';
+import {SHELF_AUTO_ADD_COUNT_CHANGE, SHELF_GROUP_BY_CHANGE, SPEC_VALUE_CHANGE} from '../actions/shelf/index';
 import {SPEC_FIELD_NESTED_PROP_CHANGE, SPEC_FIELD_PROP_CHANGE} from '../actions/shelf/spec';
 import {
   DEFAULT_PERSISTENT_STATE,
@@ -198,6 +198,7 @@ export const USER_ACTIONS: ActionType[] = [
   SPEC_FIELD_REMOVE,
   SPEC_FIELD_MOVE,
   SPEC_FIELD_PROP_CHANGE,
+  SPEC_VALUE_CHANGE,
   SPEC_FIELD_NESTED_PROP_CHANGE,
 
   SPEC_FUNCTION_CHANGE,

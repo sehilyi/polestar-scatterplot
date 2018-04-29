@@ -3,13 +3,14 @@ import {SpecQuery} from 'compassql/build/src/query/spec';
 import {isWildcard, isWildcardDef, SHORT_WILDCARD} from 'compassql/build/src/wildcard';
 import {Channel} from 'vega-lite/build/src/channel';
 import {Config} from 'vega-lite/build/src/config';
+import {isValueDef} from 'vega-lite/build/src/fielddef';
 import {
   fromEncodingQueries,
-  ShelfAnyEncodingDef,
+  ShelfAnyEncodingDef, ShelfFieldDef,
   ShelfMark,
   SpecificEncoding,
   toEncodingQuery,
-  toFieldQuery
+  toFieldQuery, toValueQuery
 } from './encoding';
 
 export * from './encoding';
@@ -87,8 +88,8 @@ export function hasWildcards(spec: SpecQuery): HasWildcard {
       }
 
       if (isWildcard(encQ.aggregate) ||
-          isWildcard(encQ.bin) ||
-          isWildcard(encQ.timeUnit)) {
+        isWildcard(encQ.bin) ||
+        isWildcard(encQ.timeUnit)) {
         hasWildcardFn = true;
       }
 
@@ -108,7 +109,10 @@ export function hasWildcards(spec: SpecQuery): HasWildcard {
 function specificEncodingsToEncodingQueries(encoding: SpecificEncoding): EncodingQuery[] {
   // Assemble definition of encodings with specific channels first
   return Object.keys(encoding).map((channel: Channel) => {
-    return toFieldQuery(encoding[channel], channel);
+    // console.log(encoding[channel]);
+    const channelDef = encoding[channel];
+    return isValueDef(channelDef) ? toValueQuery(channelDef, channel) :
+      toFieldQuery(channelDef as ShelfFieldDef, channel);
   });
 }
 

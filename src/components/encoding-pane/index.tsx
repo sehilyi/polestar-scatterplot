@@ -4,6 +4,7 @@ import * as React from 'react';
 import * as CSSModules from 'react-css-modules';
 import {connect} from 'react-redux';
 import {Channel} from 'vega-lite/build/src/channel';
+import {isFieldDef, isValueDef} from 'vega-lite/build/src/fielddef';
 import {OneOfFilter, RangeFilter} from 'vega-lite/build/src/filter';
 import {FilterAction} from '../../actions';
 import {ActionHandler} from '../../actions/index';
@@ -13,6 +14,7 @@ import {ShelfAction, SPEC_CLEAR} from '../../actions/shelf';
 import {ShelfUnitSpec, State} from '../../models';
 import {VoyagerConfig} from '../../models/config';
 import {ShelfFieldDef} from '../../models/shelf';
+import {ValueDef} from '../../models/shelf/spec';
 import {selectConfig, selectDataset, selectShelfPreview} from '../../selectors';
 import {selectSchemaFieldDefs} from '../../selectors/index';
 import {selectFilters, selectShelfSpec} from '../../selectors/shelf';
@@ -32,6 +34,8 @@ interface EncodingPanelProps extends ActionHandler<ShelfAction | ResultAsyncActi
   schema: Schema;
 
   fieldDefs: ShelfFieldDef[];
+
+  valueDefs: ValueDef[];
 
   config: VoyagerConfig;
 }
@@ -110,13 +114,16 @@ class EncodingPanelBase extends React.PureComponent<EncodingPanelProps, {}> {
 
     const {handleAction, spec, specPreview, schema} = this.props;
     const {encoding} = specPreview || spec;
+    const fieldDef = isFieldDef(encoding[channel]) ? encoding[channel] as ShelfFieldDef : undefined;
+    const valueDef = isValueDef(encoding[channel]) ? encoding[channel] as ValueDef : undefined;
     return (
       <EncodingShelf
         key={channel}
         id={{channel}}
-        fieldDef={encoding[channel]}
+        fieldDef={fieldDef}
         schema={schema}
         handleAction={handleAction}
+        valueDef={valueDef}
       />
     );
   }
@@ -146,6 +153,7 @@ class EncodingPanelBase extends React.PureComponent<EncodingPanelProps, {}> {
         schema={schema}
         fieldDef={anyEncodings[index]}
         handleAction={handleAction}
+        valueDef={undefined}
       />
     );
   }
