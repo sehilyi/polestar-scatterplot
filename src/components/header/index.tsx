@@ -8,6 +8,7 @@ import {State} from '../../models/index';
 import {selectData} from '../../selectors/dataset';
 import {Controls} from './controls';
 import * as styles from './header.scss';
+import { Themes, ThemesBase, VegaTheme } from './themes';
 
 export interface HeaderProps {
   data: InlineData;
@@ -16,14 +17,14 @@ export interface HeaderProps {
 export class HeaderBase extends React.PureComponent<HeaderProps, {}> {
   public render() {
     const {data} = this.props;
-
     return (
       <div styleName='header'>
         <img styleName='voyager-logo' src={logo}/>
         {data && <Controls/>}
-        <a styleName='idl-logo' onClick={this.openLink}>
+        {data && <Themes/>}
+        {/* <a styleName='idl-logo' onClick={this.openLink}>
           <img src={idlLogo}/>
-        </a>
+        </a> */}
       </div>
     );
   }
