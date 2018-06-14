@@ -18,6 +18,7 @@ import {ShelfPreview} from '../models/shelf-preview';
 import {ShelfFilter, toPredicateFunction} from '../models/shelf/filter';
 import {selectData} from './dataset';
 import {selectFilters} from './shelf';
+import {Themes} from '../models/theme';
 
 export * from './dataset';
 export * from './result';
@@ -29,6 +30,7 @@ export const selectConfig = (state: State): VoyagerConfig => state.persistent.co
 export const selectRelatedViews = (state: State): RelatedViews => state.persistent.relatedViews;
 export const selectShelfPreview = (state: State): ShelfPreview => state.persistent.shelfPreview;
 export const selectLog = (state: State): Log => state.persistent.log;
+export const selectTheme = (state: State): Themes => state.persistent.theme;
 
 export const selectCustomWildcardFields = (state: State): CustomWildcardField[] => {
   return state.undoable.present.customWildcardFields;

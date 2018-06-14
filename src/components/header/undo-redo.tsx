@@ -3,6 +3,7 @@ import {connect} from 'react-redux';
 import {REDO, UNDO} from '../../actions/undo-redo';
 import {State} from '../../models';
 
+//TODO: Why not using redux?
 export interface UndoRedoProps {
   canUndo: boolean;
   canRedo: boolean;

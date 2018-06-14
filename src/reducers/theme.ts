@@ -7,9 +7,9 @@ export function themeReducer(
   themeChanger: Themes = DEFAULT_THEME, action: Action): Themes {
   switch (action.type) {
     case THEME_CHANGE: {
-      const newTheme: VegaTheme = action.payload;
+      const prop = action.payload;
       return {
-        theme: newTheme
+        theme: prop
       };
     }
   }

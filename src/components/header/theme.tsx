@@ -5,20 +5,20 @@ import * as styles from './theme.scss';
 import {ActionHandler} from '../../actions';
 import {THEME_CHANGE, ThemeAction} from '../../actions/theme';
 
-export namespace VegaTheme {
-  export const BASIC: 'basic' = 'basic';
-  export const FIVE38: '538' = '538';
-}
+// export namespace VegaTheme {
+//   export const BASIC: 'basic' = 'basic';
+//   export const FIVE38: '538' = '538';
+// }
 
 /**
  * Themes for vega charts
  */
-export type VegaTheme = typeof VegaTheme.BASIC | typeof VegaTheme.FIVE38;
+export type VegaTheme = 'basic' | '538';//typeof VegaTheme.BASIC | typeof VegaTheme.FIVE38;
 
-export const BASIC = VegaTheme.BASIC;
-export const FIVE38 = VegaTheme.FIVE38;
+// export const BASIC = VegaTheme.BASIC;
+// export const FIVE38 = VegaTheme.FIVE38;
 
-export const ALL_TEHEMS = ["Basic", "538"];
+export const ALL_TEHEMS = ["basic", "538"];
 
 export const options = ALL_TEHEMS.map(theme => (
   <option key={theme} value={theme}>
@@ -27,7 +27,7 @@ export const options = ALL_TEHEMS.map(theme => (
 ));
 
 export interface ThemeProps extends ActionHandler<ThemeAction> {
-  theme: VegaTheme;
+  theme: string;
 }
 
 export class ThemesBase extends React.PureComponent<ThemeProps, {}> {
@@ -43,9 +43,13 @@ export class ThemesBase extends React.PureComponent<ThemeProps, {}> {
   public render() {
     const {theme} = this.props;
     return (
-      <div styleName='theme-selector'>
-        {theme}
-        &nbsp;&nbsp;
+      <div styleName='right'>
+        {/* {theme} */}
+        <i className="fa fa-bar-chart" aria-hidden="true">
+          &nbsp;
+          Theme
+          &nbsp;&nbsp;
+        </i>
         <select
           value={theme}
           onChange={this.onThemeChange}
@@ -63,4 +67,4 @@ export class ThemesBase extends React.PureComponent<ThemeProps, {}> {
   }
 }
 
-export const Themes = CSSModules(ThemesBase, styles);
+export const Themes = (CSSModules(ThemesBase, styles));

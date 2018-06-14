@@ -97,7 +97,7 @@ const persistentStateToReset: ResetIndex<PersistentState> = {
   log: false,
   relatedViews: true,
   shelfPreview: true,
-  theme: true
+  theme: false
 };
 
 export const persistentReducer = makeResetReducer(

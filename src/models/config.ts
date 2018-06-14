@@ -7,7 +7,7 @@ export interface VoyagerConfig {
   hideFooter?: boolean;
   relatedViews?: 'initiallyCollapsed' | 'initiallyShown' | 'disabled';
   wildcards?: 'enabled' | 'disabled';
-  theme?: 'basic' | '538';
+  theme?: VegaTheme;
 };
 
 export const DEFAULT_VOYAGER_CONFIG: VoyagerConfig = {

@@ -9,25 +9,29 @@ import {selectData} from '../../selectors/dataset';
 import {Controls} from './controls';
 import * as styles from './header.scss';
 import {Themes, ThemesBase, VegaTheme} from './theme';
-import {ActionHandler} from '../../actions';
-import {ThemeChange} from '../../actions/theme';
+import {ActionHandler, createDispatchHandler, ThemeAction} from '../../actions';
+import {Action} from '../../actions/index';
+import {selectTheme} from '../../selectors';
+import {Themes as ITheme} from '../../models/theme';
 
-export interface HeaderProps extends ActionHandler<ThemeChange>{
+export interface HeaderProps extends ActionHandler<Action> {
   data: InlineData;
+  theme: ITheme;
 }
 
 export class HeaderBase extends React.PureComponent<HeaderProps, {}> {
+
+  constructor(props: HeaderProps) {
+    super(props);
+  }
+
   public render() {
-    const {handleAction, data} = this.props;
-    const val: VegaTheme = VegaTheme.BASIC;
+    const {data, theme, handleAction} = this.props;
     return (
       <div styleName='header'>
         <img styleName='voyager-logo' src={logo} />
         {data && <Controls />}
-        {data && <Themes theme={val} handleAction={handleAction}/>}
-        {/* <a styleName='idl-logo' onClick={this.openLink}>
-          <img src={idlLogo}/>
-        </a> */}
+        {data && <Themes theme={theme.theme} handleAction={handleAction} />}
       </div>
     );
   }
@@ -40,7 +44,9 @@ export class HeaderBase extends React.PureComponent<HeaderProps, {}> {
 export const Header = connect(
   (state: State) => {
     return {
-      data: selectData(state)
+      data: selectData(state),
+      theme: selectTheme(state)
     };
-  }
+  },
+  createDispatchHandler<ThemeAction>()
 )(CSSModules(HeaderBase, styles));

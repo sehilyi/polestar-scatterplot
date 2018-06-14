@@ -16,7 +16,7 @@ import {RelatedViews as RelatedViewsModel} from '../../models/related-views';
 import {Result} from '../../models/result/index';
 import {ShelfFilter} from '../../models/shelf/filter';
 import {SHELF_GROUP_BYS, ShelfGroupBy} from '../../models/shelf/index';
-import {selectBookmark, selectConfig, selectMainSpec} from '../../selectors';
+import {selectBookmark, selectConfig, selectMainSpec, selectTheme} from '../../selectors';
 import {selectFilteredData, selectRelatedViews} from '../../selectors/index';
 import {selectResult} from '../../selectors/result';
 import {
@@ -28,6 +28,7 @@ import {PlotList} from '../plot-list';
 import {RelatedViews} from './related-views';
 import {RelatedViewsButton} from './related-views-button';
 import * as styles from './view-pane.scss';
+import {Themes} from '../../models/theme';
 
 export interface ViewPaneProps extends ActionHandler<Action> {
   isQuerySpecific: boolean;
@@ -44,6 +45,8 @@ export interface ViewPaneProps extends ActionHandler<Action> {
 
   data: InlineData;
   filters: ShelfFilter[];
+
+  theme: Themes;
 }
 
 const NO_PLOT_MESSAGE = `No specified visualization yet. ` +
@@ -210,7 +213,8 @@ export const ViewPane = connect(
       isQuerySpecific: selectIsQuerySpecific(state),
       result: selectResult.main(state),
       spec: selectMainSpec(state),
-      relatedViews: selectRelatedViews(state)
+      relatedViews: selectRelatedViews(state),
+      theme: selectTheme(state)
     };
   },
   createDispatchHandler<ShelfAction>()
