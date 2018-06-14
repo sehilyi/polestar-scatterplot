@@ -1,3 +1,5 @@
+import {VegaTheme, ThemeProps} from "../components/header/theme";
+
 export interface VoyagerConfig {
   showDataSourceSelector?: boolean;
   serverUrl?: string | null;
@@ -5,6 +7,7 @@ export interface VoyagerConfig {
   hideFooter?: boolean;
   relatedViews?: 'initiallyCollapsed' | 'initiallyShown' | 'disabled';
   wildcards?: 'enabled' | 'disabled';
+  theme?: 'basic' | '538';
 };
 
 export const DEFAULT_VOYAGER_CONFIG: VoyagerConfig = {
@@ -13,5 +16,6 @@ export const DEFAULT_VOYAGER_CONFIG: VoyagerConfig = {
   hideHeader: false,
   hideFooter: false,
   relatedViews: 'initiallyShown',
-  wildcards: 'enabled'
+  wildcards: 'enabled',
+  theme: 'basic'
 };

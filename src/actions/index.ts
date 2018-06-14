@@ -12,6 +12,7 @@ import {SPEC_ACTION_TYPE_INDEX} from './shelf/spec';
 import {ApplicationStateAction} from './state';
 import {TAB_ACTION_TYPE_INDEX, TabAction} from './tab';
 import {UndoableAction} from './undo-redo';
+import {ThemeAction} from './theme';
 
 export * from './bookmark';
 export * from './custom-wildcard-field';
@@ -27,6 +28,7 @@ export * from './state';
 export * from './tab';
 export * from './undo-redo';
 export * from './shelf-preview';
+export * from './theme';
 
 /**
  * Union type of all actions in our application.
@@ -44,7 +46,8 @@ export type Action = (
   ShelfAction |
   ShelfPreviewAction |
   TabAction |
-  UndoableAction
+  UndoableAction |
+  ThemeAction
 );
 
 export type ActionType = Action['type'];
@@ -111,6 +114,8 @@ export const ACTION_TYPE_INDEX: {[k in ActionType]: 1} = {
   REDO: 1,
 
   SET_APPLICATION_STATE: 1,
+
+  THEME_CHANGE: 1,
 };
 
 /** An array of all possible action types. */

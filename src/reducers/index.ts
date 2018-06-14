@@ -1,7 +1,7 @@
 import undoable, {excludeAction, StateWithHistory} from 'redux-undo';
 import {toSet} from 'vega-util';
 
-import {Action, REDO, UNDO} from '../actions';
+import {Action, REDO, UNDO, THEME_CHANGE} from '../actions';
 import {HISTORY_LIMIT} from '../constants';
 import {DEFAULT_STATE, DEFAULT_UNDOABLE_STATE_BASE, PlotTabState} from '../models';
 
@@ -84,6 +84,7 @@ import {shelfPreviewReducer} from './shelf-preview';
 import {shelfSpecFieldAutoAddReducer} from './shelf/spec';
 import {stateReducer} from './state';
 import {tabReducer} from './tab';
+import {themeReducer} from './theme';
 
 import {modifyItemInArray} from './util';
 
@@ -95,7 +96,8 @@ const persistentStateToReset: ResetIndex<PersistentState> = {
   config: false,
   log: false,
   relatedViews: true,
-  shelfPreview: true
+  shelfPreview: true,
+  theme: true
 };
 
 export const persistentReducer = makeResetReducer(
@@ -104,7 +106,8 @@ export const persistentReducer = makeResetReducer(
     config: configReducer,
     relatedViews: relatedViewsReducer,
     log: logReducer,
-    shelfPreview: shelfPreviewReducer
+    shelfPreview: shelfPreviewReducer,
+    theme: themeReducer
   }),
   persistentStateToReset,
   DEFAULT_PERSISTENT_STATE
@@ -211,7 +214,10 @@ export const USER_ACTIONS: ActionType[] = [
   TAB_ADD,
   TAB_SWITCH,
   TAB_REMOVE,
-  TAB_TITLE_UPDATE
+  TAB_TITLE_UPDATE,
+
+  // Theme Actions
+  THEME_CHANGE
 ];
 
 

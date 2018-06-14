@@ -8,20 +8,23 @@ import {State} from '../../models/index';
 import {selectData} from '../../selectors/dataset';
 import {Controls} from './controls';
 import * as styles from './header.scss';
-import { Themes, ThemesBase, VegaTheme } from './themes';
+import {Themes, ThemesBase, VegaTheme} from './theme';
+import {ActionHandler} from '../../actions';
+import {ThemeChange} from '../../actions/theme';
 
-export interface HeaderProps {
+export interface HeaderProps extends ActionHandler<ThemeChange>{
   data: InlineData;
 }
 
 export class HeaderBase extends React.PureComponent<HeaderProps, {}> {
   public render() {
-    const {data} = this.props;
+    const {handleAction, data} = this.props;
+    const val: VegaTheme = VegaTheme.BASIC;
     return (
       <div styleName='header'>
-        <img styleName='voyager-logo' src={logo}/>
-        {data && <Controls/>}
-        {data && <Themes/>}
+        <img styleName='voyager-logo' src={logo} />
+        {data && <Controls />}
+        {data && <Themes theme={val} handleAction={handleAction}/>}
         {/* <a styleName='idl-logo' onClick={this.openLink}>
           <img src={idlLogo}/>
         </a> */}

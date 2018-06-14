@@ -21,7 +21,6 @@ import * as styles from './encoding-pane.scss';
 import {EncodingShelf} from './encoding-shelf';
 import {MarkPicker} from './mark-picker';
 
-
 interface EncodingPanelProps extends ActionHandler<ShelfAction | ResultAsyncAction | FilterAction> {
   spec: ShelfUnitSpec;
 
