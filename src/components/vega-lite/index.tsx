@@ -10,6 +10,7 @@ import {Logger} from '../util/util.logger';
 import * as vegaThemes from 'vega-themes';
 import {AppRoot} from '../app-root';
 import {Themes} from '../../models/theme';
+import {themeDict} from '../header/theme';
 
 export interface VegaLiteProps {
   spec: TopLevelExtendedSpec;
@@ -141,9 +142,9 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     //     "y": {"field": "b", "type": "quantitative"}
     //   }
     // };
-    const {logger, theme} = this.props;
+    const {logger} = this.props;
     const vlSpec = this.props.spec;
-    const vlConfig = this.props.theme.theme == "basic" ? vegaThemes.vox : vegaThemes.dark;
+    const vlConfig = themeDict[this.props.theme.theme];
 
     try {
       const spec = vl.compile(vlSpec, logger).spec;

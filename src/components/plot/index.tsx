@@ -23,6 +23,7 @@ import {BookmarkButton} from './bookmarkbutton';
 import * as styles from './plot.scss';
 import {Themes} from '../../models/theme';
 import * as vegaThemes from 'vega-themes';
+import {themeDict} from '../header/theme';
 
 export interface PlotProps extends ActionHandler<
   ShelfAction | BookmarkAction | ShelfPreviewAction | ResultAction | LogAction
@@ -110,7 +111,7 @@ export class PlotBase extends React.PureComponent<PlotProps, PlotState> {
 
     return (
       <div styleName={isPlotListItem ? 'plot-list-item-group' : 'plot-group'}
-        style={{backgroundColor: this.props.theme.theme == "basic" ? vegaThemes.vox.background : vegaThemes.dark.background}}>
+        style={{backgroundColor: themeDict[this.props.theme.theme].background}}>
         <div styleName="plot-info">
           <div styleName="command-toolbox">
             {onSort && this.renderSortButton('x')}

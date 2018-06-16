@@ -4,6 +4,7 @@ import * as CSSModules from 'react-css-modules';
 import * as styles from './theme.scss';
 import {ActionHandler} from '../../actions';
 import {THEME_CHANGE, ThemeAction} from '../../actions/theme';
+import * as vegaThemes from 'vega-themes';
 
 export namespace VegaTheme {
   export const BASIC: 'basic' = 'basic';
@@ -13,12 +14,16 @@ export namespace VegaTheme {
 /**
  * Themes for vega charts
  */
-export type VegaTheme = 'basic' | '538';//typeof VegaTheme.BASIC | typeof VegaTheme.FIVE38;
+export type VegaTheme = 'basic' | 'excel' | 'ggplot2' | 'quartz' | 'vox' | 'fivethirtyeight';
+export const ALL_TEHEMS = ['basic', 'excel', 'ggplot2', 'quartz', 'vox', 'fivethirtyeight'];
 
-export const BASIC = VegaTheme.BASIC;
-export const FIVE38 = VegaTheme.FIVE38;
-
-export const ALL_TEHEMS = ["basic", "538"];
+export let themeDict: {[id: string] : any;} = {};
+themeDict['basic'] = vegaThemes.vox;
+themeDict['excel'] = vegaThemes.excel;
+themeDict['ggplot2'] = vegaThemes.ggplot2;
+themeDict['quartz'] = vegaThemes.quartz;
+themeDict['vox'] = vegaThemes.vox;
+themeDict['fivethirtyeight'] = vegaThemes.fivethirtyeight;
 
 export const options = ALL_TEHEMS.map(theme => (
   <option key={theme} value={theme}>
