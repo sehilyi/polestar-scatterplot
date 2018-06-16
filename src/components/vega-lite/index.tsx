@@ -48,10 +48,10 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
   public render() {
     return (
       <div>
-        <ClipLoader color={SPINNER_COLOR} loading={this.state.isLoading}/>
-        <div className='chart' ref={CHART_REF}/>
+        <ClipLoader color={SPINNER_COLOR} loading={this.state.isLoading} />
+        <div className='chart' ref={CHART_REF} />
         {/* chart is defined in app.scss */}
-        <div id="vis-tooltip" className="vg-tooltip"/>
+        <div id="vis-tooltip" className="vg-tooltip" />
       </div>
     );
   }
@@ -143,9 +143,11 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     // };
     const {logger, theme} = this.props;
     const vlSpec = this.props.spec;
+    const vlConfig = this.props.theme.theme == "basic" ? vegaThemes.vox : vegaThemes.dark;
+
     try {
       const spec = vl.compile(vlSpec, logger).spec;
-      const runtime = vega.parse(spec, this.props.theme.theme == "basic"?vegaThemes.vox : vegaThemes.dark);//vlSpec.config
+      const runtime = vega.parse(spec, vlConfig);
       this.view = new vega.View(runtime)
         .logLevel(vega.Warn)
         .initialize(this.refs[CHART_REF] as any)
@@ -164,8 +166,8 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     if (data && isNamedData(spec.data)) {
       this.view.change(spec.data.name,
         vega.changeset()
-            .remove(() => true) // remove previous data
-            .insert(data.values)
+          .remove(() => true) // remove previous data
+          .insert(data.values)
       );
     }
   }
