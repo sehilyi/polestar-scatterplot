@@ -6,11 +6,6 @@ import {ActionHandler} from '../../actions';
 import {THEME_CHANGE, ThemeAction} from '../../actions/theme';
 import * as vegaThemes from 'vega-themes';
 
-export namespace VegaTheme {
-  export const BASIC: 'basic' = 'basic';
-  export const FIVE38: '538' = '538';
-}
-
 /**
  * Themes for vega charts
  */
