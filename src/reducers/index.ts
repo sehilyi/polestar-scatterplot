@@ -1,7 +1,7 @@
 import undoable, {excludeAction, StateWithHistory} from 'redux-undo';
 import {toSet} from 'vega-util';
 
-import {Action, REDO, UNDO, THEME_CHANGE} from '../actions';
+import {Action, REDO, UNDO} from '../actions';
 import {HISTORY_LIMIT} from '../constants';
 import {DEFAULT_STATE, DEFAULT_UNDOABLE_STATE_BASE, PlotTabState} from '../models';
 
@@ -55,7 +55,8 @@ import {
   TAB_ADD,
   TAB_REMOVE,
   TAB_SWITCH,
-  TAB_TITLE_UPDATE
+  TAB_TITLE_UPDATE,
+  THEME_CHANGE
 } from '../actions';
 
 import {ActionType} from '../actions';

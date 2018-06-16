@@ -9,14 +9,16 @@ import {State} from '../../models';
 import {Bookmark} from '../../models/bookmark';
 import {ResultPlot} from '../../models/result';
 import {selectData} from '../../selectors/dataset';
-import {selectBookmark} from '../../selectors/index';
+import {selectBookmark, selectTheme} from '../../selectors/index';
 import {Plot} from '../plot';
 import * as styles from './bookmark.scss';
+import {Themes} from '../../models/theme';
 
 
 export interface BookmarkProps extends ActionHandler<BookmarkAction> {
   bookmark: Bookmark;
   data: InlineData;
+  theme: Themes;
 }
 
 export class BookmarkBase extends React.PureComponent<BookmarkProps, any> {
@@ -99,7 +101,7 @@ export class BookmarkBase extends React.PureComponent<BookmarkProps, any> {
   }
 
   private renderBookmarks(bookmark: Bookmark) {
-    const {data} = this.props;
+    const {data, theme} = this.props;
     const plots: ResultPlot[] = bookmark.list.map(key => bookmark.dict[key].plot);
 
     const bookmarkPlotListItems = plots.map((plot, index) => {
@@ -117,6 +119,7 @@ export class BookmarkBase extends React.PureComponent<BookmarkProps, any> {
           showBookmarkButton={true}
           showSpecifyButton={true}
           spec={spec}
+          theme={this.props.theme}
         />
       );
     });
@@ -139,7 +142,8 @@ export const BookmarkPane = connect(
   (state: State) => {
     return {
       bookmark: selectBookmark(state),
-      data: selectData(state)
+      data: selectData(state),
+      theme: selectTheme(state)
     };
   },
   createDispatchHandler<BookmarkAction>()

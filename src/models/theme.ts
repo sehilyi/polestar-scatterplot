@@ -5,5 +5,5 @@ export interface Themes {
 };
 
 export const DEFAULT_THEME: Themes = {
-  theme: 'basic'
+  theme: VegaTheme.BASIC
 };

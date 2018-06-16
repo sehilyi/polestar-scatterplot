@@ -116,7 +116,7 @@ class ViewPaneBase extends React.PureComponent<ViewPaneProps, {}> {
   }
 
   private renderSpecifiedView() {
-    const {bookmark, data, filters, handleAction, spec} = this.props;
+    const {bookmark, data, filters, handleAction, spec, theme} = this.props;
 
     if (spec) {
       return (
@@ -128,6 +128,7 @@ class ViewPaneBase extends React.PureComponent<ViewPaneProps, {}> {
           onSort={this.onSort}
           showBookmarkButton={true}
           spec={spec}
+          theme={theme}
         />
       );
     } else {
@@ -138,7 +139,7 @@ class ViewPaneBase extends React.PureComponent<ViewPaneProps, {}> {
   }
 
   private renderSpecifiedViews() {
-    const {bookmark, handleAction, autoAddCount, groupBy, defaultGroupBy, result} = this.props;
+    const {bookmark, handleAction, autoAddCount, groupBy, defaultGroupBy, result, theme} = this.props;
 
     const options = SHELF_GROUP_BYS.map(value => {
       const label = value === 'auto' ?
@@ -178,6 +179,7 @@ class ViewPaneBase extends React.PureComponent<ViewPaneProps, {}> {
           resultType="main"
           handleAction={handleAction}
           bookmark={bookmark}
+          theme={theme}
         />
       </div>
     );

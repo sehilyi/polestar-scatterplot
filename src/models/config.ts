@@ -17,5 +17,5 @@ export const DEFAULT_VOYAGER_CONFIG: VoyagerConfig = {
   hideFooter: false,
   relatedViews: 'initiallyShown',
   wildcards: 'enabled',
-  theme: 'basic'
+  theme: VegaTheme.BASIC
 };

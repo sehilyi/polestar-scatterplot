@@ -77,6 +77,7 @@
     "vega-datasets": "^1.8.0",
     "vega-expression": "^2.3.1",
     "vega-lite": "2.0.0-rc1",
+    "vega-themes": "^2.1.0",
     "vega-tooltip": "^0.4.2"
   },
   "devDependencies": {

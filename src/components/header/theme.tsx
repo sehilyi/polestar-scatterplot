@@ -5,18 +5,18 @@ import * as styles from './theme.scss';
 import {ActionHandler} from '../../actions';
 import {THEME_CHANGE, ThemeAction} from '../../actions/theme';
 
-// export namespace VegaTheme {
-//   export const BASIC: 'basic' = 'basic';
-//   export const FIVE38: '538' = '538';
-// }
+export namespace VegaTheme {
+  export const BASIC: 'basic' = 'basic';
+  export const FIVE38: '538' = '538';
+}
 
 /**
  * Themes for vega charts
  */
 export type VegaTheme = 'basic' | '538';//typeof VegaTheme.BASIC | typeof VegaTheme.FIVE38;
 
-// export const BASIC = VegaTheme.BASIC;
-// export const FIVE38 = VegaTheme.FIVE38;
+export const BASIC = VegaTheme.BASIC;
+export const FIVE38 = VegaTheme.FIVE38;
 
 export const ALL_TEHEMS = ["basic", "538"];
 
@@ -44,7 +44,6 @@ export class ThemesBase extends React.PureComponent<ThemeProps, {}> {
     const {theme} = this.props;
     return (
       <div styleName='right'>
-        {/* {theme} */}
         <i className="fa fa-bar-chart" aria-hidden="true">
           &nbsp;
           Theme

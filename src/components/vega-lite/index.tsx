@@ -7,6 +7,9 @@ import {TopLevelExtendedSpec} from 'vega-lite/build/src/spec';
 import * as vegaTooltip from 'vega-tooltip';
 import {SPINNER_COLOR} from '../../constants';
 import {Logger} from '../util/util.logger';
+import * as vegaThemes from 'vega-themes';
+import {AppRoot} from '../app-root';
+import {Themes} from '../../models/theme';
 
 export interface VegaLiteProps {
   spec: TopLevelExtendedSpec;
@@ -16,6 +19,8 @@ export interface VegaLiteProps {
   logger: Logger;
 
   data: InlineData;
+
+  theme: Themes;
 
   viewRunAfter?: (view: vega.View) => any;
 }
@@ -136,11 +141,11 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     //     "y": {"field": "b", "type": "quantitative"}
     //   }
     // };
-    const {logger} = this.props;
+    const {logger, theme} = this.props;
     const vlSpec = this.props.spec;
     try {
       const spec = vl.compile(vlSpec, logger).spec;
-      const runtime = vega.parse(spec, vlSpec.config);
+      const runtime = vega.parse(spec, this.props.theme.theme == "basic"?vegaThemes.vox : vegaThemes.dark);//vlSpec.config
       this.view = new vega.View(runtime)
         .logLevel(vega.Warn)
         .initialize(this.refs[CHART_REF] as any)

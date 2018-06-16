@@ -21,10 +21,12 @@ import {Logger} from '../util/util.logger';
 import {VegaLite} from '../vega-lite/index';
 import {BookmarkButton} from './bookmarkbutton';
 import * as styles from './plot.scss';
+import {Themes} from '../../models/theme';
+import * as vegaThemes from 'vega-themes';
 
 export interface PlotProps extends ActionHandler<
   ShelfAction | BookmarkAction | ShelfPreviewAction | ResultAction | LogAction
-> {
+  > {
   data: InlineData;
   filters: ShelfFilter[];
   fieldInfos?: PlotFieldInfo[];
@@ -36,6 +38,7 @@ export interface PlotProps extends ActionHandler<
 
   spec: FacetedCompositeUnitSpec;
   bookmark?: Bookmark;
+  theme: Themes;
 
   // specified when it's in the modal
   // so we can close the modal when the specify button is clicked.
@@ -89,7 +92,7 @@ export class PlotBase extends React.PureComponent<PlotProps, PlotState> {
   }
 
   public render() {
-    const {isPlotListItem, onSort, showBookmarkButton, showSpecifyButton, spec, data} = this.props;
+    const {isPlotListItem, onSort, showBookmarkButton, showSpecifyButton, spec, data, theme} = this.props;
 
     let notesDiv;
     const specKey = JSON.stringify(spec);
@@ -106,7 +109,8 @@ export class PlotBase extends React.PureComponent<PlotProps, PlotState> {
     }
 
     return (
-      <div styleName={isPlotListItem ? 'plot-list-item-group' : 'plot-group'}>
+      <div styleName={isPlotListItem ? 'plot-list-item-group' : 'plot-group'}
+        style={{backgroundColor: this.props.theme.theme == "basic" ? vegaThemes.vox.background : vegaThemes.dark.background}}>
         <div styleName="plot-info">
           <div styleName="command-toolbox">
             {onSort && this.renderSortButton('x')}
@@ -137,7 +141,7 @@ export class PlotBase extends React.PureComponent<PlotProps, PlotState> {
           onMouseEnter={this.onMouseEnter}
           onMouseLeave={this.onMouseLeave}
         >
-          <VegaLite spec={spec} logger={this.plotLogger} data={data}/>
+          <VegaLite spec={spec} logger={this.plotLogger} data={data} theme={theme} />
         </div>
         {notesDiv}
       </div>

@@ -11,10 +11,11 @@ import {Bookmark} from '../../models/bookmark';
 import {State} from '../../models/index';
 import {Result, RESULT_TYPES, ResultType} from '../../models/result';
 import {RELATED_VIEWS_INDEX, RELATED_VIEWS_TYPES} from '../../queries/index';
-import {selectBookmark} from '../../selectors/index';
+import {selectBookmark, selectTheme} from '../../selectors/index';
 import {selectResult} from '../../selectors/result';
 import {PlotList} from '../plot-list/index';
 import * as styles from './related-views.scss';
+import {Themes} from '../../models/theme';
 
 export interface RelatedViewsProps extends ActionHandler<BookmarkAction|ShelfAction|ShelfPreviewAction|ResultAction> {
   results: {
@@ -22,11 +23,13 @@ export interface RelatedViewsProps extends ActionHandler<BookmarkAction|ShelfAct
   };
 
   bookmark: Bookmark;
+
+  theme: Themes;
 }
 
 export class RelatedViewsBase extends React.PureComponent<RelatedViewsProps, {}> {
   public render() {
-    const {bookmark, handleAction, results} = this.props;
+    const {bookmark, handleAction, results, theme} = this.props;
 
     const subpanes = RELATED_VIEWS_TYPES.map(relatedViewType => {
       const title = RELATED_VIEWS_INDEX[relatedViewType].title;
@@ -56,6 +59,7 @@ export class RelatedViewsBase extends React.PureComponent<RelatedViewsProps, {}>
             bookmark={bookmark}
             resultType={relatedViewType}
             result={result}
+            theme={theme}
           />
         </div>
       );
@@ -100,7 +104,8 @@ export const RelatedViews = connect(
         results[resultType] = selectResult[resultType](state);
         return results;
       }, {}),
-      bookmark: selectBookmark(state)
+      bookmark: selectBookmark(state),
+      theme: selectTheme(state)
     };
   },
   createDispatchHandler<BookmarkAction|ShelfAction>()

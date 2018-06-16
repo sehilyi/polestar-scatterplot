@@ -16,10 +16,11 @@ import {State} from '../../models/index';
 import {ResultType} from '../../models/result';
 import {Result} from '../../models/result/index';
 import {ShelfFilter} from '../../models/shelf/filter';
-import {selectFilteredData} from '../../selectors/index';
+import {selectFilteredData, selectTheme} from '../../selectors/index';
 import {selectFilters} from '../../selectors/shelf';
 import {Plot} from '../plot';
 import * as styles from './plot-list.scss';
+import {Themes} from '../../models/theme';
 
 export interface PlotListOwnProps extends ActionHandler<ShelfAction|ResultAction> {
   result: Result;
@@ -27,6 +28,8 @@ export interface PlotListOwnProps extends ActionHandler<ShelfAction|ResultAction
   resultType?: ResultType;
 
   bookmark: Bookmark;
+
+  theme: Themes;
 }
 
 export interface PlotListConnectProps {
@@ -45,7 +48,7 @@ export class PlotListBase extends React.PureComponent<PlotListProps, any> {
   }
 
   public render() {
-    const {handleAction, bookmark, data, filters, result} = this.props;
+    const {handleAction, bookmark, data, filters, result, theme} = this.props;
     const {plots, limit, isLoading} = result;
     const plotListItems = plots && plots.slice(0, limit).map((plot, index) => {
       const {spec, fieldInfos} = plot;
@@ -62,6 +65,7 @@ export class PlotListBase extends React.PureComponent<PlotListProps, any> {
           showSpecifyButton={true}
           spec={spec}
           bookmark={bookmark}
+          theme={this.props.theme}
         />
       );
     });
@@ -116,7 +120,9 @@ export const PlotList = connect<PlotListConnectProps, {}, PlotListOwnProps>(
     // take spec from props and read spec.data.name
     return {
       data: selectFilteredData(state),
-      filters: selectFilters(state)
+      filters: selectFilters(state),
+      theme: selectTheme(state)
     };
+    
   }
 )(CSSModules(PlotListBase, styles));
