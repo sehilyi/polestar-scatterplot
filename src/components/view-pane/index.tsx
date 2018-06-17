@@ -28,7 +28,7 @@ import {PlotList} from '../plot-list';
 import {RelatedViews} from './related-views';
 import {RelatedViewsButton} from './related-views-button';
 import * as styles from './view-pane.scss';
-import {Themes} from '../../models/theme';
+import {Themes} from '../../models/theme/theme';
 
 export interface ViewPaneProps extends ActionHandler<Action> {
   isQuerySpecific: boolean;

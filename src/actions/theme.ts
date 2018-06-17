@@ -1,5 +1,5 @@
 import {ReduxAction} from './redux-action';
-import {VegaTheme} from '../components/header/theme';
+import {VegaTheme} from '../models/theme/theme';
 
 export type ThemeAction = ThemeChange;
 

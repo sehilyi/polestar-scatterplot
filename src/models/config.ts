@@ -1,4 +1,4 @@
-import {VegaTheme, ThemeProps} from "../components/header/theme";
+import {VegaTheme} from "./theme/theme";
 
 export interface VoyagerConfig {
   showDataSourceSelector?: boolean;

@@ -6791,12 +6791,6 @@ vega-statistics@^1.2.1:
   dependencies:
     d3-array "1"
 
-vega-themes@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/vega-themes/-/vega-themes-2.1.0.tgz#83879e95cdc14bd960620d60bdc4547ee690666a"
-  dependencies:
-    vega-typings "^0.3.3"
-
 vega-tooltip@^0.4.2:
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/vega-tooltip/-/vega-tooltip-0.4.2.tgz#c9690208ec49d765873e4374955a1b480931fa63"
@@ -6816,7 +6810,7 @@ vega-transforms@^2.0.0:
     vega-statistics "^1.2.1"
     vega-util "^1.7.0"
 
-vega-typings@*, vega-typings@^0.3.3:
+vega-typings@*:
   version "0.3.15"
   resolved "https://registry.yarnpkg.com/vega-typings/-/vega-typings-0.3.15.tgz#347b9065935e83ca23386d07b7d029a8b1c2619c"
   dependencies:
@@ -6902,7 +6896,7 @@ vega-wordcloud@^3.0.0:
     vega-statistics "^1.2.1"
     vega-util "^1.7.0"
 
-vega@4.0.0-rc2:
+vega@4.0.0-rc.2:
   version "4.0.0-rc.2"
   resolved "https://registry.yarnpkg.com/vega/-/vega-4.0.0-rc.2.tgz#2f892b69be4c733a14ac2c6cbce3e2c788e4fcc1"
   dependencies:

@@ -8,7 +8,7 @@ import {DEFAULT_LOG, Log} from './log';
 import {DEFAULT_RELATED_VIEWS, RelatedViews} from './related-views';
 import {DEFAULT_SHELF_PREVIEW, ShelfPreview} from './shelf-preview';
 import {DEFAULT_TAB, Tab} from './tab';
-import {Themes, DEFAULT_THEME} from './theme';
+import {Themes, DEFAULT_THEME} from './theme/theme';
 
 export * from './bookmark';
 export * from './dataset';

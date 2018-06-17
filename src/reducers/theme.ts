@@ -1,6 +1,5 @@
 import {THEME_CHANGE, Action} from "../actions";
-import {Themes, DEFAULT_THEME} from "../models/theme";
-import {VegaTheme} from "../components/header/theme";
+import {Themes, DEFAULT_THEME} from "../models/theme/theme";
 
 //TODO: Refer RelatedViews
 export function themeReducer(

@@ -12,7 +12,7 @@ import {selectData} from '../../selectors/dataset';
 import {selectBookmark, selectTheme} from '../../selectors/index';
 import {Plot} from '../plot';
 import * as styles from './bookmark.scss';
-import {Themes} from '../../models/theme';
+import {Themes} from '../../models/theme/theme';
 
 
 export interface BookmarkProps extends ActionHandler<BookmarkAction> {

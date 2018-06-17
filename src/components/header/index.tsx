@@ -8,11 +8,11 @@ import {State} from '../../models/index';
 import {selectData} from '../../selectors/dataset';
 import {Controls} from './controls';
 import * as styles from './header.scss';
-import {Themes, ThemesBase, VegaTheme} from './theme';
+import {Themes} from './theme';
 import {ActionHandler, createDispatchHandler, ThemeAction} from '../../actions';
 import {Action} from '../../actions/index';
 import {selectTheme} from '../../selectors';
-import {Themes as ITheme} from '../../models/theme';
+import {Themes as ITheme} from '../../models/theme/theme';
 
 export interface HeaderProps extends ActionHandler<Action> {
   data: InlineData;

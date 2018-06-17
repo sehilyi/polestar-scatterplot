@@ -20,7 +20,7 @@ import {selectFilteredData, selectTheme} from '../../selectors/index';
 import {selectFilters} from '../../selectors/shelf';
 import {Plot} from '../plot';
 import * as styles from './plot-list.scss';
-import {Themes} from '../../models/theme';
+import {Themes} from '../../models/theme/theme';
 
 export interface PlotListOwnProps extends ActionHandler<ShelfAction|ResultAction> {
   result: Result;
@@ -123,6 +123,6 @@ export const PlotList = connect<PlotListConnectProps, {}, PlotListOwnProps>(
       filters: selectFilters(state),
       theme: selectTheme(state)
     };
-    
+
   }
 )(CSSModules(PlotListBase, styles));

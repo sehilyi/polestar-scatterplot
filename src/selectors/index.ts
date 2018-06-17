@@ -18,7 +18,7 @@ import {ShelfPreview} from '../models/shelf-preview';
 import {ShelfFilter, toPredicateFunction} from '../models/shelf/filter';
 import {selectData} from './dataset';
 import {selectFilters} from './shelf';
-import {Themes} from '../models/theme';
+import {Themes} from '../models/theme/theme';
 
 export * from './dataset';
 export * from './result';

@@ -21,9 +21,8 @@ import {Logger} from '../util/util.logger';
 import {VegaLite} from '../vega-lite/index';
 import {BookmarkButton} from './bookmarkbutton';
 import * as styles from './plot.scss';
-import {Themes} from '../../models/theme';
-import * as vegaThemes from 'vega-themes';
-import {themeDict} from '../header/theme';
+import {Themes} from '../../models/theme/theme';
+import {themeDict} from '../../models/theme/theme';
 
 export interface PlotProps extends ActionHandler<
   ShelfAction | BookmarkAction | ShelfPreviewAction | ResultAction | LogAction

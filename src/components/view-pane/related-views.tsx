@@ -15,7 +15,7 @@ import {selectBookmark, selectTheme} from '../../selectors/index';
 import {selectResult} from '../../selectors/result';
 import {PlotList} from '../plot-list/index';
 import * as styles from './related-views.scss';
-import {Themes} from '../../models/theme';
+import {Themes} from '../../models/theme/theme';
 
 export interface RelatedViewsProps extends ActionHandler<BookmarkAction|ShelfAction|ShelfPreviewAction|ResultAction> {
   results: {

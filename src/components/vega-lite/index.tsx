@@ -7,10 +7,7 @@ import {TopLevelExtendedSpec} from 'vega-lite/build/src/spec';
 import * as vegaTooltip from 'vega-tooltip';
 import {SPINNER_COLOR} from '../../constants';
 import {Logger} from '../util/util.logger';
-import * as vegaThemes from 'vega-themes';
-import {AppRoot} from '../app-root';
-import {Themes} from '../../models/theme';
-import {themeDict} from '../header/theme';
+import {Themes, themeDict} from '../../models/theme/theme';
 
 export interface VegaLiteProps {
   spec: TopLevelExtendedSpec;
