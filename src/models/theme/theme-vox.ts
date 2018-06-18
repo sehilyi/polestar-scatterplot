@@ -1,4 +1,5 @@
 import { Config as VgConfig } from 'vega-typings';
+import {defaultFont} from './theme-common';
 
 export type Config = VgConfig;
 
@@ -22,6 +23,8 @@ const voxTheme: Config = {
     tickSize: 5,
     tickWidth: 0.5,
     titleFontWeight: 'normal',
+    titleFont: defaultFont,
+    labelFont: defaultFont,
   },
 
   axisBand: {
@@ -41,6 +44,8 @@ const voxTheme: Config = {
     labelFontSize: 11,
     padding: 1,
     symbolType: 'square',
+    labelFont: defaultFont,
+    titleFont: defaultFont,
   },
 
   range: {

@@ -1,4 +1,5 @@
 import { Config as VgConfig } from 'vega-typings';
+import {defaultFont} from './theme-common';
 
 export type Config = VgConfig;
 
@@ -12,6 +13,11 @@ const fivethirtyeighttheme: Config = {
 
   axisBand: {
     grid: false,
+  },
+
+  axis:{
+    titleFont: defaultFont,
+    labelFont: defaultFont,
   },
 
   axisBottom: {
@@ -84,6 +90,8 @@ const fivethirtyeighttheme: Config = {
     symbolType: 'square',
     titleFontSize: 14,
     titlePadding: 10,
+    labelFont: defaultFont,
+    titleFont: defaultFont,
   },
 
   line: {

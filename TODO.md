@@ -1,9 +1,8 @@
 - Add descriptions for novices (e.g., chart title)
   - TouchPivot: Blending WIMP & Post-WIMP Interfaces for Data Exploration on Tablet Devices
-- Fix vega-theme error (Config)
 - Add abstract value selection on Encoding
 - SVG save
-- (?) Change View panel
+- Improve View panel for novices
 
 - Things to read
   - redux: https://deminoth.github.io/redux/basics/Reducers.html

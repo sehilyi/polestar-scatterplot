@@ -1,4 +1,5 @@
 import { Config as VgConfig } from 'vega-typings';
+import {defaultFont} from './theme-common';
 
 export type Config = VgConfig;
 
@@ -28,12 +29,16 @@ const ggplot2Theme: Config = {
     tickSize: 5.67,
     titleFontSize: 16,
     titleFontWeight: 'normal',
+    titleFont: defaultFont,
+    labelFont: defaultFont,
   },
 
   legend: {
     labelBaseline: 'middle',
     labelFontSize: 11,
     symbolSize: 40,
+    labelFont: defaultFont,
+    titleFont: defaultFont,
   },
 
   range: {

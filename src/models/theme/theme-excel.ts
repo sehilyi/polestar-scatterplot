@@ -1,4 +1,5 @@
 import { Config as VgConfig } from 'vega-typings';
+import {defaultFont} from './theme-common';
 
 export type Config = VgConfig;
 
@@ -24,6 +25,8 @@ const excelTheme: Config = {
     labelPadding: 10,
     tickSize: 5,
     tickWidth: 0.5,
+    titleFont: defaultFont,
+    labelFont: defaultFont,
   },
 
   axisBand: {
@@ -36,6 +39,8 @@ const excelTheme: Config = {
     labelFontSize: 11,
     symbolSize: 50,
     symbolType: 'square',
+    labelFont: defaultFont,
+    titleFont: defaultFont,
   },
 
   range: {

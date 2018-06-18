@@ -1,4 +1,5 @@
 import { Config as VgConfig } from 'vega-typings';
+import {defaultFont} from './theme-common';
 
 export type Config = VgConfig;
 
@@ -23,6 +24,13 @@ const darkTheme: Config = {
     domainColor: lightColor,
     gridColor: medColor,
     tickColor: lightColor,
+    titleFont: defaultFont,
+    labelFont: defaultFont,
+  },
+
+  legend: {
+    labelFont: defaultFont,
+    titleFont: defaultFont,
   },
 };
 

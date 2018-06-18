@@ -1,4 +1,5 @@
 import { Config as VgConfig } from 'vega-typings';
+import {defaultFont} from './theme-common';
 
 export type Config = VgConfig;
 
@@ -24,6 +25,8 @@ const quartzTheme: Config = {
     tickColor: axisColor,
     tickWidth: 0.2,
     titleColor: axisColor,
+    titleFont: defaultFont,
+    labelFont: defaultFont,
   },
 
   axisBand: {
@@ -46,6 +49,8 @@ const quartzTheme: Config = {
     padding: 1,
     symbolSize: 30,
     symbolType: 'square',
+    labelFont: defaultFont,
+    titleFont: defaultFont,
   },
 
   range: {
