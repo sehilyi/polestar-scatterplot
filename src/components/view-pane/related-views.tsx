@@ -84,7 +84,7 @@ export class RelatedViewsBase extends React.PureComponent<RelatedViewsProps, {}>
   private onPreviewMouseEnter(relatedViewType: ResultType) {
     const {handleAction, results} = this.props;
     const query = results[relatedViewType].query;
-    handleAction({
+        handleAction({
       type: SHELF_PREVIEW_QUERY,
       payload: {query}
     });

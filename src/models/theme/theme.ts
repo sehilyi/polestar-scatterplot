@@ -4,6 +4,7 @@ import fivethirtyeighttheme from "./theme-fivethirtyeight";
 import quartzTheme from "./theme-quartz";
 import excelTheme from "./theme-excel";
 import ggplot2Theme from "./theme-ggplot2";
+import basic from "./theme-basic";
 
 /**
  * Themes for vega charts
@@ -12,7 +13,7 @@ export type VegaTheme = 'basic' | 'excel' | 'ggplot2' | 'quartz' | 'vox' | 'five
 export const ALL_TEHEMS = ['basic', 'excel', 'ggplot2', 'quartz', 'vox', 'fivethirtyeight', 'dark'];
 
 export let themeDict: {[id: string] : any;} = {};
-themeDict['basic'] = {};
+themeDict['basic'] = basic;
 themeDict['excel'] = excelTheme;
 themeDict['ggplot2'] = ggplot2Theme;
 themeDict['quartz'] = quartzTheme;

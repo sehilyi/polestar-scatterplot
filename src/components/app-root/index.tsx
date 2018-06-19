@@ -19,6 +19,7 @@ import {Header} from '../header/index';
 import {LoadData} from '../load-data-pane/index';
 import {LogPane} from '../log-pane/index';
 import {ViewPane} from '../view-pane/index';
+import {GuidePane} from '../guie-pane';
 
 export interface AppRootProps {
   dataset: Dataset;
@@ -39,7 +40,10 @@ class AppRootBase extends React.PureComponent<AppRootProps, {}> {
             <DataPane/>
             <SplitPane split="vertical" defaultSize={235} minSize={200} maxSize={350}>
               <EncodingPane/>
-              <ViewPane/>
+                <SplitPane split="vertical" defaultSize={235} minSize={200} maxSize={350} primary="second">
+                <ViewPane/>
+                <GuidePane/>
+              </SplitPane>
             </SplitPane>
           </SplitPane>
         );

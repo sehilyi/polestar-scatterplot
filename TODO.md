@@ -1,8 +1,9 @@
 - Add descriptions for novices (e.g., chart title)
-  - TouchPivot: Blending WIMP & Post-WIMP Interfaces for Data Exploration on Tablet Devices
 - Add abstract value selection on Encoding
 - SVG save
 - Improve View panel for novices
+- handle undo-redo actions (remove theme change action)
+- Focus plot by click
 
 - Things to read
   - redux: https://deminoth.github.io/redux/basics/Reducers.html
