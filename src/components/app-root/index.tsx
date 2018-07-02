@@ -40,7 +40,7 @@ class AppRootBase extends React.PureComponent<AppRootProps, {}> {
             <DataPane/>
             <SplitPane split="vertical" defaultSize={235} minSize={200} maxSize={350}>
               <EncodingPane/>
-                <SplitPane split="vertical" defaultSize={235} minSize={200} maxSize={350} primary="second">
+                <SplitPane split="vertical" defaultSize={350} minSize={300} maxSize={450} primary="second">
                 <ViewPane/>
                 <GuidePane/>
               </SplitPane>

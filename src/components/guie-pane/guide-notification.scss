@@ -1,0 +1,68 @@
+$sub-pill-height: 12px;
+$pill-height: 20px;
+$pill-radius: 7px;
+$guide-height: 44px;
+
+.guideline {
+  display: flex;
+  background-color: white;// hsla(224,25%,29%,0.2);
+  border-radius: $pill-radius;
+  border: 1px solid rgb(160, 160, 160);
+  margin-bottom: 4px;
+
+  width: 100%;
+  height: $guide-height;
+  overflow: hidden;
+
+  &:hover {
+    color: #fff;
+    background-color: #999;
+  }
+}
+
+.icon{
+  width: 30px;
+  height: 30px;
+  margin: 7px;
+}
+
+.guide-label{
+  flex-grow: 1;
+}
+
+.guide-category {
+  user-select: none;
+  display: block;
+  font-size: 11px;
+
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+
+  font-family: 'Roboto';
+  margin: 5px;
+  line-height: $sub-pill-height;
+  height: $sub-pill-height;
+}
+
+.guide-title {
+  user-select: none;
+  display: block;
+
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+
+  font-size: 14px;
+  font-family: 'Roboto Condensed';
+  margin: 4px;
+  line-height: $pill-height;
+  height: $pill-height;
+}
+
+.ignore-button{
+  color: black;
+  padding-right: 6px;
+  line-height: $guide-height;
+  height: $guide-height;
+}
