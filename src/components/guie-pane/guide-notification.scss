@@ -2,22 +2,36 @@ $sub-pill-height: 12px;
 $pill-height: 20px;
 $pill-radius: 7px;
 $guide-height: 44px;
+$guide-height-expanded: 150px;
+$content-height: 44px;
 
 .guideline {
-  display: flex;
   background-color: white;// hsla(224,25%,29%,0.2);
   border-radius: $pill-radius;
   border: 1px solid rgb(160, 160, 160);
+
+  width: 100%;
+  height: $guide-height;
   margin-bottom: 4px;
+  overflow: hidden;
+
+  &:hover {
+    // color: #fff;
+    background-color: rgb(134, 221, 255);
+  }
+}
+
+.expanded {
+  @extend .guideline;
+  height: $guide-height-expanded;
+}
+
+.guide-header{
+  display: flex;
 
   width: 100%;
   height: $guide-height;
   overflow: hidden;
-
-  &:hover {
-    color: #fff;
-    background-color: #999;
-  }
 }
 
 .icon{
@@ -65,4 +79,36 @@ $guide-height: 44px;
   padding-right: 6px;
   line-height: $guide-height;
   height: $guide-height;
+}
+
+.splitter{
+  flex-grow: 1;
+  border-top: 1px solid rgb(160, 160, 160);
+}
+
+.guide-content{
+  flex-grow: 1;
+}
+
+.guide-content-text{
+  user-select: none;
+  display: block;
+  overflow: hidden;
+
+  word-wrap:break-word;
+  text-overflow: ellipsis;
+
+  font-size: 12px;
+  font-family: 'Roboto Condensed';
+  margin: 4px;
+  line-height: 12px;
+  height: $content-height;
+}
+
+.guide-interactive{
+  flex-grow: 1;
+  background-color: rgb(105, 132, 253);
+  margin: 5px;
+  height: 50px;
+  border-radius: $pill-radius;
 }

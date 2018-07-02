@@ -6,35 +6,49 @@ import {GuideNotificationModel} from ".";
 import * as logo from '../../../images/icon-encoding.png';
 
 export interface GuideNotificationProps {
-  guide: GuideNotificationModel;
+  guideHeader: GuideNotificationModel;
 }
 
-export class GuideNotificationBase extends React.PureComponent<GuideNotificationProps, {}> {
+export class GuideNotificationBase extends React.PureComponent<GuideNotificationProps, any> {
 
   constructor(props: GuideNotificationProps) {
     super(props);
+
+    this.state = {isExpanded: false};
+    this.onOpenGuide = this.onOpenGuide.bind(this);
   }
 
   public render() {
     return (
-      <div styleName="guideline" onClick={this.onIgnore}>
-        <img styleName='icon' src={logo} />
-        <div styleName="guide-label">
-          <span styleName="guide-category">{this.props.guide.category}</span>
-          <span styleName="guide-title">{this.props.guide.title}</span>
+      <div styleName={this.state.isExpanded? "expanded" : "guideline"} onClick={this.onOpenGuide}>
+        <div styleName="guide-header">
+          <img styleName='icon' src={logo} />
+          <div styleName="guide-label">
+            <span styleName="guide-category">{this.props.guideHeader.category}</span>
+            <span styleName="guide-title">{this.props.guideHeader.title}</span>
+          </div>
+          <span styleName="ignore-button">
+            <a onClick={this.onIgnore}>
+              <i className="fa fa-times"></i>
+            </a>
+          </span>
         </div>
-        <span styleName="ignore-button">
-          <a onClick={this.onIgnore}>
-            <i className="fa fa-times"></i>
-          </a>
-        </span>
-
+        <div styleName="splitter"/>
+        <div styleName="guide-content">
+          <span styleName="guide-content-text">{this.props.guideHeader.content}</span>
+        </div>
+        <div styleName="guide-interactive">
+        </div>
       </div>
     );
   }
 
   private onIgnore() {
-    this.setState({isIgnored: true}); //TODO: make this working
+    // this.setState({isIgnored: true}); //TODO: make this working
+  }
+
+  private onOpenGuide(){
+    this.setState({isExpanded: !this.state.isExpanded});
   }
 }
 

@@ -7,9 +7,12 @@ import {GuideNotification} from "./guide-notification";
 
 /*
  * Should move to /models
+ *
+ * Include proper ui in the model
  **/
 export interface GuideNotificationModel {
   title: string;
+  content?: string;
 
   category?: string;
   isIgnored?: boolean;
@@ -28,8 +31,8 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
   public render() {
 
     // temp
-    let a: GuideNotificationModel = {title: 'Reduce # of Categories', category: 'Visual Encoding'};
-    let b: GuideNotificationModel = {title: 'Novel Visualization Recommended', category: 'Visualization'};
+    let a: GuideNotificationModel = {title: 'Reduce # of Categories', category: 'Visual Encoding', content: 'Corrently, there are too many visual categories. You can reduce categories by grouping similar categories.'};
+    let b: GuideNotificationModel = {title: 'Novel Visualization Recommended', category: 'Visualization', content: ''};
     let guidelines = [];
     guidelines.push(a);
     guidelines.push(b);
@@ -64,7 +67,7 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
     return (
       <GuideNotification
         key={title}
-        guide={gs}
+        guideHeader={gs}
       />
     );
   }
