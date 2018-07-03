@@ -1,12 +1,14 @@
 import * as React from 'react';
 import * as CSSModules from 'react-css-modules';
+
 import * as styles from "./guide-notification.scss";
-import {GuideNotificationModel} from ".";
-
 import * as logo from '../../../images/icon-encoding.png';
+import {GuidelineItem} from '../../models/guidelines';
+import {ActionHandler} from '../../actions';
+import {GUIDELINE_REMOVE_ITEM, GuidelineAction} from '../../actions/guidelines';
 
-export interface GuideNotificationProps {
-  guideHeader: GuideNotificationModel;
+export interface GuideNotificationProps extends ActionHandler<GuidelineAction> {
+  guideHeader: GuidelineItem;
 }
 
 export class GuideNotificationBase extends React.PureComponent<GuideNotificationProps, any> {
@@ -20,8 +22,8 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
 
   public render() {
     return (
-      <div styleName={this.state.isExpanded? "expanded" : "guideline"} onClick={this.onOpenGuide}>
-        <div styleName="guide-header">
+      <div styleName={this.state.isExpanded ? "expanded" : "guideline"}>
+        <div styleName="guide-header" onClick={this.onOpenGuide}>
           <img styleName='icon' src={logo} />
           <div styleName="guide-label">
             <span styleName="guide-category">{this.props.guideHeader.category}</span>
@@ -33,7 +35,7 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
             </a>
           </span>
         </div>
-        <div styleName="splitter"/>
+        <div styleName="splitter" />
         <div styleName="guide-content">
           <span styleName="guide-content-text">{this.props.guideHeader.content}</span>
         </div>
@@ -44,10 +46,16 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
   }
 
   private onIgnore() {
-    // this.setState({isIgnored: true}); //TODO: make this working
+    console.log('onIgnore');
+    this.props.handleAction({
+      type: GUIDELINE_REMOVE_ITEM,
+      payload: {
+        item: this.props.guideHeader
+      }
+    });
   }
 
-  private onOpenGuide(){
+  private onOpenGuide() {
     this.setState({isExpanded: !this.state.isExpanded});
   }
 }

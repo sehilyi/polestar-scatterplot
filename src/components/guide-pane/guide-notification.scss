@@ -15,23 +15,28 @@ $content-height: 44px;
   margin-bottom: 4px;
   overflow: hidden;
 
-  &:hover {
-    // color: #fff;
-    background-color: rgb(134, 221, 255);
-  }
+  transition: 0.5s;
+  transition-timing-function: ease;
 }
 
 .expanded {
   @extend .guideline;
   height: $guide-height-expanded;
+
+  transition: 0.5s;
+  transition-timing-function: ease;
 }
 
 .guide-header{
   display: flex;
 
   width: 100%;
-  height: $guide-height;
+  // height: $guide-height;
   overflow: hidden;
+
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .icon{
@@ -48,12 +53,13 @@ $content-height: 44px;
   user-select: none;
   display: block;
   font-size: 11px;
+  font-weight: 500;
 
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
 
-  font-family: 'Roboto';
+  // font-family: 'Roboto';
   margin: 5px;
   line-height: $sub-pill-height;
   height: $sub-pill-height;
@@ -68,10 +74,12 @@ $content-height: 44px;
   white-space: nowrap;
 
   font-size: 14px;
-  font-family: 'Roboto Condensed';
+  // font-family: 'Roboto Condensed';
+  font-weight: 500;
+
   margin: 4px;
   line-height: $pill-height;
-  height: $pill-height;
+  // height: $pill-height;
 }
 
 .ignore-button{
@@ -99,7 +107,7 @@ $content-height: 44px;
   text-overflow: ellipsis;
 
   font-size: 12px;
-  font-family: 'Roboto Condensed';
+  // font-family: 'Roboto Condensed';
   margin: 4px;
   line-height: 12px;
   height: $content-height;

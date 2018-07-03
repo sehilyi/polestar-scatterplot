@@ -9,6 +9,7 @@ import {DEFAULT_RELATED_VIEWS, RelatedViews} from './related-views';
 import {DEFAULT_SHELF_PREVIEW, ShelfPreview} from './shelf-preview';
 import {DEFAULT_TAB, Tab} from './tab';
 import {Themes, DEFAULT_THEME} from './theme/theme';
+import {Guidelines, DEFAULT_GUIDELINES} from './guidelines';
 
 export * from './bookmark';
 export * from './dataset';
@@ -27,6 +28,7 @@ export interface PersistentState {
   relatedViews: RelatedViews;
   shelfPreview: ShelfPreview;
   theme: Themes;
+  guidelines: Guidelines;
 }
 
 export interface UndoableStateBaseWithoutDataset {
@@ -70,7 +72,8 @@ export const DEFAULT_PERSISTENT_STATE: PersistentState = {
   log: DEFAULT_LOG,
   relatedViews: DEFAULT_RELATED_VIEWS,
   shelfPreview: DEFAULT_SHELF_PREVIEW,
-  theme: DEFAULT_THEME
+  theme: DEFAULT_THEME,
+  guidelines: DEFAULT_GUIDELINES
 };
 
 export const DEFAULT_STATE: State = {
@@ -107,11 +110,12 @@ export function fromSerializable(serializable: SerializableState): Readonly<Stat
     relatedViews,
     shelfPreview,
     theme,
+    guidelines,
     // Then the rest should be UndoableStateBaseWithoutDataset
     ...undoableStateBaseWithoutDataset
   } = serializable;
 
-  const persistent: PersistentState = {bookmark, config, relatedViews, shelfPreview, log, theme};
+  const persistent: PersistentState = {bookmark, config, relatedViews, shelfPreview, log, theme, guidelines};
 
   const undoableBase: UndoableStateBase = {
     ...undoableStateBaseWithoutDataset,

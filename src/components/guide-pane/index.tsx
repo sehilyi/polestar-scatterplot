@@ -4,22 +4,12 @@ import {State} from "../../models";
 import * as styles from "./guide-pane.scss"
 import * as CSSModules from 'react-css-modules';
 import {GuideNotification} from "./guide-notification";
+import {GuidelineItem, Guidelines} from "../../models/guidelines";
+import {selectGuidelines} from "../../selectors";
+import {ActionHandler, Action} from "../../actions";
 
-/*
- * Should move to /models
- *
- * Include proper ui in the model
- **/
-export interface GuideNotificationModel {
-  title: string;
-  content?: string;
-
-  category?: string;
-  isIgnored?: boolean;
-}
-
-export interface GuidePaneProps {
-  guidelines: GuideNotificationModel[];
+export interface GuidePaneProps extends ActionHandler<Action> {
+  guidelines: Guidelines;
 }
 
 export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
@@ -31,8 +21,8 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
   public render() {
 
     // temp
-    let a: GuideNotificationModel = {title: 'Reduce # of Categories', category: 'Visual Encoding', content: 'Corrently, there are too many visual categories. You can reduce categories by grouping similar categories.'};
-    let b: GuideNotificationModel = {title: 'Novel Visualization Recommended', category: 'Visualization', content: ''};
+    let a: GuidelineItem = {title: 'Reduce # of Categories', category: 'Visual Encoding', content: 'Corrently, there are too many visual categories. You can reduce categories by grouping similar categories.'};
+    let b: GuidelineItem = {title: 'Novel Visualization Recommended', category: 'Visualization', content: ''};
     let guidelines = [];
     guidelines.push(a);
     guidelines.push(b);
@@ -49,7 +39,10 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
         </a>
 
         <h2>
-          Guidelines
+          {/* <i className="fa fa-bolt" aria-hidden="true"/> */}
+          <i className="fa fa-lightbulb-o" aria-hidden="true"/>
+          {' '}
+          Guidelines {' (' + guidelines.length + ')'}
         </h2>
 
         <div styleName="guide-group">
@@ -61,13 +54,15 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
   }
 
 
-  private guideNotification(gs: GuideNotificationModel) {
+  private guideNotification(gs: GuidelineItem) {
 
     const {title} = gs;
+    const {handleAction} = this.props;
     return (
       <GuideNotification
         key={title}
         guideHeader={gs}
+        handleAction={handleAction}
       />
     );
   }
@@ -75,6 +70,8 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
 
 export const GuidePane = connect(
   (state: State) => {
-    return {};
+    return {
+      guidelines: selectGuidelines(state)
+    };
   }
 )(CSSModules(GuidePaneBase, styles));

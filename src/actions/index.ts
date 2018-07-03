@@ -13,6 +13,7 @@ import {ApplicationStateAction} from './state';
 import {TAB_ACTION_TYPE_INDEX, TabAction} from './tab';
 import {UndoableAction} from './undo-redo';
 import {ThemeAction} from './theme';
+import {GuidelineAction} from './guidelines';
 
 export * from './bookmark';
 export * from './custom-wildcard-field';
@@ -47,7 +48,8 @@ export type Action = (
   ShelfPreviewAction |
   TabAction |
   UndoableAction |
-  ThemeAction
+  ThemeAction |
+  GuidelineAction
 );
 
 export type ActionType = Action['type'];
@@ -116,6 +118,8 @@ export const ACTION_TYPE_INDEX: {[k in ActionType]: 1} = {
   SET_APPLICATION_STATE: 1,
 
   THEME_CHANGE: 1,
+
+  GUIDELINE_REMOVE_ITEM: 1,
 };
 
 /** An array of all possible action types. */

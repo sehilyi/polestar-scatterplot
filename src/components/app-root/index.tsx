@@ -19,7 +19,7 @@ import {Header} from '../header/index';
 import {LoadData} from '../load-data-pane/index';
 import {LogPane} from '../log-pane/index';
 import {ViewPane} from '../view-pane/index';
-import {GuidePane} from '../guie-pane';
+import {GuidePane} from '../guide-pane';
 
 export interface AppRootProps {
   dataset: Dataset;

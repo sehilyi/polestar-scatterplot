@@ -88,6 +88,7 @@ import {tabReducer} from './tab';
 import {themeReducer} from './theme';
 
 import {modifyItemInArray} from './util';
+import {guidelineReducer} from './guidelines';
 
 /**
  * Whether to reset a particular property of the persistent state during RESET action
@@ -98,7 +99,8 @@ const persistentStateToReset: ResetIndex<PersistentState> = {
   log: false,
   relatedViews: true,
   shelfPreview: true,
-  theme: false
+  theme: false,
+  guidelines: true
 };
 
 export const persistentReducer = makeResetReducer(
@@ -108,7 +110,8 @@ export const persistentReducer = makeResetReducer(
     relatedViews: relatedViewsReducer,
     log: logReducer,
     shelfPreview: shelfPreviewReducer,
-    theme: themeReducer
+    theme: themeReducer,
+    guidelines: guidelineReducer
   }),
   persistentStateToReset,
   DEFAULT_PERSISTENT_STATE
