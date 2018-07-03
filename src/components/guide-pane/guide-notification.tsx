@@ -41,7 +41,7 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
         </div>
         <div styleName="splitter" />
         <div styleName="guide-content">
-          {/* <ReactCSSTransitionGroup
+          {/* <ReactTransitionGroup
             transitionName="course-item"
             transitionLeave={true}
             transitionAppear={true}
@@ -50,8 +50,8 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
             transitionLeaveTimeout={1000}
             component="tbody"
           > */}
-            <span styleName="guide-content-text">{this.props.item.content}</span>
-          {/* </ReactCSSTransitionGroup> */}
+          <span styleName="guide-content-text">{this.props.item.content}</span>
+          {/* </ReactTransitionGroup > */}
         </div>
         <div styleName="guide-interactive">
         </div>
