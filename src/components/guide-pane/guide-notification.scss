@@ -22,9 +22,6 @@ $content-height: 44px;
 .expanded {
   @extend .guideline;
   height: $guide-height-expanded;
-
-  transition: 0.5s;
-  transition-timing-function: ease;
 }
 
 .guide-header{
@@ -34,9 +31,9 @@ $content-height: 44px;
   // height: $guide-height;
   overflow: hidden;
 
-  &:hover {
-    cursor: pointer;
-  }
+  // &:hover {
+
+  // }
 }
 
 .icon{
@@ -53,7 +50,7 @@ $content-height: 44px;
   user-select: none;
   display: block;
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
 
   text-overflow: ellipsis;
   overflow: hidden;
@@ -82,7 +79,7 @@ $content-height: 44px;
   // height: $pill-height;
 }
 
-.ignore-button{
+.decision-button{
   color: black;
   padding-right: 6px;
   line-height: $guide-height;
@@ -109,7 +106,7 @@ $content-height: 44px;
   font-size: 12px;
   // font-family: 'Roboto Condensed';
   margin: 4px;
-  line-height: 12px;
+  line-height: 14px;
   height: $content-height;
 }
 

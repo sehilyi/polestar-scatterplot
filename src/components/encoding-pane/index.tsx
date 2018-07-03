@@ -20,8 +20,9 @@ import {FilterPane} from '../filter-pane';
 import * as styles from './encoding-pane.scss';
 import {EncodingShelf} from './encoding-shelf';
 import {MarkPicker} from './mark-picker';
+import {GuidelineAction} from '../../actions/guidelines';
 
-interface EncodingPanelProps extends ActionHandler<ShelfAction | ResultAsyncAction | FilterAction> {
+interface EncodingPanelProps extends ActionHandler<ShelfAction | ResultAsyncAction | FilterAction | GuidelineAction> {
   spec: ShelfUnitSpec;
 
   specPreview: ShelfUnitSpec;

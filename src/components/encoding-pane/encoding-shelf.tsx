@@ -20,6 +20,10 @@ import * as styles from './encoding-shelf.scss';
 import {FieldCustomizer} from './field-customizer';
 import {FunctionPicker, FunctionPickerWildcardHandler} from './function-picker';
 import {CUSTOMIZABLE_ENCODING_CHANNELS} from './property-editor-schema';
+import {fieldDefs} from 'vega-lite/build/src/encoding';
+import {CHANNELS, COLOR} from 'vega-lite/build/src/channel';
+import {GUIDELINE_ADD_ITEM, GuidelineAction} from '../../actions/guidelines';
+import {GuidelineItem} from '../../models/guidelines';
 
 /**
  * Props for react-dnd of EncodingShelf
@@ -32,7 +36,7 @@ export interface EncodingShelfDropTargetProps {
   item: Object;
 }
 
-export interface EncodingShelfPropsBase extends ActionHandler<SpecEncodingAction> {
+export interface EncodingShelfPropsBase extends ActionHandler<SpecEncodingAction | GuidelineAction> {
   id: ShelfId;
 
   fieldDef: ShelfFieldDef;
@@ -267,6 +271,16 @@ const encodingShelfTarget: DropTargetSpec<EncodingShelfProps> = {
         break;
       default:
         throw new Error('Field dragged from unregistered source type to EncodingShelf');
+    }
+    //TODO: make this logic more systematic!
+    if(props.id.channel == COLOR){
+      let item: GuidelineItem = {title: '카테고리가 너무 많습니다.', category: '시각적 요소', content: '[Job]들을 색깔로 구별하기에 개수가 너무 많아 차트가 이해하기 어렵습니다. 효과적인 차트를 만들기 위해 다음의 조치를 취해주세요.'};
+      props.handleAction({
+        type: GUIDELINE_ADD_ITEM,
+        payload: {
+          item: item
+        }
+      });
     }
   }
 };

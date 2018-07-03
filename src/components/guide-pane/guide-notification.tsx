@@ -24,21 +24,34 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
   public render() {
     return (
       <div styleName={this.state.isExpanded ? "expanded" : "guideline"}>
-        <div styleName="guide-header" onClick={this.onOpenGuide}>
+        <div styleName="guide-header">
           <img styleName='icon' src={logo} />
           <div styleName="guide-label">
             <span styleName="guide-category">{this.props.item.category}</span>
             <span styleName="guide-title">{this.props.item.title}</span>
           </div>
-          <span styleName="ignore-button">
+          <span styleName="decision-button">
+            <a onClick={this.onOpenGuide}>
+              <i className="fa fa-caret-down" aria-hidden="true" />
+            </a>
             <a onClick={this.onIgnore}>
-              <i className="fa fa-times"></i>
+              <i className="fa fa-times" />
             </a>
           </span>
         </div>
         <div styleName="splitter" />
         <div styleName="guide-content">
-          <span styleName="guide-content-text">{this.props.item.content}</span>
+          {/* <ReactCSSTransitionGroup
+            transitionName="course-item"
+            transitionLeave={true}
+            transitionAppear={true}
+            transitionAppearTimeout={2500}
+            transitionEnterTimeout={1700}
+            transitionLeaveTimeout={1000}
+            component="tbody"
+          > */}
+            <span styleName="guide-content-text">{this.props.item.content}</span>
+          {/* </ReactCSSTransitionGroup> */}
         </div>
         <div styleName="guide-interactive">
         </div>
@@ -49,7 +62,6 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
     this.setState({isExpanded: !this.state.isExpanded});
   }
   private onIgnore() {
-    console.log(this);
     this.props.handleAction({
       type: GUIDELINE_REMOVE_ITEM,
       payload: {
