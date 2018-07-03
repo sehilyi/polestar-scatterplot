@@ -8,7 +8,7 @@ import {ActionHandler} from '../../actions';
 import {GUIDELINE_REMOVE_ITEM, GuidelineAction} from '../../actions/guidelines';
 
 export interface GuideNotificationProps extends ActionHandler<GuidelineAction> {
-  guideHeader: GuidelineItem;
+  item: GuidelineItem;
 }
 
 export class GuideNotificationBase extends React.PureComponent<GuideNotificationProps, any> {
@@ -18,6 +18,7 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
 
     this.state = {isExpanded: false};
     this.onOpenGuide = this.onOpenGuide.bind(this);
+    this.onIgnore = this.onIgnore.bind(this);
   }
 
   public render() {
@@ -26,8 +27,8 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
         <div styleName="guide-header" onClick={this.onOpenGuide}>
           <img styleName='icon' src={logo} />
           <div styleName="guide-label">
-            <span styleName="guide-category">{this.props.guideHeader.category}</span>
-            <span styleName="guide-title">{this.props.guideHeader.title}</span>
+            <span styleName="guide-category">{this.props.item.category}</span>
+            <span styleName="guide-title">{this.props.item.title}</span>
           </div>
           <span styleName="ignore-button">
             <a onClick={this.onIgnore}>
@@ -37,26 +38,24 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
         </div>
         <div styleName="splitter" />
         <div styleName="guide-content">
-          <span styleName="guide-content-text">{this.props.guideHeader.content}</span>
+          <span styleName="guide-content-text">{this.props.item.content}</span>
         </div>
         <div styleName="guide-interactive">
         </div>
       </div>
     );
   }
-
+  private onOpenGuide() {
+    this.setState({isExpanded: !this.state.isExpanded});
+  }
   private onIgnore() {
-    console.log('onIgnore');
+    console.log(this);
     this.props.handleAction({
       type: GUIDELINE_REMOVE_ITEM,
       payload: {
-        item: this.props.guideHeader
+        item: this.props.item
       }
     });
-  }
-
-  private onOpenGuide() {
-    this.setState({isExpanded: !this.state.isExpanded});
   }
 }
 

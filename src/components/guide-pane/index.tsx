@@ -61,7 +61,7 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
     return (
       <GuideNotification
         key={title}
-        guideHeader={gs}
+        item={gs}
         handleAction={handleAction}
       />
     );
