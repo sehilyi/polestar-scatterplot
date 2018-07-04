@@ -5,6 +5,11 @@ $guide-height: 44px;
 $guide-height-expanded: 150px;
 $content-height: 44px;
 
+@keyframes appear {
+  from {background-color: rgb(255, 238, 87); }
+  to {background-color: white; }
+}
+
 .guideline {
   background-color: white;// hsla(224,25%,29%,0.2);
   border-radius: $pill-radius;
@@ -16,7 +21,12 @@ $content-height: 44px;
   overflow: hidden;
 
   transition: 0.5s;
-  transition-timing-function: ease;
+  transition-timing-function: ease-out;
+
+  animation-name: appear;
+  animation-timing-function: ease-in;
+  animation-duration: 1s;
+
 }
 
 .expanded {

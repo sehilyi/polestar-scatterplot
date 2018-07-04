@@ -145,7 +145,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
 
     try {
       const spec = vl.compile(vlSpec, logger).spec;
-      const runtime = vega.parse(spec, vlConfig);
+      const runtime = vega.parse(spec, vlSpec.config);// vlConfig);
       this.view = new vega.View(runtime)
         .logLevel(vega.Warn)
         .initialize(this.refs[CHART_REF] as any)

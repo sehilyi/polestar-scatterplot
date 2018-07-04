@@ -4,11 +4,13 @@ import {State} from "../../models";
 import * as styles from "./guide-pane.scss"
 import * as CSSModules from 'react-css-modules';
 import {GuideNotification} from "./guide-notification";
-import {GuidelineItem, Guidelines} from "../../models/guidelines";
+import {GuidelineItem, Guidelines, GUIDELINE_TOO_MANY_CATEGORIES} from "../../models/guidelines";
 import {selectGuidelines} from "../../selectors";
-import {ActionHandler, createDispatchHandler} from "../../actions";
+import {ActionHandler, createDispatchHandler, SPEC_FIELD_ADD, SPEC_FIELD_MOVE, SPEC_FIELD_REMOVE} from "../../actions";
 import {Action} from "../../actions/index";
-import {GuidelineAction} from "../../actions/guidelines";
+import {GuidelineAction, GUIDELINE_ADD_ITEM, GUIDELINE_REMOVE_ITEM} from "../../actions/guidelines";
+import {EncodingShelfProps} from "../../components/encoding-pane/encoding-shelf";
+import {COLOR} from "vega-lite/build/src/channel";
 
 export interface GuidePaneProps extends ActionHandler<Action> {
   guidelines: Guidelines;
@@ -42,7 +44,7 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
 
         <h2>
           {/* <i className="fa fa-bolt" aria-hidden="true"/> */}
-          <i className="fa fa-lightbulb-o" aria-hidden="true"/>
+          <i className="fa fa-lightbulb-o" aria-hidden="true" />
           {' '}
           Guidelines {' (' + this.props.guidelines.list.length + ')'}
         </h2>
@@ -78,3 +80,32 @@ export const GuidePane = connect(
   },
   createDispatchHandler<GuidelineAction>()
 )(CSSModules(GuidePaneBase, styles));
+
+//TODO: make this process more systematic
+//1) every guideline must have their own id
+export function guideActionShelf(props: EncodingShelfProps, type: string) {
+  switch (type) {
+    case SPEC_FIELD_ADD:
+    case SPEC_FIELD_MOVE:
+      if (props.id.channel == COLOR) {
+        props.handleAction({
+          type: GUIDELINE_ADD_ITEM,
+          payload: {
+            item: GUIDELINE_TOO_MANY_CATEGORIES
+          }
+        });
+      }
+      break;
+    case SPEC_FIELD_REMOVE:
+      if (props.id.channel == COLOR) {
+        props.handleAction({
+          type: GUIDELINE_REMOVE_ITEM,
+          payload: {
+            item: GUIDELINE_TOO_MANY_CATEGORIES
+          }
+        });
+      }
+      break;
+
+  }
+}

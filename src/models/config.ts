@@ -15,7 +15,7 @@ export const DEFAULT_VOYAGER_CONFIG: VoyagerConfig = {
   serverUrl: null,
   hideHeader: false,
   hideFooter: false,
-  relatedViews: 'initiallyShown',
+  relatedViews: 'initiallyCollapsed',
   wildcards: 'disabled',
   theme: 'basic'
 };
