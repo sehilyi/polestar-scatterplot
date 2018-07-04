@@ -109,8 +109,7 @@ export class PlotBase extends React.PureComponent<PlotProps, PlotState> {
     }
 
     return (
-      <div styleName={isPlotListItem ? 'plot-list-item-group' : 'plot-group'}
-        style={{backgroundColor: themeDict[this.props.theme.theme].background}}>
+      <div styleName={isPlotListItem ? 'plot-list-item-group' : 'plot-group'}>
         <div styleName="plot-info">
           <div styleName="command-toolbox">
             {onSort && this.renderSortButton('x')}
