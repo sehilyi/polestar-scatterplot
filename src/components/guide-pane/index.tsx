@@ -36,15 +36,15 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
 
     return (
       <div className="pane" styleName="guide-pane">
-        <a className="right">
+        {/* <a className="right">
           <i className="fa fa-eraser" />
           {' '}
           Clear
-        </a>
+        </a> */}
 
         <h2>
-          {/* <i className="fa fa-bolt" aria-hidden="true"/> */}
-          <i className="fa fa-lightbulb-o" aria-hidden="true" />
+          <i className="fa fa-bolt" aria-hidden="true"/>
+          {/* <i className="fa fa-lightbulb-o" aria-hidden="true" /> */}
           {' '}
           Guidelines {' (' + this.props.guidelines.list.length + ')'}
         </h2>
