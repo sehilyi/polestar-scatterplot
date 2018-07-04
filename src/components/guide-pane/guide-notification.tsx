@@ -41,22 +41,16 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
         </div>
         <div styleName="splitter" />
         <div styleName="guide-content">
-          {/* <ReactTransitionGroup
-            transitionName="course-item"
-            transitionLeave={true}
-            transitionAppear={true}
-            transitionAppearTimeout={2500}
-            transitionEnterTimeout={1700}
-            transitionLeaveTimeout={1000}
-            component="tbody"
-          > */}
           <span styleName="guide-content-text">{this.props.item.content}</span>
-          {/* </ReactTransitionGroup > */}
         </div>
         <div styleName="guide-interactive">
+          {this.renderInteractive()}
         </div>
       </div>
     );
+  }
+  private renderInteractive() {
+    return this.props.item.interactive != null ? this.props.item.interactive.renderUI() : "";
   }
   private onOpenGuide() {
     this.setState({isExpanded: !this.state.isExpanded});
