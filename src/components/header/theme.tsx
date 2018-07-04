@@ -35,7 +35,7 @@ export class ThemesBase extends React.PureComponent<ThemeProps, {}> {
           Theme
           &nbsp;&nbsp;
         </i>
-        <select
+        <select disabled
           value={theme}
           onChange={this.onThemeChange}
         >
