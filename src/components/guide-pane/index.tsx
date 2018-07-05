@@ -1,6 +1,6 @@
 import React = require("react");
 import {connect} from "react-redux";
-import {State, Schema, ShelfUnitSpec} from "../../models";
+import {State, Schema, ShelfUnitSpec, ShelfFieldDef} from "../../models";
 import * as styles from "./guide-pane.scss"
 import * as CSSModules from 'react-css-modules';
 import {GuideNotification} from "./guide-notification";
@@ -83,11 +83,13 @@ export const GuidePane = connect(
 
 //TODO: make this process more systematic
 //1) every guideline must have their own id
-export function guideActionShelf(props: EncodingShelfProps, type: string) {
+export function guideActionShelf(props: EncodingShelfProps, fieldDefs: ShelfFieldDef, type: string) {
+  let domain = props.schema.domain({field: fieldDefs.field.toString()});
+
   switch (type) {
     case SPEC_FIELD_ADD:
     case SPEC_FIELD_MOVE:
-      if (props.id.channel == COLOR) {
+      if (props.id.channel == COLOR && domain.length > 10 && fieldDefs.type == "nominal") {
         props.handleAction({
           type: GUIDELINE_ADD_ITEM,
           payload: {

@@ -180,7 +180,7 @@ class EncodingShelfBase extends React.PureComponent<
       type: SPEC_FIELD_REMOVE,
       payload: id
     });
-    guideActionShelf(this.props, SPEC_FIELD_REMOVE);
+    guideActionShelf(this.props, null, SPEC_FIELD_REMOVE);
   }
 
   private renderField() {
@@ -275,7 +275,7 @@ const encodingShelfTarget: DropTargetSpec<EncodingShelfProps> = {
         throw new Error('Field dragged from unregistered source type to EncodingShelf');
     }
 
-    guideActionShelf(props, SPEC_FIELD_ADD);
+    guideActionShelf(props, fieldDef, SPEC_FIELD_ADD);
   }
 };
 

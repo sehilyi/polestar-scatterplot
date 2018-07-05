@@ -9,6 +9,7 @@ export function guidelineReducer(guidelines: Guidelines = DEFAULT_GUIDELINES, ac
   switch (action.type) {
     case GUIDELINE_ADD_ITEM: {
       const {item} = action.payload;
+      //TODO: Check if there is same guideline already.
       list.push(item);
 
       return {
