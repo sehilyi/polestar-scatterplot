@@ -12,3 +12,12 @@ export const GUIDELINE_REMOVE_ITEM = 'GUIDELINE_REMOVE_ITEM';
 export type GuidelineRemoveItem = ReduxAction<typeof GUIDELINE_REMOVE_ITEM, {
   item: GuidelineItem;
 }>;
+
+///
+
+export type ActionableAction = ActionableRemoveCategories;
+
+export const ACTIONABLE_REMOVE_CATEGORIES = 'ACTIONABLE_REMOVE_CATEGORIES';
+export type ActionableRemoveCategories = ReduxAction<typeof ACTIONABLE_REMOVE_CATEGORIES, {
+  categoreis: string[]
+}>;

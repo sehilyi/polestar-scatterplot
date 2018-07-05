@@ -50,7 +50,12 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
     );
   }
   private renderInteractive() {
-    return this.props.item.interactive != null ? this.props.item.interactive.renderUI() : "";
+    switch(this.props.item.id){
+      case "GUIDELINE_TOO_MANY_CATEGORIES":
+        return (
+          <div></div>
+        );
+    }
   }
   private onOpenGuide() {
     this.setState({isExpanded: !this.state.isExpanded});

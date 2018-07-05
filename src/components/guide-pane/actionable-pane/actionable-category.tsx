@@ -2,25 +2,21 @@ import * as React from 'react';
 import * as CSSModules from 'react-css-modules';
 
 import * as styles from './guideline-categories.scss';
-import {GuideUI} from './guide-ui';
 import {DateTime} from 'vega-lite/build/src/datetime';
 import {OneOfFilter} from 'vega-lite/build/src/filter';
-import {FilterAction, FILTER_MODIFY_ONE_OF} from '../../../actions';
-import {insertItemToArray, removeItemFromArray} from '../../../reducers/util';
 
-export interface GuideCategoriesProps { //TODO: Add actions
+export interface ActionableCategoryProps {
   domain: string[] | number[] | boolean[] | DateTime[];
   index: number;
   filter: OneOfFilter;
-  handleAction: (action: FilterAction) => void;
 }
 
-export interface GuideCategoriesPropState {
+export interface ActionableCategoryState {
   hideSearchBar: boolean;
 }
 
-export class GuideCategoriesBase extends React.PureComponent<GuideCategoriesProps, GuideCategoriesPropState>{
-  constructor(props: GuideCategoriesProps) {
+export class ActionableCategoryBase extends React.PureComponent<ActionableCategoryProps, ActionableCategoryState>{
+  constructor(props: ActionableCategoryProps) {
     super(props);
     this.state = ({
       hideSearchBar: true
@@ -38,10 +34,9 @@ export class GuideCategoriesBase extends React.PureComponent<GuideCategoriesProp
               value={option}
               type='checkbox'
               checked={(filter.oneOf as any[]).indexOf(option) !== -1}
-              onChange={this.toggleCheckbox.bind(this, option)}
             /> {'' + option}
           </label>
-          <span onClick={this.onSelectOne.bind(this, option)} styleName='keep-only'>
+          <span styleName='keep-only'>
             Keep Only
           </span>
         </div>
@@ -51,10 +46,10 @@ export class GuideCategoriesBase extends React.PureComponent<GuideCategoriesProp
       <div id={index.toString()}>
         <div styleName='below-header'>
           <span>
-            <a styleName='select-all' onClick={this.onSelectAll.bind(this)}>
+            <a styleName='select-all'>
               Select All
             </a> /
-            <a styleName='clear-all' onClick={this.onClearAll.bind(this)}>
+            <a styleName='clear-all'>
               Clear All
             </a>
           </span>
@@ -69,43 +64,6 @@ export class GuideCategoriesBase extends React.PureComponent<GuideCategoriesProp
         {oneOfFilter}
       </div>
     );
-  }
-  protected filterModifyOneOf(index: number, oneOf: string[] | number[] | boolean[] | DateTime[]) {
-    const {handleAction} = this.props;
-    handleAction({
-      type: FILTER_MODIFY_ONE_OF,
-      payload: {
-        index,
-        oneOf
-      }
-    });
-  }
-
-  private toggleCheckbox(option: string | number | boolean | DateTime) {
-    const oneOf = this.props.filter.oneOf;
-    const valueIndex = (oneOf as any[]).indexOf(option);
-    let changedSelectedValues;
-    if (valueIndex === -1) {
-      changedSelectedValues = insertItemToArray(oneOf, oneOf.length, option);
-    } else {
-      changedSelectedValues = removeItemFromArray(oneOf, valueIndex).array;
-    }
-    this.filterModifyOneOf(this.props.index, changedSelectedValues);
-  }
-
-  private onSelectOne(value: string | number | boolean | DateTime) {
-    const {index} = this.props;
-    this.filterModifyOneOf(index, [value]);
-  }
-
-  private onSelectAll() {
-    const {domain, index} = this.props;
-    this.filterModifyOneOf(index, domain.slice());
-  }
-
-  private onClearAll() {
-    const {index} = this.props;
-    this.filterModifyOneOf(index, []);
   }
 
   private onClickSearch() {
@@ -145,18 +103,4 @@ export class GuideCategoriesBase extends React.PureComponent<GuideCategoriesProp
   }
 }
 
-export const GuideCategories = (CSSModules(GuideCategoriesBase, styles));
-
-export const GuidelineCategoriesUI: GuideUI = {
-  renderUI: () => {
-    return (
-      <div/>
-      // <GuideCategories
-      //   domain={domain}
-      //   index={index}
-      //   filter={filter}
-      //   handleAction={handleAction}
-      // />
-    );
-  }
-}
+export const ActionableCategory = (CSSModules(ActionableCategoryBase, styles));
