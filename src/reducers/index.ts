@@ -67,7 +67,7 @@ import {RESET} from '../actions/reset';
 import {RESULT_LIMIT_INCREASE, RESULT_MODIFY_FIELD_PROP, RESULT_MODIFY_NESTED_FIELD_PROP} from '../actions/result';
 import {SHELF_PREVIEW_QUERY} from '../actions/shelf-preview';
 import {SHELF_AUTO_ADD_COUNT_CHANGE, SHELF_GROUP_BY_CHANGE} from '../actions/shelf/index';
-import {SPEC_FIELD_NESTED_PROP_CHANGE, SPEC_FIELD_PROP_CHANGE} from '../actions/shelf/spec';
+import {SPEC_FIELD_NESTED_PROP_CHANGE, SPEC_FIELD_PROP_CHANGE, SPEC_COLOR_SCALE_SPECIFIED} from '../actions/shelf/spec';
 import {
   DEFAULT_PERSISTENT_STATE,
   PersistentState,
@@ -89,6 +89,7 @@ import {themeReducer} from './theme';
 
 import {modifyItemInArray} from './util';
 import {guidelineReducer} from './guidelines';
+import {GUIDELINE_ADD_ITEM, GUIDELINE_REMOVE_ITEM, ACTIONABLE_SELECT_CATEGORIES} from '../actions/guidelines';
 
 /**
  * Whether to reset a particular property of the persistent state during RESET action
@@ -201,6 +202,7 @@ export const USER_ACTIONS: ActionType[] = [
   SPEC_CLEAR,
   SPEC_MARK_CHANGE_TYPE,
   SPEC_FIELD_ADD,
+  SPEC_COLOR_SCALE_SPECIFIED,
   SPEC_FIELD_AUTO_ADD,
   SPEC_FIELD_REMOVE,
   SPEC_FIELD_MOVE,
@@ -221,7 +223,12 @@ export const USER_ACTIONS: ActionType[] = [
   TAB_TITLE_UPDATE,
 
   // Theme Actions
-  THEME_CHANGE
+  THEME_CHANGE,
+
+  // Guideline Actions
+  GUIDELINE_ADD_ITEM,
+  GUIDELINE_REMOVE_ITEM,
+  ACTIONABLE_SELECT_CATEGORIES,
 ];
 
 

@@ -8,15 +8,19 @@ import {
   SPEC_CLEAR, SPEC_FIELD_ADD, SPEC_FIELD_MOVE,
   SPEC_FIELD_REMOVE, SPEC_FUNCTION_CHANGE, SPEC_FUNCTION_ENABLE_WILDCARD, SPEC_MARK_CHANGE_TYPE
 } from '../../actions/shelf';
-import {SPEC_FUNCTION_ADD_WILDCARD, SPEC_FUNCTION_DISABLE_WILDCARD,
-        SPEC_FUNCTION_REMOVE_WILDCARD} from '../../actions/shelf';
-import {SPEC_FIELD_NESTED_PROP_CHANGE, SPEC_FIELD_PROP_CHANGE, SpecFieldAutoAdd} from '../../actions/shelf/spec';
+import {
+  SPEC_FUNCTION_ADD_WILDCARD, SPEC_FUNCTION_DISABLE_WILDCARD,
+  SPEC_FUNCTION_REMOVE_WILDCARD
+} from '../../actions/shelf';
+import {SPEC_FIELD_NESTED_PROP_CHANGE, SPEC_FIELD_PROP_CHANGE, SpecFieldAutoAdd, SPEC_COLOR_SCALE_SPECIFIED} from '../../actions/shelf/spec';
 import {isWildcardChannelId} from '../../models';
 import {ShelfAnyEncodingDef, ShelfFieldDef, ShelfId, ShelfUnitSpec} from '../../models/shelf';
 import {sortFunctions} from '../../models/shelf';
 import {autoAddFieldQuery} from '../../models/shelf';
 import {DEFAULT_SHELF_UNIT_SPEC, fromSpecQuery} from '../../models/shelf/spec';
 import {insertItemToArray, modifyItemInArray, removeItemFromArray} from '../util';
+import {COLOR} from 'vega-lite/build/src/channel';
+import {Scale} from 'vega-lite/build/src/scale';
 
 export function shelfSpecFieldAutoAddReducer(
   shelfSpec: Readonly<ShelfUnitSpec>, action: SpecFieldAutoAdd, schema: Schema
@@ -85,6 +89,11 @@ export function shelfSpecReducer(
       return addedShelf2;
     }
 
+    case SPEC_COLOR_SCALE_SPECIFIED: {
+      const {fieldDef} = action.payload;
+      return addScaleToColor(shelfSpec, fieldDef);
+    }
+
     case SPEC_FIELD_PROP_CHANGE: {
       const {shelfId, prop, value} = action.payload;
       return modifyEncoding(shelfSpec, shelfId, (fieldDef: Readonly<ShelfFieldDef | ShelfAnyEncodingDef>) => {
@@ -101,7 +110,6 @@ export function shelfSpecReducer(
 
     case SPEC_FUNCTION_CHANGE: {
       const {shelfId, fn} = action.payload;
-
       return modifyEncoding(shelfSpec, shelfId, (fieldDef: Readonly<ShelfFieldDef | ShelfAnyEncodingDef>) => {
         return {
           ...fieldDef,
@@ -211,6 +219,16 @@ function addEncoding(shelf: Readonly<ShelfUnitSpec>, shelfId: ShelfId, fieldDef:
   }
 }
 
+function addScaleToColor(shelf: Readonly<ShelfUnitSpec>, fieldDef: ShelfFieldDef) {
+  return {
+    ...shelf,
+    encoding: {
+      ...shelf.encoding,
+      [COLOR]: fieldDef
+    }
+  };
+}
+
 type ShelfFieldDefModifier<T extends ShelfFieldDef> = (fieldDef: Readonly<T>) => T;
 
 function modifyEncoding(shelf: Readonly<ShelfUnitSpec>, shelfId: ShelfId, modifier: ShelfFieldDefModifier<any>) {
@@ -231,8 +249,7 @@ function modifyEncoding(shelf: Readonly<ShelfUnitSpec>, shelfId: ShelfId, modifi
 }
 
 
-function removeEncoding(shelf: Readonly<ShelfUnitSpec>, shelfId: ShelfId):
-  {fieldDef: ShelfFieldDef, shelf: Readonly<ShelfUnitSpec>} {
+function removeEncoding(shelf: Readonly<ShelfUnitSpec>, shelfId: ShelfId): {fieldDef: ShelfFieldDef, shelf: Readonly<ShelfUnitSpec>} {
 
   if (isWildcardChannelId(shelfId)) {
     const index = shelfId.index;
@@ -294,7 +311,7 @@ export function modifyNestedFieldProp(
   const {[nestedProp]: _oldValue, ...parentWithoutNestedProp} = oldParent || {};
   const parent = {
     ...parentWithoutNestedProp,
-    ...(value !== undefined ? {[nestedProp] : value} : {})
+    ...(value !== undefined ? {[nestedProp]: value} : {})
   };
   return {
     ...fieldDefWithoutProp,

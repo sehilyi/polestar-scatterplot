@@ -3,6 +3,7 @@ import {FacetedCompositeUnitSpec} from 'vega-lite/build/src/spec';
 import {ShelfFieldDef, ShelfFunction, ShelfId, ShelfMark} from '../../models';
 import {Action} from '../index';
 import {PlainReduxAction, ReduxAction} from '../redux-action';
+import {Scale} from 'vega-lite/build/src/scale';
 
 export type SpecAction =
   SpecClear |
@@ -15,7 +16,8 @@ export type SpecEncodingAction = SpecFieldAdd | SpecFieldAutoAdd |
   SpecFunctionChange |
   SpecFunctionAddWildcard | SpecFunctionRemoveWildcard |
   SpecFunctionDisableWildcard | SpecFunctionEnableWildcard |
-  SpecLoad ;
+  SpecLoad |
+  SpecColorScaleSpecified;
 
 export const SPEC_CLEAR = 'SPEC_CLEAR';
 export type SpecClear = PlainReduxAction<typeof SPEC_CLEAR>;
@@ -30,6 +32,11 @@ export type SpecFieldAdd = ReduxAction<typeof SPEC_FIELD_ADD, {
   shelfId: ShelfId;
   fieldDef: ShelfFieldDef;
   replace: boolean;
+}>;
+
+export const SPEC_COLOR_SCALE_SPECIFIED = 'SPEC_COLOR_SCALE_SPECIFIED';
+export type SpecColorScaleSpecified = ReduxAction<typeof SPEC_COLOR_SCALE_SPECIFIED, {
+  fieldDef: ShelfFieldDef;
 }>;
 
 export const SPEC_FIELD_AUTO_ADD = 'SPEC_FIELD_AUTO_ADD';
@@ -116,6 +123,7 @@ export const SPEC_ACTION_TYPE_INDEX: {[k in SpecAction['type']]: 1} = {
   SPEC_MARK_CHANGE_TYPE: 1,
 
   SPEC_FIELD_ADD: 1,
+  SPEC_COLOR_SCALE_SPECIFIED: 1,
   SPEC_FIELD_AUTO_ADD: 1,
   SPEC_FIELD_MOVE: 1,
   SPEC_FIELD_PROP_CHANGE: 1,
