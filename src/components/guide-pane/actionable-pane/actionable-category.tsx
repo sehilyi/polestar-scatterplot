@@ -8,6 +8,7 @@ import {Field} from '../../field';
 import {ActionHandler, ShelfAction, SpecAction, SPEC_COLOR_SCALE_SPECIFIED} from '../../../actions';
 import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction} from '../../../actions/guidelines';
 import {GuidelineItem} from '../../../models/guidelines';
+import {insertItemToArray, removeItemFromArray} from '../../../reducers/util';
 
 export interface ActionableCategoryProps extends ActionHandler<GuidelineAction | SpecAction> {
   item: GuidelineItem;
@@ -61,6 +62,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
               value={option}
               type='checkbox'
               checked={(item.selectedCategories as any[]).indexOf(option) !== -1}
+              onChange={this.toggleCheckbox.bind(this, option)}
             /> {'' + option}
           </label>
           <span styleName='keep-only' onClick={this.onSelectOne.bind(this, option)}>
@@ -133,6 +135,18 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
       if (round >= p.length - 1) round = 0;
     }
     return r;
+  }
+
+  private toggleCheckbox(option: string | number | boolean | DateTime) {
+    const selected = this.props.item.selectedCategories;
+    const valueIndex = (selected as any[]).indexOf(option);
+    let changedSelectedValues;
+    if (valueIndex === -1) {
+      changedSelectedValues = insertItemToArray(selected, selected.length, option);
+    } else {
+      changedSelectedValues = removeItemFromArray(selected, valueIndex).array;
+    }
+    this.categoryModifyScale(changedSelectedValues);
   }
 
   private onSelectOne(value: string | number | boolean | DateTime) {
