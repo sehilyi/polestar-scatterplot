@@ -16,12 +16,12 @@ $content-height: 44px;
   border: 1px solid rgb(160, 160, 160);
 
   width: 100%;
-  height: $guide-height;
+  max-height: $guide-height;
+
   margin-bottom: 4px;
   overflow: hidden;
 
-  transition: 0.5s;
-  transition-timing-function: ease-out;
+  transition: max-height 0.5s ease-in-out;
 
   animation-name: appear;
   animation-timing-function: ease-in;
@@ -31,7 +31,9 @@ $content-height: 44px;
 
 .expanded {
   @extend .guideline;
-  height: $guide-height-expanded;
+  // min-height: $guide-height-expanded;
+  max-height: 500px;
+  height: 100%;
 }
 
 .guide-header{
@@ -117,13 +119,13 @@ $content-height: 44px;
   // font-family: 'Roboto Condensed';
   margin: 4px;
   line-height: 14px;
-  height: $content-height;
+  // height: $content-height;
 }
 
 .guide-interactive{
   flex-grow: 1;
-  background-color: rgb(105, 132, 253);
+  // background-color: rgb(105, 132, 253);
   margin: 5px;
-  height: 50px;
+  height: 100%;
   border-radius: $pill-radius;
 }

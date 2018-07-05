@@ -21,5 +21,5 @@ export const GUIDELINE_TOO_MANY_CATEGORIES: GuidelineItem = {
   id: "GUIDELINE_TOO_MANY_CATEGORIES",
   title: 'Too many categories',
   category: 'Visual Encoding',
-  content: 'Too many categories are used in the chart. To make a better visualization in terms of recognition speed and accuracy, you should reduce the number of categories.',
+  content: 'Select only few categories that you want to highlight.',
 }

@@ -1,11 +1,11 @@
 import React = require("react");
 import {connect} from "react-redux";
-import {State} from "../../models";
+import {State, Schema, ShelfUnitSpec} from "../../models";
 import * as styles from "./guide-pane.scss"
 import * as CSSModules from 'react-css-modules';
 import {GuideNotification} from "./guide-notification";
 import {GuidelineItem, Guidelines, GUIDELINE_TOO_MANY_CATEGORIES} from "../../models/guidelines";
-import {selectGuidelines} from "../../selectors";
+import {selectGuidelines, selectDataset, selectShelfSpec} from "../../selectors";
 import {ActionHandler, createDispatchHandler, SPEC_FIELD_ADD, SPEC_FIELD_MOVE, SPEC_FIELD_REMOVE} from "../../actions";
 import {Action} from "../../actions/index";
 import {GuidelineAction, GUIDELINE_ADD_ITEM, GUIDELINE_REMOVE_ITEM} from "../../actions/guidelines";
@@ -14,6 +14,9 @@ import {COLOR} from "vega-lite/build/src/channel";
 
 export interface GuidePaneProps extends ActionHandler<Action> {
   guidelines: Guidelines;
+
+  schema: Schema;
+  spec: ShelfUnitSpec;
 }
 
 export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
@@ -52,12 +55,14 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
 
   private guideNotification(gs: GuidelineItem) {
 
-    const {title} = gs;
-    const {handleAction} = this.props;
+    const {id} = gs;
+    const {handleAction, schema, spec} = this.props;
     return (
       <GuideNotification
-        key={title}
+        key={id}
         item={gs}
+        schema={schema}
+        spec={spec}
         handleAction={handleAction}
       />
     );
@@ -67,7 +72,10 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
 export const GuidePane = connect(
   (state: State) => {
     return {
-      guidelines: selectGuidelines(state)
+      guidelines: selectGuidelines(state),
+
+      schema: selectDataset(state).schema,
+      spec: selectShelfSpec(state),
     };
   },
   createDispatchHandler<GuidelineAction>()

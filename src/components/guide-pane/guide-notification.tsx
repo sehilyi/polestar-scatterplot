@@ -6,9 +6,14 @@ import * as logo from '../../../images/icon-encoding.png';
 import {GuidelineItem} from '../../models/guidelines';
 import {ActionHandler} from '../../actions';
 import {GUIDELINE_REMOVE_ITEM, GuidelineAction} from '../../actions/guidelines';
+import {ActionableCategory} from './actionable-pane/actionable-category';
+import {Schema, ShelfUnitSpec} from '../../models';
 
 export interface GuideNotificationProps extends ActionHandler<GuidelineAction> {
   item: GuidelineItem;
+
+  schema: Schema;
+  spec: ShelfUnitSpec;
 }
 
 export class GuideNotificationBase extends React.PureComponent<GuideNotificationProps, any> {
@@ -52,8 +57,14 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
   private renderInteractive() {
     switch(this.props.item.id){
       case "GUIDELINE_TOO_MANY_CATEGORIES":
+        const {schema, spec} = this.props;
+        let domain = schema.domain({field: spec.encoding.color.field.toString()})
         return (
-          <div></div>
+          <ActionableCategory
+            domain={domain}
+            spec={spec}
+            schema={schema}
+          />
         );
     }
   }

@@ -1,14 +1,15 @@
 import * as React from 'react';
 import * as CSSModules from 'react-css-modules';
 
-import * as styles from './guideline-categories.scss';
+import * as styles from './actionable-category.scss';
 import {DateTime} from 'vega-lite/build/src/datetime';
-import {OneOfFilter} from 'vega-lite/build/src/filter';
+import {ShelfUnitSpec, Schema} from '../../../models';
+import {Field} from '../../field';
 
 export interface ActionableCategoryProps {
   domain: string[] | number[] | boolean[] | DateTime[];
-  index: number;
-  filter: OneOfFilter;
+  spec: ShelfUnitSpec;
+  schema: Schema;
 }
 
 export interface ActionableCategoryState {
@@ -24,16 +25,37 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
   }
 
   public render() {
-    const {domain, filter, index} = this.props;
+    const {schema, spec} = this.props;
+    let field = spec.encoding.color.field.toString();
+    const fieldSchema = schema.fieldSchema(field);
+    const fieldDef = {
+      field,
+      type: fieldSchema.vlType
+    };
+
+    return (
+      <div styleName='filter-shelf' key={'1'}>
+        <Field
+          draggable={false}
+          fieldDef={fieldDef}
+          caretShow={true}
+          isPill={true}
+        />
+        {this.renderCategorySelector()}
+      </div>
+    );
+  }
+
+  private renderCategorySelector() {
+    const {domain, spec} = this.props;
     const oneOfFilter = (domain as any[]).map(option => {
       return (
         <div key={option} className='option-div' styleName='option-row'>
           <label>
             <input
-              name={index.toString()}
+              name="temp"
               value={option}
               type='checkbox'
-              checked={(filter.oneOf as any[]).indexOf(option) !== -1}
             /> {'' + option}
           </label>
           <span styleName='keep-only'>
@@ -43,7 +65,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
       );
     });
     return (
-      <div id={index.toString()}>
+      <div id="temp">
         <div styleName='below-header'>
           <span>
             <a styleName='select-all'>
@@ -96,7 +118,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
    */
   private getDivs() {
     // select the current filter shelf
-    const container = document.getElementById(this.props.index.toString());
+    const container = document.getElementById("temp".toString());
     // select all divs
     const divs = container.getElementsByClassName('option-div');
     return divs;
