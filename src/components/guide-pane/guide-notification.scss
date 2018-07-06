@@ -54,16 +54,33 @@ $guideline-margin: 8px;
   margin-top: 13px;
   margin-left: 10px;
   margin-right: 10px;
+  transition: opacity 0.5s ease-in-out;
+  position: absolute;
+}
+
+.icon-show{
+  @extend .icon;
+  opacity: 1;
+}
+
+.icon-hide{
+  @extend .icon;
+  opacity: 0;
 }
 
 .guide-label{
   flex-grow: 1;
 }
 
+// TODO: add common prop for category and title
+
 .guide-category {
   user-select: none;
   display: block;
   font-size: 12px;
+  font-weight: 500;
+  text-decoration: line-through;
+  text-decoration-color: transparent;
   color: #292929;
 
   text-overflow: ellipsis;
@@ -71,8 +88,18 @@ $guideline-margin: 8px;
   white-space: nowrap;
 
   margin: 5px;
+  margin-left: 55px;
   line-height: $sub-pill-height;
   height: $sub-pill-height;
+
+  transition: text-decoration-color 0.5s ease-in-out;
+  transition: color 0.5s ease-in-out;
+}
+
+.guide-category-done{
+  @extend .guide-category;
+  text-decoration-color: #b4b4b4;
+  color: #b4b4b4;
 }
 
 .guide-title {
@@ -85,10 +112,21 @@ $guideline-margin: 8px;
   white-space: nowrap;
 
   font-size: 14px;
-  font-weight: 500;
+  text-decoration: line-through;
+  text-decoration-color: transparent;
 
   margin: 5px;
+  margin-left: 55px;
   line-height: $pill-height;
+
+  transition: text-decoration-color 0.5s ease-in-out;
+  transition: color 0.5s ease-in-out;
+}
+
+.guide-title-done{
+  @extend .guide-title;
+  text-decoration-color: #b4b4b4;
+  color: #b4b4b4;
 }
 
 .decision-button{

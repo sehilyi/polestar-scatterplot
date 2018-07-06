@@ -2,7 +2,8 @@ import * as React from 'react';
 import * as CSSModules from 'react-css-modules';
 
 import * as styles from "./guide-notification.scss";
-import * as logo from '../../../images/icon-encoding.png';
+import * as warn from '../../../images/warning.png';
+import * as done from '../../../images/done.png';
 import {GuidelineItem} from '../../models/guidelines';
 import {ActionHandler, ShelfAction} from '../../actions';
 import {GUIDELINE_REMOVE_ITEM, GuidelineAction} from '../../actions/guidelines';
@@ -30,10 +31,11 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
     return (
       <div styleName={this.state.isExpanded ? "expanded" : "guideline"}>
         <div styleName="guide-header">
-          <img styleName='icon' src={logo} />
+          <img styleName={this.props.item.guideState == "WARN"? 'icon-show' : 'icon-hide'} src={warn} />
+          <img styleName={this.props.item.guideState == "DONE"? 'icon-show' : 'icon-hide'} src={done} />
           <div styleName="guide-label">
-            <span styleName="guide-category">{this.props.item.category}</span>
-            <span styleName="guide-title">{this.props.item.title}</span>
+            <span styleName={this.props.item.guideState == "WARN" ? "guide-category" : "guide-category-done"}>{this.props.item.category}</span>
+            <span styleName={this.props.item.guideState == "WARN" ? "guide-title" : "guide-title-done"}>{this.props.item.title}</span>
           </div>
           <span styleName="decision-button">
             <a onClick={this.onOpenGuide}>
@@ -55,7 +57,7 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
     );
   }
   private renderInteractive() {
-    switch(this.props.item.id){
+    switch (this.props.item.id) {
       case "GUIDELINE_TOO_MANY_CATEGORIES":
         const {item, schema, spec, handleAction} = this.props;
         let domain = schema.domain({field: spec.encoding.color.field.toString()})

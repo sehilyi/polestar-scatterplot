@@ -1,15 +1,18 @@
 import {DateTime} from "vega-lite/build/src/datetime";
 
+export type GuideState = "WARN" | "DONE";
+
 export interface Guidelines{
   list: GuidelineItem[];
 }
 
 export interface GuidelineItem {
   id: guidelineIds;
+  category?: string;
   title: string;
   content?: string;
-  category?: string;
 
+  guideState: GuideState;
   selectedCategories: string[] | number[] | boolean[] | DateTime[];
 }
 
@@ -21,9 +24,10 @@ export type guidelineIds = "GUIDELINE_TOO_MANY_CATEGORIES" | "GUIDELINE_NONE";
 
 export const GUIDELINE_TOO_MANY_CATEGORIES: GuidelineItem = {
   id: "GUIDELINE_TOO_MANY_CATEGORIES",
-  title: 'Too many categories',
-  category: 'Visual Encoding',
-  content: 'Select only few categories that you want to highlight.',
+  category: 'Too Many Categories',
+  title: 'Select at most 10 categories to highlight',
+  content: '',
 
+  guideState: "WARN",
   selectedCategories: []
 }
