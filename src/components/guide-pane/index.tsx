@@ -37,7 +37,7 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
           Clear
         </a> */}
 
-        <h2>
+        <h2 className="H2-in-guideline">
           <i className="fa fa-bolt" aria-hidden="true"/>
           {/* <i className="fa fa-lightbulb-o" aria-hidden="true" /> */}
           {' '}

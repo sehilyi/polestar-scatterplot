@@ -1,9 +1,9 @@
-$sub-pill-height: 12px;
+$guide-height: 56px;
+$sub-pill-height: 20px;
 $pill-height: 20px;
 $pill-radius: 7px;
-$guide-height: 44px;
 $guide-height-expanded: 150px;
-$content-height: 44px;
+$guideline-margin: 8px;
 
 @keyframes appear {
   from {background-color: rgb(255, 238, 87); }
@@ -11,14 +11,16 @@ $content-height: 44px;
 }
 
 .guideline {
-  background-color: white;// hsla(224,25%,29%,0.2);
-  border-radius: $pill-radius;
-  border: 1px solid rgb(160, 160, 160);
+  background-color: #FCFCFC;
+  // border-radius: $pill-radius;
+  // border: 1px solid rgb(160, 160, 160);
 
-  width: 100%;
+  width: calc(100% - $guideline-margin);
   max-height: $guide-height;
+  margin: $guideline-margin;
 
   margin-bottom: 4px;
+  padding: 4px;
   overflow: hidden;
 
   transition: max-height 0.5s ease-in-out;
@@ -27,31 +29,31 @@ $content-height: 44px;
   animation-timing-function: ease-in;
   animation-duration: 1s;
 
+  box-shadow: 0 0 10px rgba(0,0,0,0.2);
 }
 
 .expanded {
   @extend .guideline;
-  // min-height: $guide-height-expanded;
   max-height: 500px;
   height: 100%;
 }
 
 .guide-header{
   display: flex;
-
   width: 100%;
-  // height: $guide-height;
   overflow: hidden;
+}
 
-  // &:hover {
-
-  // }
+.fa-gray {
+  color: gray;
 }
 
 .icon{
   width: 30px;
   height: 30px;
-  margin: 7px;
+  margin-top: 13px;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .guide-label{
@@ -61,14 +63,13 @@ $content-height: 44px;
 .guide-category {
   user-select: none;
   display: block;
-  font-size: 11px;
-  font-weight: 600;
+  font-size: 12px;
+  color: #292929;
 
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
 
-  // font-family: 'Roboto';
   margin: 5px;
   line-height: $sub-pill-height;
   height: $sub-pill-height;
@@ -78,17 +79,16 @@ $content-height: 44px;
   user-select: none;
   display: block;
 
+  color: #6E6E6E;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
 
   font-size: 14px;
-  // font-family: 'Roboto Condensed';
   font-weight: 500;
 
-  margin: 4px;
+  margin: 5px;
   line-height: $pill-height;
-  // height: $pill-height;
 }
 
 .decision-button{
@@ -100,7 +100,10 @@ $content-height: 44px;
 
 .splitter{
   flex-grow: 1;
-  border-top: 1px solid rgb(160, 160, 160);
+  border-top: 1px solid #D4D4D4;
+  margin-top: 4px;
+  margin-left: -4px;
+  margin-right: -4px;
 }
 
 .guide-content{
@@ -116,15 +119,12 @@ $content-height: 44px;
   text-overflow: ellipsis;
 
   font-size: 12px;
-  // font-family: 'Roboto Condensed';
   margin: 4px;
   line-height: 14px;
-  // height: $content-height;
 }
 
 .guide-interactive{
   flex-grow: 1;
-  // background-color: rgb(105, 132, 253);
   margin: 5px;
   height: 100%;
   border-radius: $pill-radius;

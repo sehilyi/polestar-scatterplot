@@ -37,10 +37,10 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
           </div>
           <span styleName="decision-button">
             <a onClick={this.onOpenGuide}>
-              <i className="fa fa-caret-down" aria-hidden="true" />
+              <i className="fa fa-caret-down" styleName="fa-gray" aria-hidden="true" />
             </a>
             <a onClick={this.onIgnore}>
-              <i className="fa fa-times" />
+              <i className="fa fa-times" styleName="fa-gray" />
             </a>
           </span>
         </div>
