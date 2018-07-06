@@ -122,6 +122,7 @@ export const ACTION_TYPE_INDEX: {[k in ActionType]: 1} = {
   GUIDELINE_REMOVE_ITEM: 1,
   GUIDELINE_ADD_ITEM: 1,
   ACTIONABLE_SELECT_CATEGORIES: 1,
+  ACTIONABLE_SHOW_INDICATOR: 1,
 };
 
 /** An array of all possible action types. */

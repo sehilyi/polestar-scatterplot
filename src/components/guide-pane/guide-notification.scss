@@ -7,13 +7,11 @@ $guideline-margin: 8px;
 
 @keyframes appear {
   from {background-color: rgb(255, 238, 87); }
-  to {background-color: white; }
+  to {background-color: #FCFCFC; }
 }
 
 .guideline {
   background-color: #FCFCFC;
-  // border-radius: $pill-radius;
-  // border: 1px solid rgb(160, 160, 160);
 
   width: calc(100% - $guideline-margin);
   max-height: $guide-height;
@@ -23,13 +21,17 @@ $guideline-margin: 8px;
   padding: 4px;
   overflow: hidden;
 
-  transition: max-height 0.5s ease-in-out;
+  transition: max-height 0.5s ease-in-out, outline-width 0.1s ease;
 
   animation-name: appear;
   animation-timing-function: ease-in;
-  animation-duration: 1s;
+  animation-duration: 1.25s;
 
   box-shadow: 0 0 10px rgba(0,0,0,0.2);
+
+  &:hover{
+    outline: 3px solid rgb(255, 87, 151);
+  }
 }
 
 .expanded {

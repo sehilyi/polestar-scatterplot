@@ -23,6 +23,7 @@ import {BookmarkButton} from './bookmarkbutton';
 import * as styles from './plot.scss';
 import {Themes} from '../../models/theme/theme';
 import {themeDict} from '../../models/theme/theme';
+import {Guidelines} from '../../models/guidelines';
 
 export interface PlotProps extends ActionHandler<
   ShelfAction | BookmarkAction | ShelfPreviewAction | ResultAction | LogAction
@@ -140,7 +141,7 @@ export class PlotBase extends React.PureComponent<PlotProps, PlotState> {
           onMouseEnter={this.onMouseEnter}
           onMouseLeave={this.onMouseLeave}
         >
-          <VegaLite spec={spec} logger={this.plotLogger} data={data} theme={theme} />
+          <VegaLite spec={spec} logger={this.plotLogger} data={data} theme={theme}/>
         </div>
         {notesDiv}
       </div>

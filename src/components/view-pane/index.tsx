@@ -16,7 +16,7 @@ import {RelatedViews as RelatedViewsModel} from '../../models/related-views';
 import {Result} from '../../models/result/index';
 import {ShelfFilter} from '../../models/shelf/filter';
 import {SHELF_GROUP_BYS, ShelfGroupBy} from '../../models/shelf/index';
-import {selectBookmark, selectConfig, selectMainSpec, selectTheme} from '../../selectors';
+import {selectBookmark, selectConfig, selectMainSpec, selectTheme, selectGuidelines} from '../../selectors';
 import {selectFilteredData, selectRelatedViews} from '../../selectors/index';
 import {selectResult} from '../../selectors/result';
 import {
@@ -29,6 +29,7 @@ import {RelatedViews} from './related-views';
 import {RelatedViewsButton} from './related-views-button';
 import * as styles from './view-pane.scss';
 import {Themes} from '../../models/theme/theme';
+import {Guidelines} from '../../models/guidelines';
 
 export interface ViewPaneProps extends ActionHandler<Action> {
   isQuerySpecific: boolean;
@@ -47,6 +48,8 @@ export interface ViewPaneProps extends ActionHandler<Action> {
   filters: ShelfFilter[];
 
   theme: Themes;
+
+  guideline: Guidelines;
 }
 
 const NO_PLOT_MESSAGE = `No specified visualization yet. ` +
@@ -84,16 +87,24 @@ class ViewPaneBase extends React.PureComponent<ViewPaneProps, {}> {
           handleAction={handleAction}
         />
         <h2>Related Views</h2>
-        {!collapseRelatedViews && <RelatedViews/>}
+        {!collapseRelatedViews && <RelatedViews />}
       </div>
     );
 
     if (isQuerySpecific) {
       return (
         <div styleName="view-pane">
-          <div className="pane" styleName={collapseRelatedViews ? 'view-pane-specific-stretch' : 'view-pane-specific'}>
+          <div className="pane" id="specified-view" styleName={collapseRelatedViews ? 'view-pane-specific-stretch' : 'view-pane-specific'}>
             <h2>Specified View</h2>
             {this.renderSpecifiedView()}
+            <div className='highlighter-show'
+              style={typeof this.props.guideline.list[0] == 'undefined' ? {} : {
+                width: this.props.guideline.list[0].size.width + 'px',
+                height: (this.props.guideline.list[0].size.height + 'px'),
+                top: (this.props.guideline.list[0].position.y + 'px'),
+                left: (this.props.guideline.list[0].position.x + 'px'),
+              }}
+            />
           </div>
           {relatedViewsElement}
         </div>
@@ -116,7 +127,7 @@ class ViewPaneBase extends React.PureComponent<ViewPaneProps, {}> {
   }
 
   private renderSpecifiedView() {
-    const {bookmark, data, filters, handleAction, spec, theme} = this.props;
+    const {bookmark, data, filters, handleAction, spec, theme, guideline} = this.props;
 
     if (spec) {
       return (
@@ -216,7 +227,8 @@ export const ViewPane = connect(
       result: selectResult.main(state),
       spec: selectMainSpec(state),
       relatedViews: selectRelatedViews(state),
-      theme: selectTheme(state)
+      theme: selectTheme(state),
+      guideline: selectGuidelines(state)
     };
   },
   createDispatchHandler<ShelfAction>()

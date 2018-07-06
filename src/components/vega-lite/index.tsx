@@ -8,6 +8,7 @@ import * as vegaTooltip from 'vega-tooltip';
 import {SPINNER_COLOR} from '../../constants';
 import {Logger} from '../util/util.logger';
 import {Themes, themeDict} from '../../models/theme/theme';
+import {Guidelines} from '../../models/guidelines';
 
 export interface VegaLiteProps {
   spec: TopLevelExtendedSpec;

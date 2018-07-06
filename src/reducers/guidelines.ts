@@ -1,6 +1,6 @@
 import {Action} from "../actions";
 import {DEFAULT_GUIDELINES, Guidelines, GuidelineItem, GuideState} from "../models/guidelines";
-import {GUIDELINE_REMOVE_ITEM, GUIDELINE_ADD_ITEM, ACTIONABLE_SELECT_CATEGORIES} from "../actions/guidelines";
+import {GUIDELINE_REMOVE_ITEM, GUIDELINE_ADD_ITEM, ACTIONABLE_SELECT_CATEGORIES, ACTIONABLE_SHOW_INDICATOR} from "../actions/guidelines";
 import {modifyItemInArray} from "./util";
 
 export function guidelineReducer(guidelines: Guidelines = DEFAULT_GUIDELINES, action: Action): Guidelines {
@@ -32,6 +32,24 @@ export function guidelineReducer(guidelines: Guidelines = DEFAULT_GUIDELINES, ac
           ...item,
           selectedCategories: selectedCategories,
           guideState: (selectedCategories.length > 0 && selectedCategories.length <= 10) ? "DONE" : "WARN" as GuideState
+        };
+      };
+      return {
+        list: [
+          ...list.slice(0, list.indexOf(item)),
+          modifyOneOf(list[list.indexOf(item)]),
+          ...list.slice(list.indexOf(item) + 1)
+        ]
+      };
+    }
+    case ACTIONABLE_SHOW_INDICATOR:{
+      const {item, size, position} = action.payload;
+      const modifyOneOf = (item: GuidelineItem) => {
+        return {
+          ...item,
+          showHighlight: true,
+          size: size,
+          position: position
         };
       };
       return {

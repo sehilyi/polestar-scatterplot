@@ -89,7 +89,7 @@ import {themeReducer} from './theme';
 
 import {modifyItemInArray} from './util';
 import {guidelineReducer} from './guidelines';
-import {GUIDELINE_ADD_ITEM, GUIDELINE_REMOVE_ITEM, ACTIONABLE_SELECT_CATEGORIES} from '../actions/guidelines';
+import {GUIDELINE_ADD_ITEM, GUIDELINE_REMOVE_ITEM, ACTIONABLE_SELECT_CATEGORIES, ACTIONABLE_SHOW_INDICATOR} from '../actions/guidelines';
 
 /**
  * Whether to reset a particular property of the persistent state during RESET action
@@ -229,6 +229,7 @@ export const USER_ACTIONS: ActionType[] = [
   GUIDELINE_ADD_ITEM,
   GUIDELINE_REMOVE_ITEM,
   ACTIONABLE_SELECT_CATEGORIES,
+  ACTIONABLE_SHOW_INDICATOR,
 ];
 
 
