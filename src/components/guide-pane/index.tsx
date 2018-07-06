@@ -38,7 +38,7 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
         </a> */}
 
         <h2 className="H2-in-guideline">
-          <i className="fa fa-bolt" aria-hidden="true"/>
+          <i className="fa fa-bolt" aria-hidden="true" />
           {/* <i className="fa fa-lightbulb-o" aria-hidden="true" /> */}
           {' '}
           Guidelines {' (' + this.props.guidelines.list.length + ')'}
@@ -85,7 +85,7 @@ export const GuidePane = connect(
 //1) every guideline must have their own id
 export function guideActionShelf(props: EncodingShelfProps, fieldDefs: ShelfFieldDef, type: string) {
   let domain;
-  if(fieldDefs != null) domain = props.schema.domain({field: fieldDefs.field.toString()});
+  if (fieldDefs != null) domain = props.schema.domain({field: fieldDefs.field.toString()});
 
   switch (type) {
     case SPEC_FIELD_ADD:
@@ -93,6 +93,13 @@ export function guideActionShelf(props: EncodingShelfProps, fieldDefs: ShelfFiel
       if (props.id.channel == COLOR && domain.length > 10 && fieldDefs.type == "nominal") {
         props.handleAction({
           type: GUIDELINE_ADD_ITEM,
+          payload: {
+            item: GUIDELINE_TOO_MANY_CATEGORIES
+          }
+        });
+      } else if (props.id.channel == COLOR) {
+        props.handleAction({
+          type: GUIDELINE_REMOVE_ITEM,
           payload: {
             item: GUIDELINE_TOO_MANY_CATEGORIES
           }
