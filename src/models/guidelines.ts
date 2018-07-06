@@ -1,6 +1,6 @@
 import {DateTime} from "vega-lite/build/src/datetime";
 
-export type GuideState = "WARN" | "DONE";
+export type GuideState = "WARN" | "DONE" | "IGNORE";
 
 export interface Guidelines{
   list: GuidelineItem[];

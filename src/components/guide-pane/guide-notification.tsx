@@ -4,9 +4,10 @@ import * as CSSModules from 'react-css-modules';
 import * as styles from "./guide-notification.scss";
 import * as warn from '../../../images/warning.png';
 import * as done from '../../../images/done.png';
+import * as ignore from '../../../images/ignore.png';
 import {GuidelineItem} from '../../models/guidelines';
 import {ActionHandler, ShelfAction} from '../../actions';
-import {GUIDELINE_REMOVE_ITEM, GuidelineAction, ACTIONABLE_SHOW_INDICATOR, ACTIONABLE_HIDE_INDICATOR} from '../../actions/guidelines';
+import {GUIDELINE_REMOVE_ITEM, GuidelineAction, GUIDELINE_SHOW_INDICATOR, GUIDELINE_HIDE_INDICATOR, GUIDELINE_TOGGLE_IGNORE_ITEM} from '../../actions/guidelines';
 import {ActionableCategory} from './actionable-pane/actionable-category';
 import {Schema, ShelfUnitSpec, DEFAULT_SHELF_UNIT_SPEC} from '../../models';
 
@@ -30,24 +31,30 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
   }
 
   public render() {
+    const {guideState} = this.props.item;
+
     return (
       <div styleName={this.state.isExpanded ? "expanded" : "guideline"}
         onMouseEnter={this.onShowIndicator}
         onMouseLeave={this.onHideIndicator}>
         <div styleName="guide-header">
-          <img styleName={this.props.item.guideState == "WARN" ? 'icon-show' : 'icon-hide'} src={warn} />
-          <img styleName={this.props.item.guideState == "DONE" ? 'icon-show' : 'icon-hide'} src={done} />
+          <img styleName={guideState == "WARN" ? 'icon-show' : 'icon-hide'} src={warn} />
+          <img styleName={guideState == "DONE" ? 'icon-show' : 'icon-hide'} src={done} />
+          <img styleName={guideState == "IGNORE" ? 'icon-show' : 'icon-hide'} src={ignore} />
           <div styleName="guide-label">
-            <span styleName={this.props.item.guideState == "WARN" ? "guide-category" : "guide-category-done"}>{this.props.item.category}</span>
-            <span styleName={this.props.item.guideState == "WARN" ? "guide-title" : "guide-title-done"}>{this.props.item.title}</span>
+            <span styleName={guideState == "WARN" ? "guide-category" : guideState == "DONE" ? "guide-category-done" : "guide-category-ignore"}>{this.props.item.category}</span>
+            <span styleName={guideState == "WARN" ? "guide-title" : guideState == "DONE" ? "guide-title-done" : "guide-title-ignore"}>{this.props.item.title}</span>
           </div>
           <span styleName="decision-button">
             <a onClick={this.onOpenGuide}>
               <i className="fa fa-caret-down" styleName="fa-gray" aria-hidden="true" />
             </a>
-            <a onClick={this.onIgnore}>
-              <i className="fa fa-times" styleName="fa-gray" />
-            </a>
+            {guideState != "DONE" ?
+              <a onClick={this.onIgnore}>
+                <i className="fa fa-eye-slash" styleName="fa-gray" aria-hidden="true" />
+                {/* <i className="fa fa-times" styleName="fa-gray" /> */}
+              </a>
+              : null}
           </span>
         </div>
         <div styleName="splitter" />
@@ -92,16 +99,16 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
     size.height += boxMargin * 2;
 
     this.props.handleAction({
-      type: ACTIONABLE_SHOW_INDICATOR,
+      type: GUIDELINE_SHOW_INDICATOR,
       payload: {
         size: size,
         position: position
       }
     })
   }
-  private onHideIndicator(){
+  private onHideIndicator() {
     this.props.handleAction({
-      type: ACTIONABLE_HIDE_INDICATOR,
+      type: GUIDELINE_HIDE_INDICATOR,
       payload: {}
     })
   }
@@ -110,7 +117,7 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
   }
   private onIgnore() {
     this.props.handleAction({
-      type: GUIDELINE_REMOVE_ITEM,
+      type: GUIDELINE_TOGGLE_IGNORE_ITEM,
       payload: {
         item: this.props.item
       }

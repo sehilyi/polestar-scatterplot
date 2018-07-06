@@ -101,8 +101,13 @@ $guideline-margin: 8px;
 
 .guide-category-done{
   @extend .guide-category;
-  text-decoration-color: #b4b4b4;
-  color: #b4b4b4;
+  text-decoration-color: #c2c1c1;
+  color: #c2c1c1;
+}
+
+.guide-category-ignore{
+  @extend .guide-category;
+  color: #c2c1c1;
 }
 
 .guide-title {
@@ -128,8 +133,13 @@ $guideline-margin: 8px;
 
 .guide-title-done{
   @extend .guide-title;
-  text-decoration-color: #b4b4b4;
-  color: #b4b4b4;
+  text-decoration-color: #c2c1c1;
+  color: #c2c1c1;
+}
+
+.guide-title-ignore{
+  @extend .guide-title;
+  color: #c2c1c1;
 }
 
 .decision-button{
