@@ -34,3 +34,15 @@
 .gallery-command {
   margin-left: 10px;
 }
+
+.highlighter {
+  box-shadow: 0 0 0 0 rgb(255, 87, 151);
+  border-radius: 3px;
+  transition: box-shadow 0.1s ease;
+  position: absolute;
+}
+
+.highlighter-show {
+  @extend .highlighter;
+  box-shadow: 0 0 0 3px rgb(255, 87, 151);
+}

@@ -6,9 +6,9 @@ import * as warn from '../../../images/warning.png';
 import * as done from '../../../images/done.png';
 import {GuidelineItem} from '../../models/guidelines';
 import {ActionHandler, ShelfAction} from '../../actions';
-import {GUIDELINE_REMOVE_ITEM, GuidelineAction, ACTIONABLE_SHOW_INDICATOR} from '../../actions/guidelines';
+import {GUIDELINE_REMOVE_ITEM, GuidelineAction, ACTIONABLE_SHOW_INDICATOR, ACTIONABLE_HIDE_INDICATOR} from '../../actions/guidelines';
 import {ActionableCategory} from './actionable-pane/actionable-category';
-import {Schema, ShelfUnitSpec} from '../../models';
+import {Schema, ShelfUnitSpec, DEFAULT_SHELF_UNIT_SPEC} from '../../models';
 
 export interface GuideNotificationProps extends ActionHandler<GuidelineAction> {
   item: GuidelineItem;
@@ -23,14 +23,17 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
     super(props);
 
     this.state = {isExpanded: false};
-    this.onPreview = this.onPreview.bind(this);
+    this.onShowIndicator = this.onShowIndicator.bind(this);
+    this.onHideIndicator = this.onHideIndicator.bind(this);
     this.onOpenGuide = this.onOpenGuide.bind(this);
     this.onIgnore = this.onIgnore.bind(this);
   }
 
   public render() {
     return (
-      <div styleName={this.state.isExpanded ? "expanded" : "guideline"} onMouseEnter={this.onPreview}>
+      <div styleName={this.state.isExpanded ? "expanded" : "guideline"}
+        onMouseEnter={this.onShowIndicator}
+        onMouseLeave={this.onHideIndicator}>
         <div styleName="guide-header">
           <img styleName={this.props.item.guideState == "WARN" ? 'icon-show' : 'icon-hide'} src={warn} />
           <img styleName={this.props.item.guideState == "DONE" ? 'icon-show' : 'icon-hide'} src={done} />
@@ -73,7 +76,7 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
         );
     }
   }
-  private onPreview() {
+  private onShowIndicator() {
     //TODO: change systematically for other guidelines
     const boxMargin = 4;
     const root = document.getElementById('root'),
@@ -83,19 +86,23 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
     let size = {width: legend.getBoundingClientRect().width, height: legend.getBoundingClientRect().height},
       position = {x: legend.getBoundingClientRect().left, y: legend.getBoundingClientRect().top};
 
-      position.x = position.x - specifiedView.getBoundingClientRect().left - boxMargin;
-      position.y = position.y - specifiedView.getBoundingClientRect().top - boxMargin;
-      size.width += boxMargin * 2;
-      size.height += boxMargin * 2;
+    position.x = position.x - specifiedView.getBoundingClientRect().left - boxMargin;
+    position.y = position.y - specifiedView.getBoundingClientRect().top - boxMargin;
+    size.width += boxMargin * 2;
+    size.height += boxMargin * 2;
 
-    console.log(legend);
     this.props.handleAction({
       type: ACTIONABLE_SHOW_INDICATOR,
       payload: {
-        item: this.props.item,
         size: size,
         position: position
       }
+    })
+  }
+  private onHideIndicator(){
+    this.props.handleAction({
+      type: ACTIONABLE_HIDE_INDICATOR,
+      payload: {}
     })
   }
   private onOpenGuide() {

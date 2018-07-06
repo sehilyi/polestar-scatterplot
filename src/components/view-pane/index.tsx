@@ -75,6 +75,7 @@ class ViewPaneBase extends React.PureComponent<ViewPaneProps, {}> {
 
   public render() {
     const {isQuerySpecific, handleAction, relatedViews, config} = this.props;
+    const {showHighlight, size, position} = this.props.guideline;
 
     const collapseRelatedViews = relatedViews.isCollapsed === undefined ? config.relatedViews === 'initiallyCollapsed' :
       relatedViews.isCollapsed;
@@ -97,12 +98,12 @@ class ViewPaneBase extends React.PureComponent<ViewPaneProps, {}> {
           <div className="pane" id="specified-view" styleName={collapseRelatedViews ? 'view-pane-specific-stretch' : 'view-pane-specific'}>
             <h2>Specified View</h2>
             {this.renderSpecifiedView()}
-            <div className='highlighter-show'
-              style={typeof this.props.guideline.list[0] == 'undefined' ? {} : {
-                width: this.props.guideline.list[0].size.width + 'px',
-                height: (this.props.guideline.list[0].size.height + 'px'),
-                top: (this.props.guideline.list[0].position.y + 'px'),
-                left: (this.props.guideline.list[0].position.x + 'px'),
+            <div styleName={showHighlight?'highlighter-show':'highlighter'}
+              style={{
+                width: size.width + 'px',
+                height: size.height + 'px',
+                top: position.y + 'px',
+                left: position.x + 'px',
               }}
             />
           </div>

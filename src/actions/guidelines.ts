@@ -2,7 +2,7 @@ import {GuidelineItem} from "../models/guidelines";
 import {ReduxAction} from "./redux-action";
 import {DateTime} from "vega-lite/build/src/datetime";
 
-export type GuidelineAction = GuidelineRemoveItem | GuidelineAddItem | ActionableSelectCategories | ActionableShowIndicator;
+export type GuidelineAction = GuidelineRemoveItem | GuidelineAddItem | ActionableSelectCategories | ActionableShowIndicator | ActionableHideIndicator;
 
 export const GUIDELINE_ADD_ITEM = 'GUIDELINE_ADD_ITEM';
 export type GuidelineAddItem = ReduxAction<typeof GUIDELINE_ADD_ITEM, {
@@ -26,7 +26,9 @@ export type ActionableSelectCategories = ReduxAction<typeof ACTIONABLE_SELECT_CA
 
 export const ACTIONABLE_SHOW_INDICATOR = 'ACTIONABLE_SHOW_INDICATOR';
 export type ActionableShowIndicator = ReduxAction<typeof ACTIONABLE_SHOW_INDICATOR, {
-  item: GuidelineItem,
   size: {width: number, height: number},
   position: {x: number, y: number}
 }>;
+
+export const ACTIONABLE_HIDE_INDICATOR = 'ACTIONABLE_HIDE_INDICATOR';
+export type ActionableHideIndicator = ReduxAction<typeof ACTIONABLE_HIDE_INDICATOR, {}>;

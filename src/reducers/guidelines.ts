@@ -1,10 +1,10 @@
 import {Action} from "../actions";
 import {DEFAULT_GUIDELINES, Guidelines, GuidelineItem, GuideState} from "../models/guidelines";
-import {GUIDELINE_REMOVE_ITEM, GUIDELINE_ADD_ITEM, ACTIONABLE_SELECT_CATEGORIES, ACTIONABLE_SHOW_INDICATOR} from "../actions/guidelines";
+import {GUIDELINE_REMOVE_ITEM, GUIDELINE_ADD_ITEM, ACTIONABLE_SELECT_CATEGORIES, ACTIONABLE_SHOW_INDICATOR, ACTIONABLE_HIDE_INDICATOR} from "../actions/guidelines";
 import {modifyItemInArray} from "./util";
 
 export function guidelineReducer(guidelines: Guidelines = DEFAULT_GUIDELINES, action: Action): Guidelines {
-  const {list} = guidelines;
+  const {list, showHighlight, size, position} = guidelines;
 
   switch (action.type) {
     case GUIDELINE_ADD_ITEM: {
@@ -13,7 +13,10 @@ export function guidelineReducer(guidelines: Guidelines = DEFAULT_GUIDELINES, ac
       list.push(item);
 
       return {
-        list: list
+        list: list,
+        showHighlight: showHighlight,
+        size: size,
+        position: position
       };
     }
     case GUIDELINE_REMOVE_ITEM: {
@@ -21,7 +24,10 @@ export function guidelineReducer(guidelines: Guidelines = DEFAULT_GUIDELINES, ac
       list.splice(list.indexOf(item), 1);
 
       return {
-        list: list
+        list: list,
+        showHighlight: showHighlight,
+        size: size,
+        position: position
       };
     }
     ///
@@ -39,25 +45,27 @@ export function guidelineReducer(guidelines: Guidelines = DEFAULT_GUIDELINES, ac
           ...list.slice(0, list.indexOf(item)),
           modifyOneOf(list[list.indexOf(item)]),
           ...list.slice(list.indexOf(item) + 1)
-        ]
+        ],
+        showHighlight: showHighlight,
+        size: size,
+        position: position
       };
     }
     case ACTIONABLE_SHOW_INDICATOR:{
-      const {item, size, position} = action.payload;
-      const modifyOneOf = (item: GuidelineItem) => {
-        return {
-          ...item,
-          showHighlight: true,
-          size: size,
-          position: position
-        };
-      };
+      const {size, position} = action.payload;
       return {
-        list: [
-          ...list.slice(0, list.indexOf(item)),
-          modifyOneOf(list[list.indexOf(item)]),
-          ...list.slice(list.indexOf(item) + 1)
-        ]
+        list: list,
+        showHighlight: true,
+        size: size,
+        position: position
+      };
+    }
+    case ACTIONABLE_HIDE_INDICATOR: {
+      return {
+        list: list,
+        showHighlight: false,
+        size: size,
+        position: position
       };
     }
   }

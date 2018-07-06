@@ -16,21 +16,22 @@ $guideline-margin: 8px;
   width: calc(100% - $guideline-margin);
   max-height: $guide-height;
   margin: $guideline-margin;
+  border-radius: $pill-radius;
 
   margin-bottom: 4px;
   padding: 4px;
   overflow: hidden;
 
-  transition: max-height 0.5s ease-in-out, outline-width 0.1s ease;
+  transition: max-height 0.5s ease-in-out, box-shadow 0.1s ease;
 
   animation-name: appear;
   animation-timing-function: ease-in;
   animation-duration: 1.25s;
 
-  box-shadow: 0 0 10px rgba(0,0,0,0.2);
+  box-shadow: 0 0 7px rgba(0,0,0,0.2);
 
   &:hover{
-    outline: 3px solid rgb(255, 87, 151);
+    box-shadow: 0 0 0 3px rgb(255, 87, 151);
   }
 }
 
