@@ -84,7 +84,8 @@ export const GuidePane = connect(
 //TODO: make this process more systematic
 //1) every guideline must have their own id
 export function guideActionShelf(props: EncodingShelfProps, fieldDefs: ShelfFieldDef, type: string) {
-  let domain = props.schema.domain({field: fieldDefs.field.toString()});
+  let domain;
+  if(fieldDefs != null) domain = props.schema.domain({field: fieldDefs.field.toString()});
 
   switch (type) {
     case SPEC_FIELD_ADD:
