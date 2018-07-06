@@ -17,6 +17,7 @@ $guideline-margin: 8px;
   max-height: $guide-height;
   margin: $guideline-margin;
   border-radius: $pill-radius;
+  border: 1px solid rgb(206, 206, 206);
 
   margin-bottom: 4px;
   padding: 4px;
@@ -28,10 +29,10 @@ $guideline-margin: 8px;
   animation-timing-function: ease-in;
   animation-duration: 1.25s;
 
-  box-shadow: 0 0 7px rgba(0,0,0,0.2);
+  box-shadow: 0 0 7px rgba(0,0,0,0.1);
 
   &:hover{
-    box-shadow: 0 0 7px rgba(0,0,0,0.6);
+    box-shadow: 0 0 12px 0 rgba(0,0,0,0.2);
     // box-shadow: 0 0 0 3px rgb(255, 87, 151);
   }
 }
