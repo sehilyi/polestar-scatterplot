@@ -46,9 +46,11 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
             <span styleName={guideState == "WARN" ? "guide-title" : guideState == "DONE" ? "guide-title-done" : "guide-title-ignore"}>{this.props.item.title}</span>
           </div>
           <span styleName="decision-button">
-            <a onClick={this.onOpenGuide}>
-              <i className="fa fa-caret-down" styleName="fa-gray" aria-hidden="true" />
-            </a>
+            {guideState != "IGNORE" ?
+              <a onClick={this.onOpenGuide}>
+                <i className="fa fa-caret-down" styleName="fa-gray" aria-hidden="true" />
+              </a>
+              : null}
             {guideState != "DONE" ?
               <a onClick={this.onIgnore}>
                 <i className="fa fa-eye-slash" styleName="fa-gray" aria-hidden="true" />
