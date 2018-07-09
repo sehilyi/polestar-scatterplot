@@ -12,7 +12,7 @@ import {
   SPEC_FUNCTION_ADD_WILDCARD, SPEC_FUNCTION_DISABLE_WILDCARD,
   SPEC_FUNCTION_REMOVE_WILDCARD
 } from '../../actions/shelf';
-import {SPEC_FIELD_NESTED_PROP_CHANGE, SPEC_FIELD_PROP_CHANGE, SpecFieldAutoAdd, SPEC_COLOR_SCALE_SPECIFIED} from '../../actions/shelf/spec';
+import {SPEC_FIELD_NESTED_PROP_CHANGE, SPEC_FIELD_PROP_CHANGE, SpecFieldAutoAdd, SPEC_COLOR_SCALE_SPECIFIED, SPEC_COLOR_TRANSFORM_SPECIFIED} from '../../actions/shelf/spec';
 import {isWildcardChannelId} from '../../models';
 import {ShelfAnyEncodingDef, ShelfFieldDef, ShelfId, ShelfUnitSpec} from '../../models/shelf';
 import {sortFunctions} from '../../models/shelf';
@@ -21,6 +21,7 @@ import {DEFAULT_SHELF_UNIT_SPEC, fromSpecQuery} from '../../models/shelf/spec';
 import {insertItemToArray, modifyItemInArray, removeItemFromArray} from '../util';
 import {COLOR} from 'vega-lite/build/src/channel';
 import {Scale} from 'vega-lite/build/src/scale';
+import {Transform} from 'vega-lite/build/src/transform';
 
 export function shelfSpecFieldAutoAddReducer(
   shelfSpec: Readonly<ShelfUnitSpec>, action: SpecFieldAutoAdd, schema: Schema
@@ -92,6 +93,11 @@ export function shelfSpecReducer(
     case SPEC_COLOR_SCALE_SPECIFIED: {
       const {fieldDef} = action.payload;
       return addScaleToColor(shelfSpec, fieldDef);
+    }
+
+    case SPEC_COLOR_TRANSFORM_SPECIFIED: {
+      const {fieldDef, transform} = action.payload;
+      return addTransformAndNewColor(shelfSpec, fieldDef, transform);
     }
 
     case SPEC_FIELD_PROP_CHANGE: {
@@ -222,6 +228,17 @@ function addEncoding(shelf: Readonly<ShelfUnitSpec>, shelfId: ShelfId, fieldDef:
 function addScaleToColor(shelf: Readonly<ShelfUnitSpec>, fieldDef: ShelfFieldDef) {
   return {
     ...shelf,
+    encoding: {
+      ...shelf.encoding,
+      [COLOR]: fieldDef
+    }
+  };
+}
+
+function addTransformAndNewColor(shelf: Readonly<ShelfUnitSpec>, fieldDef: ShelfFieldDef, transform: Transform) {
+  return {
+    ...shelf,
+    transform: transform,
     encoding: {
       ...shelf.encoding,
       [COLOR]: fieldDef

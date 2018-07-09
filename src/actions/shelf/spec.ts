@@ -4,6 +4,7 @@ import {ShelfFieldDef, ShelfFunction, ShelfId, ShelfMark} from '../../models';
 import {Action} from '../index';
 import {PlainReduxAction, ReduxAction} from '../redux-action';
 import {Scale} from 'vega-lite/build/src/scale';
+import {Transform} from 'vega-lite/build/src/transform';
 
 export type SpecAction =
   SpecClear |
@@ -17,7 +18,7 @@ export type SpecEncodingAction = SpecFieldAdd | SpecFieldAutoAdd |
   SpecFunctionAddWildcard | SpecFunctionRemoveWildcard |
   SpecFunctionDisableWildcard | SpecFunctionEnableWildcard |
   SpecLoad |
-  SpecColorScaleSpecified;
+  SpecColorScaleSpecified | SpecColorTransformSpecified;
 
 export const SPEC_CLEAR = 'SPEC_CLEAR';
 export type SpecClear = PlainReduxAction<typeof SPEC_CLEAR>;
@@ -36,6 +37,12 @@ export type SpecFieldAdd = ReduxAction<typeof SPEC_FIELD_ADD, {
 
 export const SPEC_COLOR_SCALE_SPECIFIED = 'SPEC_COLOR_SCALE_SPECIFIED';
 export type SpecColorScaleSpecified = ReduxAction<typeof SPEC_COLOR_SCALE_SPECIFIED, {
+  fieldDef: ShelfFieldDef;
+}>;
+
+export const SPEC_COLOR_TRANSFORM_SPECIFIED = 'SPEC_COLOR_TRANSFORM_SPECIFIED';
+export type SpecColorTransformSpecified = ReduxAction<typeof SPEC_COLOR_TRANSFORM_SPECIFIED, {
+  transform: Transform;
   fieldDef: ShelfFieldDef;
 }>;
 
@@ -124,6 +131,7 @@ export const SPEC_ACTION_TYPE_INDEX: {[k in SpecAction['type']]: 1} = {
 
   SPEC_FIELD_ADD: 1,
   SPEC_COLOR_SCALE_SPECIFIED: 1,
+  SPEC_COLOR_TRANSFORM_SPECIFIED: 1,
   SPEC_FIELD_AUTO_ADD: 1,
   SPEC_FIELD_MOVE: 1,
   SPEC_FIELD_PROP_CHANGE: 1,

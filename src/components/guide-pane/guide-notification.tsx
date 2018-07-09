@@ -122,6 +122,8 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
         item: this.props.item
       }
     });
+    const {guideState} = this.props.item;
+    this.setState({isExpanded: guideState == "WARN" ? false : this.state.isExpanded});
   }
 }
 

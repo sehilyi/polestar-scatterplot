@@ -5,10 +5,11 @@ import * as styles from './actionable-category.scss';
 import {DateTime} from 'vega-lite/build/src/datetime';
 import {ShelfUnitSpec, Schema} from '../../../models';
 import {Field} from '../../field';
-import {ActionHandler, ShelfAction, SpecAction, SPEC_COLOR_SCALE_SPECIFIED} from '../../../actions';
+import {ActionHandler, ShelfAction, SpecAction, SPEC_COLOR_SCALE_SPECIFIED, SPEC_COLOR_TRANSFORM_SPECIFIED} from '../../../actions';
 import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction} from '../../../actions/guidelines';
 import {GuidelineItem} from '../../../models/guidelines';
 import {insertItemToArray, removeItemFromArray} from '../../../reducers/util';
+import {LookupTransform, LookupData} from 'vega-lite/build/src/transform';
 
 export interface ActionableCategoryProps extends ActionHandler<GuidelineAction | SpecAction> {
   item: GuidelineItem;
@@ -121,7 +122,24 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
       payload: {
         fieldDef: fieldDef
       }
-    })
+    });
+    // const newData = this.getNewCategory(selected);
+    // const lookupData: LookupData = {
+    //   data: {values: newData},
+    //   key: 'from',
+    //   fields: ['to']
+    // }
+    // const transform: LookupTransform = {
+    //   lookup: field,
+    //   from: lookupData
+    // }
+    // handleAction({
+    //   type: SPEC_COLOR_TRANSFORM_SPECIFIED,
+    //   payload: {
+    //     transform: transform,
+    //     fieldDef: fieldDef
+    //   }
+    // });
   }
 
   //TODO: Any better algorithm for this?
@@ -135,6 +153,14 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
       if (round >= p.length - 1) round = 0;
     }
     return r;
+  }
+
+  private getNewCategory(selected: string[] | number[] | boolean[] | DateTime[]): any[] {
+    const newC = [];
+    for (let i of this.props.domain) {
+      newC.push((((selected as any[]).indexOf(i) === -1) ? {from: i, to: "Others"} : {from: i, to: i}));
+    }
+    return newC;
   }
 
   private toggleCheckbox(option: string | number | boolean | DateTime) {
