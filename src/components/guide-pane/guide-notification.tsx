@@ -7,11 +7,12 @@ import * as done from '../../../images/done.png';
 import * as ignore from '../../../images/ignore.png';
 import {GuidelineItem} from '../../models/guidelines';
 import {ActionHandler, ShelfAction} from '../../actions';
-import {GUIDELINE_REMOVE_ITEM, GuidelineAction, GUIDELINE_SHOW_INDICATOR, GUIDELINE_HIDE_INDICATOR, GUIDELINE_TOGGLE_IGNORE_ITEM} from '../../actions/guidelines';
+import {GUIDELINE_REMOVE_ITEM, GuidelineAction, GUIDELINE_SHOW_INDICATOR, GUIDELINE_HIDE_INDICATOR, GUIDELINE_TOGGLE_IGNORE_ITEM, GUIDELINE_TOGGLE_ISEXPANDED} from '../../actions/guidelines';
 import {ActionableCategory} from './actionable-pane/actionable-category';
 import {Schema, ShelfUnitSpec, DEFAULT_SHELF_UNIT_SPEC} from '../../models';
 import {InlineData} from 'vega-lite/build/src/data';
 import {FacetedCompositeUnitSpec} from 'vega-lite/build/src/spec';
+import {Themes} from '../../models/theme/theme';
 
 export interface GuideNotificationProps extends ActionHandler<GuidelineAction> {
   item: GuidelineItem;
@@ -22,14 +23,14 @@ export interface GuideNotificationProps extends ActionHandler<GuidelineAction> {
   //preveiw
   data: InlineData;
   mainSpec: FacetedCompositeUnitSpec;
+  theme: Themes;
 }
 
-export class GuideNotificationBase extends React.PureComponent<GuideNotificationProps, any> {
+export class GuideNotificationBase extends React.PureComponent<GuideNotificationProps, {}> {
 
   constructor(props: GuideNotificationProps) {
     super(props);
 
-    this.state = {isExpanded: false};
     this.onShowIndicator = this.onShowIndicator.bind(this);
     this.onHideIndicator = this.onHideIndicator.bind(this);
     this.onOpenGuide = this.onOpenGuide.bind(this);
@@ -37,10 +38,10 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
   }
 
   public render() {
-    const {guideState} = this.props.item;
+    const {isExpanded, guideState} = this.props.item;
 
     return (
-      <div styleName={this.state.isExpanded ? "expanded" : "guideline"}
+      <div styleName={isExpanded ? "expanded" : "guideline"}
         onMouseEnter={this.onShowIndicator}
         onMouseLeave={this.onHideIndicator}>
         <div styleName="guide-header">
@@ -78,7 +79,7 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
   private renderInteractive() {
     switch (this.props.item.id) {
       case "GUIDELINE_TOO_MANY_CATEGORIES":
-        const {item, schema, spec, handleAction, data, mainSpec} = this.props;
+        const {item, schema, spec, handleAction, data, mainSpec, theme} = this.props;
         let domain = schema.domain({field: spec.encoding.color.field.toString()})
         return (
           <ActionableCategory
@@ -90,6 +91,7 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
 
             data={data}
             mainSpec={mainSpec}
+            theme={theme}
           />
         );
     }
@@ -124,7 +126,14 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
     })
   }
   private onOpenGuide() {
-    this.setState({isExpanded: !this.state.isExpanded});
+    const {item} = this.props;
+    this.props.handleAction({
+      type: GUIDELINE_TOGGLE_ISEXPANDED,
+      payload: {
+        item: item
+      }
+    });
+    // this.setState({isExpanded: !this.state.isExpanded});
   }
   private onIgnore() {
     this.props.handleAction({
@@ -133,8 +142,8 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
         item: this.props.item
       }
     });
-    const {guideState} = this.props.item;
-    this.setState({isExpanded: guideState == "WARN" ? false : this.state.isExpanded});
+    const {isExpanded, guideState} = this.props.item;
+    this.setState({isExpanded: guideState == "WARN" ? false : isExpanded});
   }
 }
 

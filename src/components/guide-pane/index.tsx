@@ -5,7 +5,7 @@ import * as styles from "./guide-pane.scss"
 import * as CSSModules from 'react-css-modules';
 import {GuideNotification} from "./guide-notification";
 import {GuidelineItem, Guidelines, GUIDELINE_TOO_MANY_CATEGORIES} from "../../models/guidelines";
-import {selectGuidelines, selectDataset, selectShelfSpec, selectFilteredData, selectMainSpec} from "../../selectors";
+import {selectGuidelines, selectDataset, selectShelfSpec, selectFilteredData, selectMainSpec, selectTheme} from "../../selectors";
 import {ActionHandler, createDispatchHandler, SPEC_FIELD_ADD, SPEC_FIELD_MOVE, SPEC_FIELD_REMOVE, ShelfAction, SpecAction, LogAction} from "../../actions";
 import {Action} from "../../actions/index";
 import {GuidelineAction, GUIDELINE_ADD_ITEM, GUIDELINE_REMOVE_ITEM} from "../../actions/guidelines";
@@ -13,6 +13,7 @@ import {EncodingShelfProps} from "../../components/encoding-pane/encoding-shelf"
 import {COLOR} from "vega-lite/build/src/channel";
 import {InlineData} from "vega-lite/build/src/data";
 import {FacetedCompositeUnitSpec} from "vega-lite/build/src/spec";
+import {Themes} from "../../models/theme/theme";
 
 export interface GuidePaneProps extends ActionHandler<Action> {
   guidelines: Guidelines;
@@ -23,6 +24,7 @@ export interface GuidePaneProps extends ActionHandler<Action> {
   //for preview
   data: InlineData;
   mainSpec: FacetedCompositeUnitSpec;
+  theme: Themes;
 }
 
 export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
@@ -62,7 +64,7 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
   private guideNotification(gs: GuidelineItem) {
 
     const {id} = gs;
-    const {handleAction, schema, spec, data, mainSpec} = this.props;
+    const {handleAction, schema, spec, data, mainSpec, theme} = this.props;
     if (mainSpec) {
       return (
         <GuideNotification
@@ -74,6 +76,8 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
 
           data={data}
           mainSpec={mainSpec}
+          theme={theme}
+
         />
       );
     } else {
@@ -95,6 +99,7 @@ export const GuidePane = connect(
       //for preview
       data: selectFilteredData(state),
       mainSpec: selectMainSpec(state),
+      theme: selectTheme(state),
     };
   },
   createDispatchHandler<GuidelineAction | SpecAction | LogAction>()

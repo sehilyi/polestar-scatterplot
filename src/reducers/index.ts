@@ -89,7 +89,7 @@ import {themeReducer} from './theme';
 
 import {modifyItemInArray} from './util';
 import {guidelineReducer} from './guidelines';
-import {GUIDELINE_ADD_ITEM, GUIDELINE_REMOVE_ITEM, ACTIONABLE_SELECT_CATEGORIES, GUIDELINE_SHOW_INDICATOR, GUIDELINE_HIDE_INDICATOR, GUIDELINE_TOGGLE_IGNORE_ITEM} from '../actions/guidelines';
+import {GUIDELINE_ADD_ITEM, GUIDELINE_REMOVE_ITEM, ACTIONABLE_SELECT_CATEGORIES, GUIDELINE_SHOW_INDICATOR, GUIDELINE_HIDE_INDICATOR, GUIDELINE_TOGGLE_IGNORE_ITEM, GUIDELINE_TOGGLE_ISEXPANDED} from '../actions/guidelines';
 
 /**
  * Whether to reset a particular property of the persistent state during RESET action
@@ -101,7 +101,7 @@ const persistentStateToReset: ResetIndex<PersistentState> = {
   relatedViews: true,
   shelfPreview: true,
   theme: false,
-  guidelines: true
+  guidelines: false,
 };
 
 export const persistentReducer = makeResetReducer(
@@ -232,6 +232,7 @@ export const USER_ACTIONS: ActionType[] = [
   GUIDELINE_TOGGLE_IGNORE_ITEM,
   GUIDELINE_SHOW_INDICATOR,
   GUIDELINE_HIDE_INDICATOR,
+  GUIDELINE_TOGGLE_ISEXPANDED,
   ACTIONABLE_SELECT_CATEGORIES,
 ];
 

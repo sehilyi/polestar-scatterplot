@@ -15,6 +15,8 @@ import {VegaLite} from '../../vega-lite';
 import {InlineData} from 'vega-lite/build/src/data';
 import {FacetedCompositeUnitSpec} from 'vega-lite/build/src/spec';
 import {Logger} from '../../util/util.logger';
+import {Plot} from '../../plot';
+import {Themes} from '../../../models/theme/theme';
 
 export interface ActionableCategoryProps extends ActionHandler<GuidelineAction | SpecAction | LogAction> {
   item: GuidelineItem;
@@ -25,6 +27,7 @@ export interface ActionableCategoryProps extends ActionHandler<GuidelineAction |
   //preveiw
   data: InlineData;
   mainSpec: FacetedCompositeUnitSpec;
+  theme: Themes;
 }
 
 export interface ActionableCategoryState {
@@ -101,17 +104,28 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
   }
 
   private renderFilterCategoriesPreview() {
-    const {mainSpec, data} = this.props;
-    console.log(mainSpec);
+    const {mainSpec, data, handleAction} = this.props;
+    let previewSpec = (JSON.parse(JSON.stringify(mainSpec)));
     return (
-      <VegaLite spec={mainSpec} logger={this.plotLogger} data={data} />
+      // <Plot
+      //     data={data}
+      //     filters={[]} /* preview specs already have filters included */
+      //     handleAction={handleAction}
+      //     isPlotListItem={true}
+      //     showBookmarkButton={true}
+      //     showSpecifyButton={true}
+      //     spec={mainSpec}
+      //     theme={this.props.theme}
+      //   />
+      <VegaLite spec={previewSpec} logger={this.plotLogger} data={data} />
     );
   }
 
   private renderSelectCategoriesPreview() {
     const {mainSpec, data} = this.props;
+    let previewSpec = (JSON.parse(JSON.stringify(mainSpec)));
     return (
-      <VegaLite spec={mainSpec} logger={this.plotLogger} data={data} />
+      <VegaLite spec={previewSpec} logger={this.plotLogger} data={data} />
     );
   }
 
@@ -229,7 +243,6 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     const r = [];
     let round = 0;
     for (let i of this.props.domain) {
-      console.log(selected + "/" + i);
       r.push((((selected as any[]).indexOf(i) !== -1) ? p[round++] : p[p.length - 1]));
       if (round >= p.length - 1) round = 0;
     }

@@ -24,9 +24,10 @@ import * as styles from './plot.scss';
 import {Themes} from '../../models/theme/theme';
 import {themeDict} from '../../models/theme/theme';
 import {Guidelines} from '../../models/guidelines';
+import {GuidelineAction} from '../../actions/guidelines';
 
 export interface PlotProps extends ActionHandler<
-  ShelfAction | BookmarkAction | ShelfPreviewAction | ResultAction | LogAction
+  ShelfAction | BookmarkAction | ShelfPreviewAction | ResultAction | LogAction | GuidelineAction
   > {
   data: InlineData;
   filters: ShelfFilter[];

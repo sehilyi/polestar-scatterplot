@@ -147,9 +147,6 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     try {
       let spec = vl.compile(vlSpec, logger).spec;
       const runtime = vega.parse(spec, vlSpec.config);// vlConfig);
-      console.log(spec);
-      console.log(vlSpec);
-      console.log(runtime);
       this.view = new vega.View(runtime)
         .logLevel(vega.Warn)
         .initialize(this.refs[CHART_REF] as any)
@@ -187,7 +184,6 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
 
   private getChartSize(): {width: number, height: number} {
     const chart = this.refs[CHART_REF] as HTMLElement;
-    console.log(chart);
     const chartContainer = chart.querySelector(this.props.renderer || 'svg');
     const width = Number(chartContainer.getAttribute('width'));
     const height = Number(chartContainer.getAttribute('height'));
