@@ -133,7 +133,6 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
         item: item
       }
     });
-    // this.setState({isExpanded: !this.state.isExpanded});
   }
   private onIgnore() {
     this.props.handleAction({
@@ -142,8 +141,6 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
         item: this.props.item
       }
     });
-    const {isExpanded, guideState} = this.props.item;
-    this.setState({isExpanded: guideState == "WARN" ? false : isExpanded});
   }
 }
 
