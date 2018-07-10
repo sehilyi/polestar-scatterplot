@@ -3,7 +3,7 @@ import * as CSSModules from 'react-css-modules';
 
 import * as styles from './actionable-category.scss';
 import {DateTime} from 'vega-lite/build/src/datetime';
-import {ShelfUnitSpec, Schema} from '../../../models';
+import {ShelfUnitSpec, Schema, toTransforms} from '../../../models';
 import {Field} from '../../field';
 import {ActionHandler, ShelfAction, SpecAction, SPEC_COLOR_SCALE_SPECIFIED, SPEC_COLOR_TRANSFORM_SPECIFIED, SPEC_FIELD_REMOVE, LogAction} from '../../../actions';
 import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction} from '../../../actions/guidelines';
@@ -17,6 +17,7 @@ import {FacetedCompositeUnitSpec} from 'vega-lite/build/src/spec';
 import {Logger} from '../../util/util.logger';
 import {Plot} from '../../plot';
 import {Themes} from '../../../models/theme/theme';
+import {OneOfFilter} from 'vega-lite/build/src/filter';
 
 export interface ActionableCategoryProps extends ActionHandler<GuidelineAction | SpecAction | LogAction> {
   item: GuidelineItem;
@@ -123,7 +124,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
       }
     }
     ///
-    console.log(previewSpec);
+
     return (
       <VegaLite spec={previewSpec} logger={this.plotLogger} data={data} />
     );
@@ -133,19 +134,21 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     const {mainSpec, data} = this.props;
     let previewSpec = (JSON.parse(JSON.stringify(mainSpec))) as FacetedCompositeUnitSpec;
     ///temp
-    let selected: any[] = [];
+    let oneOf: any[] = [];
     const {domain, schema, spec} = this.props;
     let field = spec.encoding.color.field.toString();
-    const fieldSchema = schema.fieldSchema(field);
-    selected.push(domain[0]);
-    selected.push(domain[1]);
-    selected.push(domain[2]);
-    console.log(previewSpec.transform);
-    previewSpec.transform.push({filter: {
+    oneOf.push(domain[0]);
+    oneOf.push(domain[1]);
+    oneOf.push(domain[2]);
+    let newFilter: OneOfFilter = {
       field,
-      oneOf: selected
-    }});
-
+      oneOf
+    }
+    const {transform} = previewSpec;
+    const newTransform = (transform || []).concat(toTransforms([newFilter]));
+    previewSpec.transform = newTransform;
+    console.log(previewSpec);
+    ///
     return (
       <VegaLite spec={previewSpec} logger={this.plotLogger} data={data} />
     );
