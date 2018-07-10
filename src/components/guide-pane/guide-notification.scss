@@ -39,7 +39,7 @@ $guideline-margin: 8px;
 
 .expanded {
   @extend .guideline;
-  max-height: 500px;
+  max-height: 900px;
   height: 100%;
 }
 
@@ -75,6 +75,7 @@ $guideline-margin: 8px;
 
 .guide-label{
   flex-grow: 1;
+  overflow: hidden;
 }
 
 // TODO: add common prop for category and title

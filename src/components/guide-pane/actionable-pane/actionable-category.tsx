@@ -9,7 +9,7 @@ import {ActionHandler, ShelfAction, SpecAction, SPEC_COLOR_SCALE_SPECIFIED, SPEC
 import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction} from '../../../actions/guidelines';
 import {GuidelineItem} from '../../../models/guidelines';
 import {insertItemToArray, removeItemFromArray} from '../../../reducers/util';
-import {LookupTransform, LookupData} from 'vega-lite/build/src/transform';
+import {LookupTransform, LookupData, Transform} from 'vega-lite/build/src/transform';
 import {COLOR} from 'vega-lite/build/src/channel';
 import {VegaLite} from '../../vega-lite';
 import {InlineData} from 'vega-lite/build/src/data';
@@ -103,27 +103,49 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     this.vegaLiteWrapper = ref;
   }
 
-  private renderFilterCategoriesPreview() {
+  private renderSelectCategoriesPreview() {
     const {mainSpec, data, handleAction} = this.props;
-    let previewSpec = (JSON.parse(JSON.stringify(mainSpec)));
+    let previewSpec = (JSON.parse(JSON.stringify(mainSpec))) as FacetedCompositeUnitSpec;
+    ///temp
+    let selected: any[] = [];
+    const {domain, schema, spec} = this.props;
+    let field = spec.encoding.color.field.toString();
+    const fieldSchema = schema.fieldSchema(field);
+    selected.push(domain[0]);
+    selected.push(domain[1]);
+    selected.push(domain[2]);
+    previewSpec.encoding.color = {
+      field,
+      type: fieldSchema.vlType,
+      scale: {
+        domain: domain,
+        range: this.getRange(selected)
+      }
+    }
+    ///
+    console.log(previewSpec);
     return (
-      // <Plot
-      //     data={data}
-      //     filters={[]} /* preview specs already have filters included */
-      //     handleAction={handleAction}
-      //     isPlotListItem={true}
-      //     showBookmarkButton={true}
-      //     showSpecifyButton={true}
-      //     spec={mainSpec}
-      //     theme={this.props.theme}
-      //   />
       <VegaLite spec={previewSpec} logger={this.plotLogger} data={data} />
     );
   }
 
-  private renderSelectCategoriesPreview() {
+  private renderFilterCategoriesPreview() {
     const {mainSpec, data} = this.props;
-    let previewSpec = (JSON.parse(JSON.stringify(mainSpec)));
+    let previewSpec = (JSON.parse(JSON.stringify(mainSpec))) as FacetedCompositeUnitSpec;
+    ///temp
+    let selected: any[] = [];
+    const {domain, schema, spec} = this.props;
+    let field = spec.encoding.color.field.toString();
+    const fieldSchema = schema.fieldSchema(field);
+    selected.push(domain[0]);
+    selected.push(domain[1]);
+    selected.push(domain[2]);
+    console.log(previewSpec.transform);
+    previewSpec.transform.push({filter: {
+      field,
+      oneOf: selected
+    }});
+
     return (
       <VegaLite spec={previewSpec} logger={this.plotLogger} data={data} />
     );

@@ -1,11 +1,11 @@
 import React = require("react");
 import {connect} from "react-redux";
-import {State, Schema, ShelfUnitSpec, ShelfFieldDef} from "../../models";
+import {State, Schema, ShelfUnitSpec, ShelfFieldDef, ShelfFilter, toTransforms} from "../../models";
 import * as styles from "./guide-pane.scss"
 import * as CSSModules from 'react-css-modules';
 import {GuideNotification} from "./guide-notification";
 import {GuidelineItem, Guidelines, GUIDELINE_TOO_MANY_CATEGORIES} from "../../models/guidelines";
-import {selectGuidelines, selectDataset, selectShelfSpec, selectFilteredData, selectMainSpec, selectTheme} from "../../selectors";
+import {selectGuidelines, selectDataset, selectShelfSpec, selectFilteredData, selectMainSpec, selectTheme, selectFilters} from "../../selectors";
 import {ActionHandler, createDispatchHandler, SPEC_FIELD_ADD, SPEC_FIELD_MOVE, SPEC_FIELD_REMOVE, ShelfAction, SpecAction, LogAction} from "../../actions";
 import {Action} from "../../actions/index";
 import {GuidelineAction, GUIDELINE_ADD_ITEM, GUIDELINE_REMOVE_ITEM} from "../../actions/guidelines";
@@ -25,6 +25,7 @@ export interface GuidePaneProps extends ActionHandler<Action> {
   data: InlineData;
   mainSpec: FacetedCompositeUnitSpec;
   theme: Themes;
+  filters: ShelfFilter[];
 }
 
 export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
@@ -65,6 +66,7 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
 
     const {id} = gs;
     const {handleAction, schema, spec, data, mainSpec, theme} = this.props;
+
     if (mainSpec) {
       return (
         <GuideNotification
@@ -75,7 +77,7 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
           handleAction={handleAction}
 
           data={data}
-          mainSpec={mainSpec}
+          mainSpec={this.specWithFilter}
           theme={theme}
 
         />
@@ -85,6 +87,15 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
         <span key={id}></span>
       );
     }
+  }
+  private get specWithFilter() {
+    const {mainSpec, filters} = this.props;
+    // console.log(filters);
+    const transform = (mainSpec.transform || []).concat(toTransforms(filters));
+    return {
+      ...mainSpec,
+      ...(transform.length > 0 ? {transform} : {})
+    };
   }
 }
 
@@ -100,6 +111,7 @@ export const GuidePane = connect(
       data: selectFilteredData(state),
       mainSpec: selectMainSpec(state),
       theme: selectTheme(state),
+      filters: selectFilters(state),
     };
   },
   createDispatchHandler<GuidelineAction | SpecAction | LogAction>()
