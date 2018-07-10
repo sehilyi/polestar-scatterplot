@@ -10,12 +10,18 @@ import {ActionHandler, ShelfAction} from '../../actions';
 import {GUIDELINE_REMOVE_ITEM, GuidelineAction, GUIDELINE_SHOW_INDICATOR, GUIDELINE_HIDE_INDICATOR, GUIDELINE_TOGGLE_IGNORE_ITEM} from '../../actions/guidelines';
 import {ActionableCategory} from './actionable-pane/actionable-category';
 import {Schema, ShelfUnitSpec, DEFAULT_SHELF_UNIT_SPEC} from '../../models';
+import {InlineData} from 'vega-lite/build/src/data';
+import {FacetedCompositeUnitSpec} from 'vega-lite/build/src/spec';
 
 export interface GuideNotificationProps extends ActionHandler<GuidelineAction> {
   item: GuidelineItem;
 
   schema: Schema;
   spec: ShelfUnitSpec;
+
+  //preveiw
+  data: InlineData;
+  mainSpec: FacetedCompositeUnitSpec;
 }
 
 export class GuideNotificationBase extends React.PureComponent<GuideNotificationProps, any> {
@@ -72,7 +78,7 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
   private renderInteractive() {
     switch (this.props.item.id) {
       case "GUIDELINE_TOO_MANY_CATEGORIES":
-        const {item, schema, spec, handleAction} = this.props;
+        const {item, schema, spec, handleAction, data, mainSpec} = this.props;
         let domain = schema.domain({field: spec.encoding.color.field.toString()})
         return (
           <ActionableCategory
@@ -81,6 +87,9 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
             spec={spec}
             schema={schema}
             handleAction={handleAction}
+
+            data={data}
+            mainSpec={mainSpec}
           />
         );
     }

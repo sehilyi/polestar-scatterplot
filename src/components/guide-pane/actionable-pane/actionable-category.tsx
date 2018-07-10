@@ -5,17 +5,26 @@ import * as styles from './actionable-category.scss';
 import {DateTime} from 'vega-lite/build/src/datetime';
 import {ShelfUnitSpec, Schema} from '../../../models';
 import {Field} from '../../field';
-import {ActionHandler, ShelfAction, SpecAction, SPEC_COLOR_SCALE_SPECIFIED, SPEC_COLOR_TRANSFORM_SPECIFIED} from '../../../actions';
+import {ActionHandler, ShelfAction, SpecAction, SPEC_COLOR_SCALE_SPECIFIED, SPEC_COLOR_TRANSFORM_SPECIFIED, SPEC_FIELD_REMOVE, LogAction} from '../../../actions';
 import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction} from '../../../actions/guidelines';
 import {GuidelineItem} from '../../../models/guidelines';
 import {insertItemToArray, removeItemFromArray} from '../../../reducers/util';
 import {LookupTransform, LookupData} from 'vega-lite/build/src/transform';
+import {COLOR} from 'vega-lite/build/src/channel';
+import {VegaLite} from '../../vega-lite';
+import {InlineData} from 'vega-lite/build/src/data';
+import {FacetedCompositeUnitSpec} from 'vega-lite/build/src/spec';
+import {Logger} from '../../util/util.logger';
 
-export interface ActionableCategoryProps extends ActionHandler<GuidelineAction | SpecAction> {
+export interface ActionableCategoryProps extends ActionHandler<GuidelineAction | SpecAction | LogAction> {
   item: GuidelineItem;
   domain: string[] | number[] | boolean[] | DateTime[];
   spec: ShelfUnitSpec;
   schema: Schema;
+
+  //preveiw
+  data: InlineData;
+  mainSpec: FacetedCompositeUnitSpec;
 }
 
 export interface ActionableCategoryState {
@@ -23,11 +32,17 @@ export interface ActionableCategoryState {
 }
 
 export class ActionableCategoryBase extends React.PureComponent<ActionableCategoryProps, ActionableCategoryState>{
+
+  private plotLogger: Logger;
+  private vegaLiteWrapper: HTMLElement;
+
   constructor(props: ActionableCategoryProps) {
     super(props);
     this.state = ({
       hideSearchBar: true
     });
+
+    this.plotLogger = new Logger(props.handleAction);
   }
 
   public render() {
@@ -40,15 +55,72 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     };
 
     return (
-      <div styleName='filter-shelf' key={'1'}>
-        <Field
-          draggable={false}
-          fieldDef={fieldDef}
-          caretShow={true}
-          isPill={true}
-        />
-        {this.renderCategorySelector()}
+      <div>
+        <div styleName="guide-previews">
+          <div styleName="guide-preview" ref={this.vegaLiteWrapperRefHandler} className="preview">
+            <a onClick={this.onFilterClick.bind(this)}>
+              {this.renderFilterCategoriesPreview()}
+              <i className="fa fa-filter" aria-hidden="true" />
+              {' '} Filter Categories
+            </a>
+          </div>
+          <div styleName="guide-preview" ref={this.vegaLiteWrapperRefHandler} className="preview">
+            <a>
+              {this.renderSelectCategoriesPreview()}
+              <i className="fa fa-hand-pointer-o" aria-hidden="true" />
+              {' '} Select Categories
+            </a>
+          </div>
+          <div styleName="guide-preview" ref={this.vegaLiteWrapperRefHandler} className="preview">
+            <a onClick={this.onRemoveField.bind(this)}>
+              {this.renderRemoveFieldPreview()}
+              <i className="fa fa-times" aria-hidden="true" />
+              {' '} Remove Field
+            </a>
+          </div>
+        </div>
+        <div styleName='filter-shelf' key={'1'} hidden>
+          <Field
+            draggable={false}
+            fieldDef={fieldDef}
+            caretShow={true}
+            isPill={true}
+          />
+          {this.renderCategorySelector()}
+        </div>
       </div>
+    );
+  }
+
+  private onFilterClick() {
+
+  }
+
+  private vegaLiteWrapperRefHandler = (ref: any) => {
+    this.vegaLiteWrapper = ref;
+  }
+
+  private renderFilterCategoriesPreview() {
+    const {mainSpec, data} = this.props;
+    console.log(mainSpec);
+    return (
+      <VegaLite spec={mainSpec} logger={this.plotLogger} data={data} />
+    );
+  }
+
+  private renderSelectCategoriesPreview() {
+    const {mainSpec, data} = this.props;
+    return (
+      <VegaLite spec={mainSpec} logger={this.plotLogger} data={data} />
+    );
+  }
+
+  private renderRemoveFieldPreview() {
+    const {mainSpec, data} = this.props;
+    let previewSpec = (JSON.parse(JSON.stringify(mainSpec)));
+    delete previewSpec.encoding.color;
+    return (
+      <VegaLite spec={previewSpec} logger={this.plotLogger} data={data} />
     );
   }
 
@@ -94,6 +166,15 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
         {oneOfFilter}
       </div>
     );
+  }
+
+  private onRemoveField() {
+    this.props.item.guideState = "IGNORE";
+    const {handleAction} = this.props;
+    handleAction({
+      type: SPEC_FIELD_REMOVE,
+      payload: {channel: COLOR}
+    });
   }
 
   protected categoryModifyScale(selected: string[] | number[] | boolean[] | DateTime[]) {

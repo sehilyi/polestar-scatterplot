@@ -19,7 +19,7 @@ export interface VegaLiteProps {
 
   data: InlineData;
 
-  theme: Themes;
+  theme?: Themes;
 
   viewRunAfter?: (view: vega.View) => any;
 }
@@ -142,7 +142,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     // };
     const {logger} = this.props;
     const vlSpec = this.props.spec;
-    const vlConfig = themeDict[this.props.theme.theme];
+    // const vlConfig = themeDict[this.props.theme.theme];
 
     try {
       let spec = vl.compile(vlSpec, logger).spec;
@@ -187,6 +187,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
 
   private getChartSize(): {width: number, height: number} {
     const chart = this.refs[CHART_REF] as HTMLElement;
+    console.log(chart);
     const chartContainer = chart.querySelector(this.props.renderer || 'svg');
     const width = Number(chartContainer.getAttribute('width'));
     const height = Number(chartContainer.getAttribute('height'));

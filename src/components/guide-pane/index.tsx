@@ -5,18 +5,24 @@ import * as styles from "./guide-pane.scss"
 import * as CSSModules from 'react-css-modules';
 import {GuideNotification} from "./guide-notification";
 import {GuidelineItem, Guidelines, GUIDELINE_TOO_MANY_CATEGORIES} from "../../models/guidelines";
-import {selectGuidelines, selectDataset, selectShelfSpec} from "../../selectors";
-import {ActionHandler, createDispatchHandler, SPEC_FIELD_ADD, SPEC_FIELD_MOVE, SPEC_FIELD_REMOVE, ShelfAction} from "../../actions";
+import {selectGuidelines, selectDataset, selectShelfSpec, selectFilteredData, selectMainSpec} from "../../selectors";
+import {ActionHandler, createDispatchHandler, SPEC_FIELD_ADD, SPEC_FIELD_MOVE, SPEC_FIELD_REMOVE, ShelfAction, SpecAction, LogAction} from "../../actions";
 import {Action} from "../../actions/index";
 import {GuidelineAction, GUIDELINE_ADD_ITEM, GUIDELINE_REMOVE_ITEM} from "../../actions/guidelines";
 import {EncodingShelfProps} from "../../components/encoding-pane/encoding-shelf";
 import {COLOR} from "vega-lite/build/src/channel";
+import {InlineData} from "vega-lite/build/src/data";
+import {FacetedCompositeUnitSpec} from "vega-lite/build/src/spec";
 
 export interface GuidePaneProps extends ActionHandler<Action> {
   guidelines: Guidelines;
 
   schema: Schema;
   spec: ShelfUnitSpec;
+
+  //for preview
+  data: InlineData;
+  mainSpec: FacetedCompositeUnitSpec;
 }
 
 export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
@@ -56,16 +62,25 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
   private guideNotification(gs: GuidelineItem) {
 
     const {id} = gs;
-    const {handleAction, schema, spec} = this.props;
-    return (
-      <GuideNotification
-        key={id}
-        item={gs}
-        schema={schema}
-        spec={spec}
-        handleAction={handleAction}
-      />
-    );
+    const {handleAction, schema, spec, data, mainSpec} = this.props;
+    if (mainSpec) {
+      return (
+        <GuideNotification
+          key={id}
+          item={gs}
+          schema={schema}
+          spec={spec}
+          handleAction={handleAction}
+
+          data={data}
+          mainSpec={mainSpec}
+        />
+      );
+    } else {
+      return (
+        <span key={id}></span>
+      );
+    }
   }
 }
 
@@ -76,9 +91,13 @@ export const GuidePane = connect(
 
       schema: selectDataset(state).schema,
       spec: selectShelfSpec(state),
+
+      //for preview
+      data: selectFilteredData(state),
+      mainSpec: selectMainSpec(state),
     };
   },
-  createDispatchHandler<GuidelineAction>()
+  createDispatchHandler<GuidelineAction | SpecAction | LogAction>()
 )(CSSModules(GuidePaneBase, styles));
 
 //TODO: make this process more systematic

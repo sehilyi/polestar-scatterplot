@@ -133,6 +133,11 @@
     margin: auto;
   }
 
+  .preview .chart, .preview .marks{
+    width: 100px !important;
+    height: 100px !important;
+  }
+
   // split-pane css
   .Resizer {
     opacity: .2;
