@@ -20,12 +20,9 @@ import * as styles from './encoding-shelf.scss';
 import {FieldCustomizer} from './field-customizer';
 import {FunctionPicker, FunctionPickerWildcardHandler} from './function-picker';
 import {CUSTOMIZABLE_ENCODING_CHANNELS} from './property-editor-schema';
-import {fieldDefs} from 'vega-lite/build/src/encoding';
-import {CHANNELS, COLOR} from 'vega-lite/build/src/channel';
 import {GUIDELINE_ADD_ITEM, GuidelineAction} from '../../actions/guidelines';
-import {GuidelineItem} from '../../models/guidelines';
-import {guideActionShelf} from '../guide-pane';
 import {RangeFilter, OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
+import {guideActionShelf} from '../guide-pane';
 
 /**
  * Props for react-dnd of EncodingShelf
@@ -38,7 +35,7 @@ export interface EncodingShelfDropTargetProps {
   item: Object;
 }
 
-export interface EncodingShelfPropsBase extends GuidelineListnerProps, ActionHandler<SpecEncodingAction | GuidelineAction> {
+export interface EncodingShelfPropsBase extends EncodingShelfGuidelineProps, ActionHandler<SpecEncodingAction | GuidelineAction> {
   id: ShelfId;
 
   fieldDef: ShelfFieldDef;
@@ -47,7 +44,7 @@ export interface EncodingShelfPropsBase extends GuidelineListnerProps, ActionHan
 }
 
 //TODO: this should move to guide-pane tsx eventually.
-export interface GuidelineListnerProps {
+export interface EncodingShelfGuidelineProps {
   filters: Array<RangeFilter | OneOfFilter>;
 }
 
@@ -280,7 +277,7 @@ const encodingShelfTarget: DropTargetSpec<EncodingShelfProps> = {
       default:
         throw new Error('Field dragged from unregistered source type to EncodingShelf');
     }
-    guideActionShelf(props, fieldDef, SPEC_FIELD_ADD);
+    guideActionShelf(this.props, fieldDef, SPEC_FIELD_REMOVE);
   }
 };
 

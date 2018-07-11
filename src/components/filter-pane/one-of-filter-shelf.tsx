@@ -5,13 +5,19 @@ import {OneOfFilter} from 'vega-lite/build/src/filter';
 import {FILTER_MODIFY_ONE_OF, FilterAction} from '../../actions';
 import {insertItemToArray, removeItemFromArray} from '../../reducers/util';
 import * as styles from './one-of-filter-shelf.scss';
+import {guideActionFilter} from '../guide-pane';
+import {ShelfFieldDef} from '../../models';
 
 
-export interface OneOfFilterShelfProps {
+export interface OneOfFilterShelfProps extends OneOfFilterShelfGuidelineProps {
   domain: string[] | number[] | boolean[] | DateTime[];
   filter: OneOfFilter;
   index: number;
   handleAction: (action: FilterAction) => void;
+}
+
+export interface OneOfFilterShelfGuidelineProps {
+  fieldDefs: ShelfFieldDef[];
 }
 
 export interface OneOfFilterShelfState {
@@ -59,10 +65,10 @@ export class OneOfFilterShelfBase extends React.PureComponent<OneOfFilterShelfPr
           </span>
           {this.state.hideSearchBar ?
             null :
-            <input type='text' onChange={this.onSearch.bind(this)} autoFocus={true}/>
+            <input type='text' onChange={this.onSearch.bind(this)} autoFocus={true} />
           }
           <a styleName='search' onClick={this.onClickSearch.bind(this)}>
-            <i className='fa fa-search'/>
+            <i className='fa fa-search' />
           </a>
         </div>
         {oneOfFilter}
@@ -79,8 +85,7 @@ export class OneOfFilterShelfBase extends React.PureComponent<OneOfFilterShelfPr
         oneOf
       }
     });
-
-
+    guideActionFilter(this.props, FILTER_MODIFY_ONE_OF);
   }
 
   private toggleCheckbox(option: string | number | boolean | DateTime) {

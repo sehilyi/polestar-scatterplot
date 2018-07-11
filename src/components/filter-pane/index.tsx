@@ -18,6 +18,7 @@ import {Field} from '../field/index';
 import * as styles from './filter-pane.scss';
 import {OneOfFilterShelf} from './one-of-filter-shelf';
 import {RangeFilterShelf} from './range-filter-shelf';
+import {ShelfFieldDef} from '../../models';
 
 
 /**
@@ -33,9 +34,13 @@ export interface FilterPaneDropTargetProps {
   canDrop: boolean;
 }
 
-export interface FilterPanePropsBase extends ActionHandler<FilterAction> {
+export interface FilterPanePropsBase extends ActionHandler<FilterAction>, FilterPaneGuidelineProps {
   filters: Array<RangeFilter | OneOfFilter>;
   schema: Schema;
+}
+
+export interface FilterPaneGuidelineProps {
+  fieldDefs: ShelfFieldDef[];
 }
 
 interface FilterPaneProps extends FilterPaneDropTargetProps, FilterPanePropsBase {};
@@ -87,7 +92,7 @@ class FilterPaneBase extends React.PureComponent<FilterPaneProps, {}> {
   }
 
   private renderFilterShelf(filter: RangeFilter | OneOfFilter, index: number) {
-    const {handleAction, schema} = this.props;
+    const {handleAction, schema, fieldDefs} = this.props;
     let domain = schema.domain({field: filter.field});
     const {field, timeUnit} = filter;
     const fieldSchema = schema.fieldSchema(filter.field);
@@ -132,6 +137,8 @@ class FilterPaneBase extends React.PureComponent<FilterPaneProps, {}> {
           index={index}
           filter={filter}
           handleAction={handleAction}
+          // props for guideline
+          fieldDefs={fieldDefs}
         />
       );
     }

@@ -153,12 +153,14 @@ class EncodingPanelBase extends React.PureComponent<EncodingPanelProps, {}> {
   }
 
   private filterPane() {
-    const {filters, schema, handleAction} = this.props;
+    const {filters, schema, handleAction, fieldDefs} = this.props;
     return (
       <FilterPane
         filters={filters}
         schema={schema}
         handleAction={handleAction}
+        // props for guideline
+        fieldDefs={fieldDefs}
       />
     );
   }
