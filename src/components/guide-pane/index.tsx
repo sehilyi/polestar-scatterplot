@@ -99,6 +99,47 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
       ...(transform.length > 0 ? {transform} : {})
     };
   }
+
+  static guideActionShelf(props: EncodingShelfProps, fieldDef: ShelfFieldDef, type: string) {
+    const {filters} = props;
+    let domain, field = (fieldDef != null ? fieldDef.field.toString() : '');
+    if (fieldDef != null) domain = props.schema.domain({field});
+
+    //Actionable Category Part
+    const domainWithFilter = (filterHasField(filters, field) ?
+      (filters[filterIndexOf(filters, field)] as OneOfFilter).oneOf : domain);
+
+    switch (type) {
+      case SPEC_FIELD_REMOVE:
+        if (props.id.channel == COLOR) {
+          props.handleAction({
+            type: GUIDELINE_REMOVE_ITEM,
+            payload: {
+              item: GUIDELINE_TOO_MANY_CATEGORIES
+            }
+          });
+        }
+        break;
+      case SPEC_FIELD_ADD:
+      case SPEC_FIELD_MOVE:
+        if (props.id.channel == COLOR && domainWithFilter.length > 10 && fieldDef.type == "nominal") {
+          props.handleAction({
+            type: GUIDELINE_ADD_ITEM,
+            payload: {
+              item: GUIDELINE_TOO_MANY_CATEGORIES
+            }
+          });
+        } else if (props.id.channel == COLOR) {
+          props.handleAction({
+            type: GUIDELINE_REMOVE_ITEM,
+            payload: {
+              item: GUIDELINE_TOO_MANY_CATEGORIES
+            }
+          });
+        }
+        break;
+    }
+  }
 }
 
 export const GuidePane = connect(
@@ -126,46 +167,7 @@ export const GuidePane = connect(
  * USED BY)
  * ActionableCategory,
  */
-export function guideActionShelf(props: EncodingShelfProps, fieldDef: ShelfFieldDef, type: string) {
-  const {filters} = props;
-  let domain, field = (fieldDef != null ? fieldDef.field.toString() : '');
-  if (fieldDef != null) domain = props.schema.domain({field});
 
-  //Actionable Category Part
-  const domainWithFilter = (filterHasField(filters, field) ?
-    (filters[filterIndexOf(filters, field)] as OneOfFilter).oneOf : domain);
-
-  switch (type) {
-    case SPEC_FIELD_REMOVE:
-      if (props.id.channel == COLOR) {
-        props.handleAction({
-          type: GUIDELINE_REMOVE_ITEM,
-          payload: {
-            item: GUIDELINE_TOO_MANY_CATEGORIES
-          }
-        });
-      }
-      break;
-    case SPEC_FIELD_ADD:
-    case SPEC_FIELD_MOVE:
-      if (props.id.channel == COLOR && domainWithFilter.length > 10 && fieldDef.type == "nominal") {
-        props.handleAction({
-          type: GUIDELINE_ADD_ITEM,
-          payload: {
-            item: GUIDELINE_TOO_MANY_CATEGORIES
-          }
-        });
-      } else if (props.id.channel == COLOR) {
-        props.handleAction({
-          type: GUIDELINE_REMOVE_ITEM,
-          payload: {
-            item: GUIDELINE_TOO_MANY_CATEGORIES
-          }
-        });
-      }
-      break;
-  }
-}
 
 /*
  * USED BY)
