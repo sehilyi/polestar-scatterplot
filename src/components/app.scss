@@ -138,6 +138,10 @@
     height: 100px !important;
   }
 
+  .preview .react-spinners--clip {
+    display: none;
+  }
+
   // split-pane css
   .Resizer {
     opacity: .2;
