@@ -1,6 +1,6 @@
 import React = require("react");
 import {connect} from "react-redux";
-import {State, Schema, ShelfUnitSpec, ShelfFieldDef, ShelfFilter, toTransforms} from "../../models";
+import {State, Schema, ShelfUnitSpec, ShelfFieldDef, ShelfFilter, toTransforms, filterHasField, filterIndexOf} from "../../models";
 import * as styles from "./guide-pane.scss"
 import * as CSSModules from 'react-css-modules';
 import {GuideNotification} from "./guide-notification";
@@ -14,6 +14,7 @@ import {COLOR} from "vega-lite/build/src/channel";
 import {InlineData} from "vega-lite/build/src/data";
 import {FacetedCompositeUnitSpec} from "vega-lite/build/src/spec";
 import {Themes} from "../../models/theme/theme";
+import {OneOfFilter, RangeFilter} from "../../../node_modules/vega-lite/build/src/filter";
 
 export interface GuidePaneProps extends ActionHandler<Action> {
   guidelines: Guidelines;
@@ -25,7 +26,7 @@ export interface GuidePaneProps extends ActionHandler<Action> {
   data: InlineData;
   mainSpec: FacetedCompositeUnitSpec;
   theme: Themes;
-  filters: ShelfFilter[];
+  filters: Array<RangeFilter | OneOfFilter>;
 }
 
 export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
@@ -65,7 +66,7 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
   private guideNotification(gs: GuidelineItem) {
 
     const {id} = gs;
-    const {handleAction, schema, spec, data, mainSpec, theme} = this.props;
+    const {handleAction, schema, spec, data, mainSpec, theme, filters} = this.props;
 
     if (mainSpec) {
       return (
@@ -79,6 +80,7 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
           data={data}
           mainSpec={this.specWithFilter}
           theme={theme}
+          filters={filters}
 
         />
       );
@@ -120,20 +122,17 @@ export const GuidePane = connect(
 //TODO: make this process more systematic
 //1) every guideline must have their own id
 export function guideActionShelf(props: EncodingShelfProps, fieldDefs: ShelfFieldDef, type: string) {
-  let domain;
-  if (fieldDefs != null) domain = props.schema.domain({field: fieldDefs.field.toString()});
+  const {filters} = props;
+  let domain, field = (fieldDefs != null ? fieldDefs.field.toString() : '');
+  if (fieldDefs != null) domain = props.schema.domain({field});
+
+  //Actionable Category Part
+  const domainWithFilter = (filterHasField(filters, field) ?
+    (filters[filterIndexOf(filters, field)] as OneOfFilter).oneOf : domain);
 
   switch (type) {
-    case SPEC_FIELD_ADD:
-    case SPEC_FIELD_MOVE:
-      if (props.id.channel == COLOR && domain.length > 10 && fieldDefs.type == "nominal") {
-        props.handleAction({
-          type: GUIDELINE_ADD_ITEM,
-          payload: {
-            item: GUIDELINE_TOO_MANY_CATEGORIES
-          }
-        });
-      } else if (props.id.channel == COLOR) {
+    case SPEC_FIELD_REMOVE:
+      if (props.id.channel == COLOR) {
         props.handleAction({
           type: GUIDELINE_REMOVE_ITEM,
           payload: {
@@ -142,8 +141,16 @@ export function guideActionShelf(props: EncodingShelfProps, fieldDefs: ShelfFiel
         });
       }
       break;
-    case SPEC_FIELD_REMOVE:
-      if (props.id.channel == COLOR) {
+    case SPEC_FIELD_ADD:
+    case SPEC_FIELD_MOVE:
+      if (props.id.channel == COLOR && domainWithFilter.length > 10 && fieldDefs.type == "nominal") {
+        props.handleAction({
+          type: GUIDELINE_ADD_ITEM,
+          payload: {
+            item: GUIDELINE_TOO_MANY_CATEGORIES
+          }
+        });
+      } else if (props.id.channel == COLOR) {
         props.handleAction({
           type: GUIDELINE_REMOVE_ITEM,
           payload: {

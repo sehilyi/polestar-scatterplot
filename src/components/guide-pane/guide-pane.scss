@@ -5,6 +5,8 @@
 .guide-pane {
   background-color: #EEEEEE;
   height: 100%;
+  overflow: auto;
+  position: relative;
 }
 
 .guide-group {

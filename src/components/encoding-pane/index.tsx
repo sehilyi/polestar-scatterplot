@@ -108,13 +108,14 @@ class EncodingPanelBase extends React.PureComponent<EncodingPanelProps, {}> {
   private encodingShelf(channel: Channel) {
     // This one can't be wildcard, thus we use VL's Channel, not our ShelfChannel
 
-    const {handleAction, spec, specPreview, schema} = this.props;
+    const {handleAction, spec, specPreview, schema, filters} = this.props;
     const {encoding} = specPreview || spec;
     return (
       <EncodingShelf
         key={channel}
         id={{channel}}
         fieldDef={encoding[channel]}
+        filters={filters}
         schema={schema}
         handleAction={handleAction}
       />
@@ -131,7 +132,7 @@ class EncodingPanelBase extends React.PureComponent<EncodingPanelProps, {}> {
   }
 
   private wildcardShelf(index: number) {
-    const {handleAction, spec, specPreview, schema} = this.props;
+    const {handleAction, spec, specPreview, schema, filters} = this.props;
     const {anyEncodings} = specPreview || spec;
 
     const id = {
@@ -144,6 +145,7 @@ class EncodingPanelBase extends React.PureComponent<EncodingPanelProps, {}> {
         key={index}
         id={id}
         schema={schema}
+        filters={filters}
         fieldDef={anyEncodings[index]}
         handleAction={handleAction}
       />

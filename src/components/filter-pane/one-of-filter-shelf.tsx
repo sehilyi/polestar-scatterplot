@@ -79,6 +79,8 @@ export class OneOfFilterShelfBase extends React.PureComponent<OneOfFilterShelfPr
         oneOf
       }
     });
+
+
   }
 
   private toggleCheckbox(option: string | number | boolean | DateTime) {

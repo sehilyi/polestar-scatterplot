@@ -3,19 +3,17 @@ import * as CSSModules from 'react-css-modules';
 
 import * as styles from './actionable-category.scss';
 import {DateTime} from 'vega-lite/build/src/datetime';
-import {ShelfUnitSpec, Schema, toTransforms} from '../../../models';
+import {ShelfUnitSpec, Schema, toTransforms, ShelfFilter, filterHasField, filterIndexOf} from '../../../models';
 import {Field} from '../../field';
 import {ActionHandler, ShelfAction, SpecAction, SPEC_COLOR_SCALE_SPECIFIED, SPEC_COLOR_TRANSFORM_SPECIFIED, SPEC_FIELD_REMOVE, LogAction} from '../../../actions';
 import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction} from '../../../actions/guidelines';
 import {GuidelineItem} from '../../../models/guidelines';
 import {insertItemToArray, removeItemFromArray} from '../../../reducers/util';
-import {LookupTransform, LookupData, Transform} from 'vega-lite/build/src/transform';
 import {COLOR} from 'vega-lite/build/src/channel';
 import {VegaLite} from '../../vega-lite';
 import {InlineData} from 'vega-lite/build/src/data';
 import {FacetedCompositeUnitSpec} from 'vega-lite/build/src/spec';
 import {Logger} from '../../util/util.logger';
-import {Plot} from '../../plot';
 import {Themes} from '../../../models/theme/theme';
 import {OneOfFilter} from 'vega-lite/build/src/filter';
 
@@ -29,6 +27,7 @@ export interface ActionableCategoryProps extends ActionHandler<GuidelineAction |
   data: InlineData;
   mainSpec: FacetedCompositeUnitSpec;
   theme: Themes;
+  filters: ShelfFilter[];
 }
 
 export interface ActionableCategoryState {
@@ -61,8 +60,8 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     return (
       <div>
         <div styleName="guide-previews">
-          <div styleName="guide-preview" ref={this.vegaLiteWrapperRefHandler} className="preview">
-            <a onClick={this.onFilterClick.bind(this)}>
+          <div styleName="guide-preview" ref={this.vegaLiteWrapperRefHandler} className="preview" onClick={this.onFilterClick.bind(this)}>
+            <a>
               {this.renderFilterCategoriesPreview()}
               <i className="fa fa-filter" aria-hidden="true" />
               {' '} Filter Categories
@@ -75,8 +74,8 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
               {' '} Select Categories
             </a>
           </div>
-          <div styleName="guide-preview" ref={this.vegaLiteWrapperRefHandler} className="preview">
-            <a onClick={this.onRemoveField.bind(this)}>
+          <div styleName="guide-preview" onClick={this.onRemoveField.bind(this)} ref={this.vegaLiteWrapperRefHandler} className="preview">
+            <a>
               {this.renderRemoveFieldPreview()}
               <i className="fa fa-times" aria-hidden="true" />
               {' '} Remove Field
@@ -104,17 +103,55 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     this.vegaLiteWrapper = ref;
   }
 
+  private renderFilterCategoriesPreview() {
+    const {mainSpec, data, filters} = this.props;
+    let previewSpec = (JSON.parse(JSON.stringify(mainSpec))) as FacetedCompositeUnitSpec;
+
+    ///temp
+    let oneOf: any[] = [];
+    const {domain, schema, spec} = this.props;
+    let field = spec.encoding.color.field.toString();
+
+    const {transform} = previewSpec;
+    // let isSameFieldFiltered = filterHasField(filters, field);
+    // const filteredDomain = (isSameFieldFiltered ?
+    //   (filters[filterIndexOf(filters,field)] as OneOfFilter).oneOf : domain);
+    // if (isSameFieldFiltered) delete previewSpec.transform.filter[field];
+
+    oneOf.push(domain[0]);
+    oneOf.push(domain[1]);
+    oneOf.push(domain[2]);
+    oneOf.push(domain[3]);
+    oneOf.push(domain[4]);
+    let newFilter: OneOfFilter = {
+      field,
+      oneOf
+    }
+    const newTransform = (transform || []).concat(toTransforms([newFilter]));
+    previewSpec.transform = newTransform;
+    ///
+    return (
+      <VegaLite spec={previewSpec} logger={this.plotLogger} data={data} />
+    );
+  }
+
   private renderSelectCategoriesPreview() {
-    const {mainSpec, data, handleAction} = this.props;
+    const {mainSpec, data, handleAction, filters} = this.props;
     let previewSpec = (JSON.parse(JSON.stringify(mainSpec))) as FacetedCompositeUnitSpec;
     ///temp
     let selected: any[] = [];
     const {domain, schema, spec} = this.props;
     let field = spec.encoding.color.field.toString();
+
     const fieldSchema = schema.fieldSchema(field);
+    // let isSameFieldFiltered = filterHasField(filters, field);
+    // const filteredDomain = (isSameFieldFiltered ?
+    //   (filters[filterIndexOf(filters,field)] as OneOfFilter).oneOf : domain);
     selected.push(domain[0]);
     selected.push(domain[1]);
     selected.push(domain[2]);
+    selected.push(domain[3]);
+    selected.push(domain[4]);
     previewSpec.encoding.color = {
       field,
       type: fieldSchema.vlType,
@@ -125,30 +162,6 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     }
     ///
 
-    return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={data} />
-    );
-  }
-
-  private renderFilterCategoriesPreview() {
-    const {mainSpec, data} = this.props;
-    let previewSpec = (JSON.parse(JSON.stringify(mainSpec))) as FacetedCompositeUnitSpec;
-    ///temp
-    let oneOf: any[] = [];
-    const {domain, schema, spec} = this.props;
-    let field = spec.encoding.color.field.toString();
-    oneOf.push(domain[0]);
-    oneOf.push(domain[1]);
-    oneOf.push(domain[2]);
-    let newFilter: OneOfFilter = {
-      field,
-      oneOf
-    }
-    const {transform} = previewSpec;
-    const newTransform = (transform || []).concat(toTransforms([newFilter]));
-    previewSpec.transform = newTransform;
-    console.log(previewSpec);
-    ///
     return (
       <VegaLite spec={previewSpec} logger={this.plotLogger} data={data} />
     );

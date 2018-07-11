@@ -9,10 +9,11 @@ import {GuidelineItem} from '../../models/guidelines';
 import {ActionHandler, ShelfAction} from '../../actions';
 import {GUIDELINE_REMOVE_ITEM, GuidelineAction, GUIDELINE_SHOW_INDICATOR, GUIDELINE_HIDE_INDICATOR, GUIDELINE_TOGGLE_IGNORE_ITEM, GUIDELINE_TOGGLE_ISEXPANDED} from '../../actions/guidelines';
 import {ActionableCategory} from './actionable-pane/actionable-category';
-import {Schema, ShelfUnitSpec, DEFAULT_SHELF_UNIT_SPEC} from '../../models';
+import {Schema, ShelfUnitSpec, DEFAULT_SHELF_UNIT_SPEC, ShelfFilter, filterIndexOf, filterHasField} from '../../models';
 import {InlineData} from 'vega-lite/build/src/data';
 import {FacetedCompositeUnitSpec} from 'vega-lite/build/src/spec';
 import {Themes} from '../../models/theme/theme';
+import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 
 export interface GuideNotificationProps extends ActionHandler<GuidelineAction> {
   item: GuidelineItem;
@@ -24,6 +25,7 @@ export interface GuideNotificationProps extends ActionHandler<GuidelineAction> {
   data: InlineData;
   mainSpec: FacetedCompositeUnitSpec;
   theme: Themes;
+  filters: ShelfFilter[];
 }
 
 export class GuideNotificationBase extends React.PureComponent<GuideNotificationProps, {}> {
@@ -67,11 +69,11 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
           </span>
         </div>
         <div styleName="splitter" />
-        <div styleName="guide-content">
-          <span styleName="guide-content-text">{this.props.item.content}</span>
-        </div>
         <div styleName="guide-interactive">
           {this.renderInteractive()}
+        </div>
+        <div styleName="guide-content">
+          <span styleName="guide-content-text">{this.props.item.content}</span>
         </div>
       </div>
     );
@@ -79,12 +81,16 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
   private renderInteractive() {
     switch (this.props.item.id) {
       case "GUIDELINE_TOO_MANY_CATEGORIES":
-        const {item, schema, spec, handleAction, data, mainSpec, theme} = this.props;
-        let domain = schema.domain({field: spec.encoding.color.field.toString()})
+        const {item, schema, spec, handleAction, data, mainSpec, theme, filters} = this.props;
+        let field = spec.encoding.color.field.toString();
+        const domainWithFilter = (filterHasField(filters, field) ?
+          (filters[filterIndexOf(filters, field)] as OneOfFilter).oneOf :
+          schema.domain({field}));
+
         return (
           <ActionableCategory
             item={item}
-            domain={domain}
+            domain={domainWithFilter}
             spec={spec}
             schema={schema}
             handleAction={handleAction}
@@ -92,6 +98,7 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
             data={data}
             mainSpec={mainSpec}
             theme={theme}
+            filters={filters}
           />
         );
     }

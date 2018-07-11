@@ -142,6 +142,18 @@
     display: none;
   }
 
+  .preview .fa {
+    &.fa-times, &.fa-search, &.fa-pencil, &.fa-caret-down, &.fa-times , &.fa-plus, &.fa-filter, &.fa-eye-slash {
+      padding: 0px;
+      border-radius: 0px;
+
+      &:hover {
+        color: black;
+        background-color: transparent;
+      }
+    }
+  }
+
   // split-pane css
   .Resizer {
     opacity: .2;
