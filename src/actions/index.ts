@@ -30,6 +30,7 @@ export * from './tab';
 export * from './undo-redo';
 export * from './shelf-preview';
 export * from './theme';
+export * from './guidelines';
 
 /**
  * Union type of all actions in our application.
