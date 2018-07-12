@@ -67,28 +67,22 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
   private guideNotification(gs: GuidelineItem) {
 
     const {id} = gs;
-    const {handleAction, schema, spec, data, mainSpec, theme, filters} = this.props;
+    const {handleAction, schema, spec, data, theme, filters, mainSpec} = this.props;
 
-    if (mainSpec) {
-      return (
-        <GuideNotification
-          key={id}
-          item={gs}
-          schema={schema}
-          spec={spec}
-          handleAction={handleAction}
+    return (
+      <GuideNotification
+        key={id}
+        item={gs}
+        schema={schema}
+        spec={spec}
+        handleAction={handleAction}
 
-          data={data}
-          mainSpec={this.specWithFilter}
-          theme={theme}
-          filters={filters}
-        />
-      );
-    } else {
-      return (
-        <span key={id}></span>
-      );
-    }
+        data={data}
+        mainSpec={typeof mainSpec == "undefined" ? undefined : this.specWithFilter}
+        theme={theme}
+        filters={filters}
+      />
+    );
   }
   private get specWithFilter() {
     const {mainSpec, filters} = this.props;

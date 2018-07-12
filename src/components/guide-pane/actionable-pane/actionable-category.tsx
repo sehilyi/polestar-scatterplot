@@ -51,7 +51,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
   }
 
   public render() {
-    const {schema, spec} = this.props;
+    const {schema, spec, mainSpec} = this.props;
     const {triggeredActionable} = this.props.item;
     let field = spec.encoding.color.field.toString();
     const fieldSchema = schema.fieldSchema(field);
@@ -65,21 +65,21 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
         <div styleName={triggeredActionable == "NONE" ? "guide-previews" : "guide-previews-hidden"}>
           <div styleName="guide-preview" ref={this.vegaLiteWrapperRefHandler} className="preview" onClick={this.onFilterClick.bind(this)}>
             <a>
-              {this.renderFilterCategoriesPreview()}
+              {typeof mainSpec != "undefined" ? this.renderFilterCategoriesPreview() : ''}
               <i className="fa fa-filter" aria-hidden="true" />
               {' '} Filter Categories
             </a>
           </div>
           <div styleName="guide-preview" ref={this.vegaLiteWrapperRefHandler} className="preview" onClick={this.onSelectClick.bind(this)}>
             <a>
-              {this.renderSelectCategoriesPreview()}
+              {typeof mainSpec != "undefined" ? this.renderSelectCategoriesPreview() : ''}
               <i className="fa fa-hand-pointer-o" aria-hidden="true" />
               {' '} Select Categories
             </a>
           </div>
           <div styleName="guide-preview" onClick={this.onRemoveField.bind(this)} ref={this.vegaLiteWrapperRefHandler} className="preview">
             <a>
-              {this.renderRemoveFieldPreview()}
+              {typeof mainSpec != "undefined" ? this.renderRemoveFieldPreview() : ''}
               <i className="fa fa-times" aria-hidden="true" />
               {' '} Remove Field
             </a>

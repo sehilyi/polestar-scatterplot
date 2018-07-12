@@ -37,6 +37,8 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
     this.onHideIndicator = this.onHideIndicator.bind(this);
     this.onOpenGuide = this.onOpenGuide.bind(this);
     this.onIgnore = this.onIgnore.bind(this);
+
+    console.log("constructor of GuideNotificationBase");
   }
 
   public render() {
