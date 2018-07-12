@@ -5,19 +5,20 @@ import {OneOfFilter} from 'vega-lite/build/src/filter';
 import {FILTER_MODIFY_ONE_OF, FilterAction} from '../../actions';
 import {insertItemToArray, removeItemFromArray} from '../../reducers/util';
 import * as styles from './one-of-filter-shelf.scss';
-import {guideActionFilter} from '../guide-pane';
-import {ShelfFieldDef} from '../../models';
+import {ShelfFieldDef, ShelfUnitSpec} from '../../models';
+import {guideActionFilter} from '../../models/guidelines';
+import {GuidelineAction} from '../../actions/guidelines';
 
 
 export interface OneOfFilterShelfProps extends OneOfFilterShelfGuidelineProps {
   domain: string[] | number[] | boolean[] | DateTime[];
   filter: OneOfFilter;
   index: number;
-  handleAction: (action: FilterAction) => void;
+  handleAction: (action: FilterAction | GuidelineAction) => void;
 }
 
 export interface OneOfFilterShelfGuidelineProps {
-  fieldDefs: ShelfFieldDef[];
+  spec: ShelfUnitSpec;
 }
 
 export interface OneOfFilterShelfState {
@@ -85,7 +86,7 @@ export class OneOfFilterShelfBase extends React.PureComponent<OneOfFilterShelfPr
         oneOf
       }
     });
-    guideActionFilter(this.props, FILTER_MODIFY_ONE_OF);
+    guideActionFilter(this.props, oneOf, FILTER_MODIFY_ONE_OF);
   }
 
   private toggleCheckbox(option: string | number | boolean | DateTime) {

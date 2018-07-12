@@ -99,47 +99,6 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
       ...(transform.length > 0 ? {transform} : {})
     };
   }
-
-  static guideActionShelf(props: EncodingShelfProps, fieldDef: ShelfFieldDef, type: string) {
-    const {filters} = props;
-    let domain, field = (fieldDef != null ? fieldDef.field.toString() : '');
-    if (fieldDef != null) domain = props.schema.domain({field});
-
-    //Actionable Category Part
-    const domainWithFilter = (filterHasField(filters, field) ?
-      (filters[filterIndexOf(filters, field)] as OneOfFilter).oneOf : domain);
-
-    switch (type) {
-      case SPEC_FIELD_REMOVE:
-        if (props.id.channel == COLOR) {
-          props.handleAction({
-            type: GUIDELINE_REMOVE_ITEM,
-            payload: {
-              item: GUIDELINE_TOO_MANY_CATEGORIES
-            }
-          });
-        }
-        break;
-      case SPEC_FIELD_ADD:
-      case SPEC_FIELD_MOVE:
-        if (props.id.channel == COLOR && domainWithFilter.length > 10 && fieldDef.type == "nominal") {
-          props.handleAction({
-            type: GUIDELINE_ADD_ITEM,
-            payload: {
-              item: GUIDELINE_TOO_MANY_CATEGORIES
-            }
-          });
-        } else if (props.id.channel == COLOR) {
-          props.handleAction({
-            type: GUIDELINE_REMOVE_ITEM,
-            payload: {
-              item: GUIDELINE_TOO_MANY_CATEGORIES
-            }
-          });
-        }
-        break;
-    }
-  }
 }
 
 export const GuidePane = connect(
@@ -159,28 +118,3 @@ export const GuidePane = connect(
   },
   createDispatchHandler<GuidelineAction | SpecAction | LogAction>()
 )(CSSModules(GuidePaneBase, styles));
-
-//TODO: make this process more systematic
-//This logic should move to model class
-//1) every guideline must have their own id
-/*
- * USED BY)
- * ActionableCategory,
- */
-
-
-/*
- * USED BY)
- * ActionableCategory,
- */
-export function guideActionFilter(props: OneOfFilterShelfProps, type: string) {
-  const {fieldDefs} = props;
-  switch (type) {
-    case FILTER_MODIFY_ONE_OF: {
-      //if same field is also used as color
-      console.log(fieldDefs);
-      //else, do nothing
-      break;
-    }
-  }
-}

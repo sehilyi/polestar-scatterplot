@@ -22,7 +22,7 @@ import {FunctionPicker, FunctionPickerWildcardHandler} from './function-picker';
 import {CUSTOMIZABLE_ENCODING_CHANNELS} from './property-editor-schema';
 import {GUIDELINE_ADD_ITEM, GuidelineAction} from '../../actions/guidelines';
 import {RangeFilter, OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
-import {GuidePaneBase} from '../guide-pane';
+import {guideActionShelf} from '../../models/guidelines';
 
 /**
  * Props for react-dnd of EncodingShelf
@@ -183,7 +183,7 @@ class EncodingShelfBase extends React.PureComponent<
       type: SPEC_FIELD_REMOVE,
       payload: id
     });
-    GuidePaneBase.guideActionShelf(this.props, null, SPEC_FIELD_REMOVE);
+    guideActionShelf(this.props, null, SPEC_FIELD_REMOVE);
   }
 
   private renderField() {
@@ -277,7 +277,7 @@ const encodingShelfTarget: DropTargetSpec<EncodingShelfProps> = {
       default:
         throw new Error('Field dragged from unregistered source type to EncodingShelf');
     }
-    GuidePaneBase.guideActionShelf(props, fieldDef, SPEC_FIELD_ADD);
+    guideActionShelf(props, fieldDef, SPEC_FIELD_ADD);
   }
 };
 
