@@ -52,11 +52,6 @@ export const GUIDELINE_TOO_MANY_CATEGORIES: GuidelineItem = {
   triggeredActionable: "NONE"
 }
 
-
-//TODO: make this process more systematic
-//This logic should move to model class
-
-//1) every guideline must have their own id
 /*
  * USED BY)
  * ActionableCategory,

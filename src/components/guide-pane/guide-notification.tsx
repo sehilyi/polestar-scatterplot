@@ -88,11 +88,13 @@ export class GuideNotificationBase extends React.PureComponent<GuideNotification
         const domainWithFilter = (filterHasField(filters, field) ?
           (filters[filterIndexOf(filters, field)] as OneOfFilter).oneOf :
           schema.domain({field}));
+        const domain = schema.domain({field});
 
         return (
           <ActionableCategory
             item={item}
-            domain={domainWithFilter}
+            domain={domain}
+            domainWithFilter={domainWithFilter}
             spec={spec}
             schema={schema}
             handleAction={handleAction}
