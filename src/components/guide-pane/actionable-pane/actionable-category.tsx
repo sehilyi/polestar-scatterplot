@@ -49,10 +49,10 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     });
 
     this.plotLogger = new Logger(props.handleAction);
-    this.onFilterClick.bind(this);
-    this.onSelectClick.bind(this);
-    this.onRemoveField.bind(this);
-    this.onBackButton.bind(this);
+    this.onFilterClick = this.onFilterClick.bind(this);
+    this.onSelectClick = this.onSelectClick.bind(this);
+    this.onRemoveField = this.onRemoveField.bind(this);
+    this.onBackButton = this.onBackButton.bind(this);
   }
 
   public render() {
