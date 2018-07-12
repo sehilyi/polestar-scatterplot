@@ -6,7 +6,7 @@ import {DateTime} from 'vega-lite/build/src/datetime';
 import {ShelfUnitSpec, Schema, toTransforms, ShelfFilter, filterHasField, filterIndexOf} from '../../../models';
 import {Field} from '../../field';
 import {ActionHandler, ShelfAction, SpecAction, SPEC_COLOR_SCALE_SPECIFIED, SPEC_COLOR_TRANSFORM_SPECIFIED, SPEC_FIELD_REMOVE, LogAction} from '../../../actions';
-import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction} from '../../../actions/guidelines';
+import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction, ACTIONABLE_TRIGGER_INTERFACE} from '../../../actions/guidelines';
 import {GuidelineItem} from '../../../models/guidelines';
 import {insertItemToArray, removeItemFromArray} from '../../../reducers/util';
 import {COLOR} from 'vega-lite/build/src/channel';
@@ -34,6 +34,8 @@ export interface ActionableCategoryState {
   hideSearchBar: boolean;
 }
 
+export type ACTIONABLES = "FILTER_CATEGORIES" | "SELECT_CATEGORIES" | "REMOVE_FIELD" | "NONE";
+
 export class ActionableCategoryBase extends React.PureComponent<ActionableCategoryProps, ActionableCategoryState>{
 
   private plotLogger: Logger;
@@ -50,6 +52,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
 
   public render() {
     const {schema, spec} = this.props;
+    const {triggeredActionable} = this.props.item;
     let field = spec.encoding.color.field.toString();
     const fieldSchema = schema.fieldSchema(field);
     const fieldDef = {
@@ -59,7 +62,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
 
     return (
       <div>
-        <div styleName="guide-previews">
+        <div styleName={triggeredActionable == "NONE" ? "guide-previews" : "guide-previews-hidden"}>
           <div styleName="guide-preview" ref={this.vegaLiteWrapperRefHandler} className="preview" onClick={this.onFilterClick.bind(this)}>
             <a>
               {this.renderFilterCategoriesPreview()}
@@ -67,7 +70,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
               {' '} Filter Categories
             </a>
           </div>
-          <div styleName="guide-preview" ref={this.vegaLiteWrapperRefHandler} className="preview">
+          <div styleName="guide-preview" ref={this.vegaLiteWrapperRefHandler} className="preview" onClick={this.onSelectClick.bind(this)}>
             <a>
               {this.renderSelectCategoriesPreview()}
               <i className="fa fa-hand-pointer-o" aria-hidden="true" />
@@ -82,7 +85,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
             </a>
           </div>
         </div>
-        <div styleName='filter-shelf' key={'1'} hidden>
+        <div styleName={triggeredActionable == "SELECT_CATEGORIES" ? 'filter-shelf' : 'filter-shelf-hidden'} key={'1'}>
           <Field
             draggable={false}
             fieldDef={fieldDef}
@@ -97,6 +100,15 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
 
   private onFilterClick() {
 
+  }
+
+  private onSelectClick() {
+    let actionable: ACTIONABLES = "SELECT_CATEGORIES";
+    const {handleAction, item} = this.props;
+    handleAction({
+      type: ACTIONABLE_TRIGGER_INTERFACE,
+      payload: {item: item, triggeredActionable: actionable}
+    });
   }
 
   private vegaLiteWrapperRefHandler = (ref: any) => {
@@ -256,6 +268,8 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
         fieldDef: fieldDef
       }
     });
+
+    // TODO: Is there any nice way to show unselected categories as "Ohters"?
     // const newData = this.getNewCategory(selected);
     // const lookupData: LookupData = {
     //   data: {values: newData},

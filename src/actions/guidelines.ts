@@ -3,7 +3,7 @@ import {ReduxAction} from "./redux-action";
 import {DateTime} from "vega-lite/build/src/datetime";
 
 export type GuidelineAction = GuidelineRemoveItem | GuidelineAddItem | ActionableSelectCategories | GuidelineShowIndicator |
-  GuidelineHideIndicator | GuidelineToggleIgnoreItem | GuidelineToggleIsExpanded;
+  GuidelineHideIndicator | GuidelineToggleIgnoreItem | GuidelineToggleIsExpanded | ActionableTriggerInterface;
 
 export const GUIDELINE_ADD_ITEM = 'GUIDELINE_ADD_ITEM';
 export type GuidelineAddItem = ReduxAction<typeof GUIDELINE_ADD_ITEM, {
@@ -33,10 +33,17 @@ export const GUIDELINE_TOGGLE_ISEXPANDED = 'GUIDELINE_TOGGLE_ISEXPANDED';
 export type GuidelineToggleIsExpanded = ReduxAction<typeof GUIDELINE_TOGGLE_ISEXPANDED, {
   item: GuidelineItem;
 }>;
+
 ///
 
 export const ACTIONABLE_SELECT_CATEGORIES = 'ACTIONABLE_SELECT_CATEGORIES';
 export type ActionableSelectCategories = ReduxAction<typeof ACTIONABLE_SELECT_CATEGORIES, {
   item: GuidelineItem,
   selectedCategories: string[] | number[] | boolean[] | DateTime[]
+}>;
+
+export const ACTIONABLE_TRIGGER_INTERFACE = 'ACTIONABLE_TRIGGER_INTERFACE';
+export type ActionableTriggerInterface = ReduxAction<typeof ACTIONABLE_TRIGGER_INTERFACE, {
+  item: GuidelineItem,
+  triggeredActionable: string
 }>;

@@ -10,6 +10,12 @@ $radius: 3px;
   flex-wrap: wrap;
 }
 
+.guide-previews-hidden {
+  @extend .guide-previews;
+
+  display: none;
+}
+
 .guide-preview {
   padding: 10px;
   margin: 5px;
@@ -73,6 +79,12 @@ $radius: 3px;
   margin-bottom: 4px;
   max-height: 150px;
   overflow: scroll;
+}
+
+.filter-shelf-hidden{
+  @extend .filter-shelf;
+
+  display: none;
 }
 
 .filter-pane {

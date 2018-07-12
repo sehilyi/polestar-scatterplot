@@ -1,6 +1,6 @@
 import {Action} from "../actions";
 import {DEFAULT_GUIDELINES, Guidelines, GuidelineItem, GuideState} from "../models/guidelines";
-import {GUIDELINE_REMOVE_ITEM, GUIDELINE_ADD_ITEM, ACTIONABLE_SELECT_CATEGORIES, GUIDELINE_SHOW_INDICATOR, GUIDELINE_HIDE_INDICATOR, GUIDELINE_TOGGLE_IGNORE_ITEM, GUIDELINE_TOGGLE_ISEXPANDED} from "../actions/guidelines";
+import {GUIDELINE_REMOVE_ITEM, GUIDELINE_ADD_ITEM, ACTIONABLE_SELECT_CATEGORIES, GUIDELINE_SHOW_INDICATOR, GUIDELINE_HIDE_INDICATOR, GUIDELINE_TOGGLE_IGNORE_ITEM, GUIDELINE_TOGGLE_ISEXPANDED, ACTIONABLE_TRIGGER_INTERFACE} from "../actions/guidelines";
 import {modifyItemInArray} from "./util";
 
 export function guidelineReducer(guidelines: Guidelines = DEFAULT_GUIDELINES, action: Action): Guidelines {
@@ -98,6 +98,25 @@ export function guidelineReducer(guidelines: Guidelines = DEFAULT_GUIDELINES, ac
           ...item,
           selectedCategories: selectedCategories,
           guideState: (selectedCategories.length > 0 && selectedCategories.length <= 10) ? "DONE" : "WARN" as GuideState
+        };
+      };
+      return {
+        list: [
+          ...list.slice(0, list.indexOf(item)),
+          modifyOneOf(list[list.indexOf(item)]),
+          ...list.slice(list.indexOf(item) + 1)
+        ],
+        showHighlight: showHighlight,
+        size: size,
+        position: position
+      };
+    }
+    case ACTIONABLE_TRIGGER_INTERFACE:{
+      const {item, triggeredActionable} = action.payload;
+      const modifyOneOf = (item: GuidelineItem) => {
+        return {
+          ...item,
+          triggeredActionable: triggeredActionable
         };
       };
       return {
