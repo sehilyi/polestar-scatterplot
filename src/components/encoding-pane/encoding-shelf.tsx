@@ -13,14 +13,14 @@ import {
 } from '../../actions/shelf';
 import {DraggableType, FieldParentType} from '../../constants';
 import {ShelfFieldDef, ShelfId} from '../../models';
-import {ShelfFunction, ShelfFilter} from '../../models/shelf';
+import {ShelfFunction} from '../../models/shelf';
 import {isWildcardChannelId} from '../../models/shelf/spec/encoding';
 import {DraggedFieldIdentifier, Field} from '../field/index';
 import * as styles from './encoding-shelf.scss';
 import {FieldCustomizer} from './field-customizer';
 import {FunctionPicker, FunctionPickerWildcardHandler} from './function-picker';
 import {CUSTOMIZABLE_ENCODING_CHANNELS} from './property-editor-schema';
-import {GUIDELINE_ADD_ITEM, GuidelineAction} from '../../actions/guidelines';
+import {GuidelineAction} from '../../actions/guidelines';
 import {RangeFilter, OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 import {guideActionShelf} from '../../models/guidelines';
 
@@ -72,7 +72,7 @@ class EncodingShelfBase extends React.PureComponent<
     this.toggleCustomizer = this.toggleCustomizer.bind(this);
   }
 
-  public componentWillUpdate(nextProps: EncodingShelfProps, nextState: EncodingShelfState) {
+  public componentWillUpdate(nextState: EncodingShelfState) {
     if (!nextState) {
       return;
     }
@@ -177,7 +177,7 @@ class EncodingShelfBase extends React.PureComponent<
   }
 
   protected onRemove() {
-    const {id, handleAction, filters} = this.props;
+    const {id, handleAction} = this.props;
     this.closePopup();
     handleAction({
       type: SPEC_FIELD_REMOVE,

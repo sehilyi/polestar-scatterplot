@@ -21,8 +21,8 @@ export type GuidelineToggleIgnoreItem = ReduxAction<typeof GUIDELINE_TOGGLE_IGNO
   item: GuidelineItem;
 }>;
 
-export const GUIDELINE_SHOW_INDICATOR = 'GUIDELINE_SHOW_INDICATOR';
-export type GuidelineShowIndicator = ReduxAction<typeof GUIDELINE_SHOW_INDICATOR, {
+export const GUIDELINE_SHOW_RECT_INDICATOR = 'GUIDELINE_SHOW_RECT_INDICATOR';
+export type GuidelineShowIndicator = ReduxAction<typeof GUIDELINE_SHOW_RECT_INDICATOR, {
   size: {width: number, height: number},
   position: {x: number, y: number}
 }>;

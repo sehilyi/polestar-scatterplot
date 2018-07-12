@@ -67,21 +67,21 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
         <div styleName={triggeredActionable == "NONE" ? "guide-previews" : "guide-previews-hidden"}>
           <div styleName="guide-preview" ref={this.vegaLiteWrapperRefHandler} className="preview" onClick={this.onFilterClick.bind(this)}>
             <a>
-              {vegaReady ? this.renderFilterCategoriesPreview() : ''}
+              {vegaReady ? this.renderFilterCategoriesPreview() : null}
               <i className="fa fa-filter" aria-hidden="true" />
               {' '} Filter Categories
             </a>
           </div>
           <div styleName="guide-preview" ref={this.vegaLiteWrapperRefHandler} className="preview" onClick={this.onSelectClick.bind(this)}>
             <a>
-              {vegaReady ? this.renderSelectCategoriesPreview() : ''}
+              {vegaReady ? this.renderSelectCategoriesPreview() : null}
               <i className="fa fa-hand-pointer-o" aria-hidden="true" />
               {' '} Select Categories
             </a>
           </div>
           <div styleName="guide-preview" onClick={this.onRemoveField.bind(this)} ref={this.vegaLiteWrapperRefHandler} className="preview">
             <a>
-              {vegaReady ? this.renderRemoveFieldPreview() : ''}
+              {vegaReady ? this.renderRemoveFieldPreview() : null}
               <i className="fa fa-times" aria-hidden="true" />
               {' '} Remove Field
             </a>

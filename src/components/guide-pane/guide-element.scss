@@ -33,7 +33,6 @@ $guideline-margin: 8px;
 
   &:hover{
     box-shadow: 0 0 12px 0 rgba(0,0,0,0.2);
-    // box-shadow: 0 0 0 3px rgb(255, 87, 151);
   }
 }
 
@@ -78,28 +77,40 @@ $guideline-margin: 8px;
   overflow: hidden;
 }
 
-// TODO: add common prop for category and title
-
-.guide-category {
-  user-select: none;
-  display: block;
-  font-size: 12px;
-  font-weight: 500;
-  text-decoration: line-through;
-  text-decoration-color: transparent;
-  color: #292929;
-
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
+.guide-category-and-title {
 
   margin: 5px;
   margin-left: 55px;
-  line-height: $sub-pill-height;
-  height: $sub-pill-height;
+
+  user-select: none;
+  display: block;
+  overflow: hidden;
+  white-space: nowrap;
+
+  text-overflow: ellipsis;
+  text-decoration: line-through;
+  text-decoration-color: transparent;
 
   transition: text-decoration-color 0.5s ease-in-out;
   transition: color 0.5s ease-in-out;
+}
+
+.guide-category {
+  @extend .guide-category-and-title;
+
+  color: #292929;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: $sub-pill-height;
+  height: $sub-pill-height;
+}
+
+.guide-title {
+  @extend .guide-category-and-title;
+
+  color: #6E6E6E;
+  font-size: 14px;
+  line-height: $pill-height;
 }
 
 .guide-category-done{
@@ -111,27 +122,6 @@ $guideline-margin: 8px;
 .guide-category-ignore{
   @extend .guide-category;
   color: #c2c1c1;
-}
-
-.guide-title {
-  user-select: none;
-  display: block;
-
-  color: #6E6E6E;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-
-  font-size: 14px;
-  text-decoration: line-through;
-  text-decoration-color: transparent;
-
-  margin: 5px;
-  margin-left: 55px;
-  line-height: $pill-height;
-
-  transition: text-decoration-color 0.5s ease-in-out;
-  transition: color 0.5s ease-in-out;
 }
 
 .guide-title-done{
@@ -177,7 +167,7 @@ $guideline-margin: 8px;
   line-height: 14px;
 }
 
-.guide-interactive{
+.actionable-pane{
   flex-grow: 1;
   margin: 5px;
   height: 100%;
