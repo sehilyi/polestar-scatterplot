@@ -16,6 +16,7 @@ import {FacetedCompositeUnitSpec} from 'vega-lite/build/src/spec';
 import {Logger} from '../../util/util.logger';
 import {Themes} from '../../../models/theme/theme';
 import {OneOfFilter} from 'vega-lite/build/src/filter';
+import {CategoryPicker} from './actionable-common-ui/category-picker';
 
 export interface ActionableCategoryProps extends ActionHandler<GuidelineAction | SpecAction | LogAction | FilterAction> {
   item: GuidelineItem;
@@ -57,8 +58,8 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
 
   public render() {
     const vegaReady = typeof this.props.mainSpec != "undefined";
-    const {schema, spec, mainSpec} = this.props;
-    const {triggeredActionable} = this.props.item;
+    const {domain, domainWithFilter, schema, spec, mainSpec, handleAction} = this.props;
+    const {id, triggeredActionable, oneOfCategories, selectedCategories} = this.props.item;
     let field = spec.encoding.color.field.toString();
     const fieldSchema = schema.fieldSchema(field);
     const fieldDef = {
@@ -90,26 +91,89 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
           <i className="fa fa-chevron-circle-left" aria-hidden="true" />
           {' '} Move Back
         </div>
-        <div styleName={triggeredActionable == "FILTER_CATEGORIES" ? 'filter-shelf' : 'filter-shelf-hidden'} key={'1'}>
-          <Field
-            draggable={false}
-            fieldDef={fieldDef}
-            caretShow={true}
-            isPill={true}
+        <div styleName={triggeredActionable == "FILTER_CATEGORIES" ? 'filter-shelf' : 'filter-shelf-hidden'}>
+          <CategoryPicker
+            id={id + field + "FILTER_CATEGORIES"}
+            field={field}
+            domain={domain}
+            selected={oneOfCategories}
+            handleAction={handleAction}
+            pickedCategoryAction={this.pickedCategoryActionForFilter}
           />
-          {this.renderCategorySelector("FILTER_CATEGORIES")}
         </div>
-        <div styleName={triggeredActionable == "SELECT_CATEGORIES" ? 'filter-shelf' : 'filter-shelf-hidden'} key={'2'}>
-          <Field
-            draggable={false}
-            fieldDef={fieldDef}
-            caretShow={true}
-            isPill={true}
+        <div styleName={triggeredActionable == "SELECT_CATEGORIES" ? 'filter-shelf' : 'filter-shelf-hidden'}>
+          <CategoryPicker
+            id={id + field + "SELECT_CATEGORIES"}
+            field={field}
+            domain={domainWithFilter}
+            selected={selectedCategories}
+            handleAction={handleAction}
+            pickedCategoryAction={this.pickedCategoryActionForSelect}
           />
-          {this.renderCategorySelector("SELECT_CATEGORIES")}
         </div>
       </div>
     );
+  }
+
+  pickedCategoryActionForSelect = (selected: string[] | number[] | boolean[] | DateTime[]) => {
+    const {handleAction, item, spec} = this.props;
+    let field = spec.encoding.color.field.toString();
+
+    const {domainWithFilter, schema} = this.props;
+    const fieldSchema = schema.fieldSchema(field);
+    const fieldDef = {
+      field,
+      type: fieldSchema.vlType,
+      scale: {
+        domain: domainWithFilter,
+        range: this.getRange(selected)
+      }
+    };
+    handleAction({
+      type: ACTIONABLE_SELECT_CATEGORIES,
+      payload: {
+        item,
+        selectedCategories: selected
+      }
+    });
+    handleAction({
+      type: SPEC_COLOR_SCALE_SPECIFIED,
+      payload: {
+        fieldDef
+      }
+    });
+  }
+
+  pickedCategoryActionForFilter = (selected: string[] | number[] | boolean[] | DateTime[]) => {
+    const {handleAction, item, spec, filters} = this.props;
+    let field = spec.encoding.color.field.toString();
+
+    handleAction({
+      type: ACTIONABLE_MODIFY_ONE_OF_CATEGORIES,
+      payload: {
+        item: item,
+        oneOfCategories: selected
+      }
+    });
+    if (filterHasField(filters, field)) {
+      handleAction({
+        type: FILTER_MODIFY_ONE_OF,
+        payload: {
+          index: filterIndexOf(filters, field),
+          oneOf: selected
+        }
+      });
+    } else {
+      handleAction({
+        type: FILTER_ADD,
+        payload: {
+          filter: {
+            field,
+            oneOf: selected
+          }
+        }
+      });
+    }
   }
 
   private onBackButton() {
@@ -149,7 +213,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
 
     ///temp
     let oneOf: any[] = [];
-    const {domainWithFilter, schema, spec} = this.props;
+    const {domainWithFilter, spec} = this.props;
     let field = spec.encoding.color.field.toString();
 
     const {transform} = previewSpec;
@@ -172,7 +236,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
   }
 
   private renderSelectCategoriesPreview() {
-    const {mainSpec, data, handleAction, filters} = this.props;
+    const {mainSpec, data} = this.props;
     let previewSpec = (JSON.parse(JSON.stringify(mainSpec))) as FacetedCompositeUnitSpec;
     ///temp
     let selected: any[] = [];
@@ -210,53 +274,6 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     );
   }
 
-  private renderCategorySelector(actionable: ACTIONABLES) {
-    const {domain, domainWithFilter, spec, item} = this.props;
-    const {selectedCategories, oneOfCategories} = this.props.item;
-    const domainInUse = (actionable == "FILTER_CATEGORIES" ? domain : domainWithFilter);
-    const selectedInUse = (actionable == "FILTER_CATEGORIES" ? oneOfCategories : selectedCategories);
-    const oneOfFilter = (domainInUse as any[]).map(option => {
-      return (
-        <div key={option} className='option-div' styleName='option-row'>
-          <label>
-            <input
-              name={item.id}
-              value={option}
-              type='checkbox'
-              checked={(selectedInUse as any[]).indexOf(option) !== -1}
-              onChange={this.toggleCheckbox.bind(this, option, actionable)}
-            /> {'' + option}
-          </label>
-          <span styleName='keep-only' onClick={this.onSelectOne.bind(this, option, actionable)}>
-            Keep Only
-          </span>
-        </div>
-      );
-    });
-    return (
-      <div id={item.id}>
-        <div styleName='below-header'>
-          <span>
-            <a styleName='select-all' onClick={this.onSelectAll.bind(this, actionable)}>
-              Select All
-            </a> /
-            <a styleName='clear-all' onClick={this.onClearAll.bind(this, actionable)}>
-              Clear All
-            </a>
-          </span>
-          {this.state.hideSearchBar ?
-            null :
-            <input type='text' onChange={this.onSearch.bind(this)} autoFocus={true} />
-          }
-          <a styleName='search' onClick={this.onClickSearch.bind(this)}>
-            <i className='fa fa-search' />
-          </a>
-        </div>
-        {oneOfFilter}
-      </div>
-    );
-  }
-
   private onRemoveField() {
     this.props.item.guideState = "IGNORE";
     const {handleAction} = this.props;
@@ -264,89 +281,6 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
       type: SPEC_FIELD_REMOVE,
       payload: {channel: COLOR}
     });
-  }
-
-  protected categoryModifyScale(selected: string[] | number[] | boolean[] | DateTime[], actionable: ACTIONABLES) {
-
-    const {handleAction, item, spec} = this.props;
-    let field = spec.encoding.color.field.toString();
-
-    switch (actionable) {
-      case "SELECT_CATEGORIES": {
-        const {domainWithFilter, schema} = this.props;
-        const fieldSchema = schema.fieldSchema(field);
-        const fieldDef = {
-          field,
-          type: fieldSchema.vlType,
-          scale: {
-            domain: domainWithFilter,
-            range: this.getRange(selected)
-          }
-        };
-        handleAction({
-          type: ACTIONABLE_SELECT_CATEGORIES,
-          payload: {
-            item: item,
-            selectedCategories: selected
-          }
-        });
-        handleAction({
-          type: SPEC_COLOR_SCALE_SPECIFIED,
-          payload: {
-            fieldDef: fieldDef
-          }
-        });
-        // TODO: Is there any nice way to show unselected categories as "Ohters"?
-        // const newData = this.getNewCategory(selected);
-        // const lookupData: LookupData = {
-        //   data: {values: newData},
-        //   key: 'from',
-        //   fields: ['to']
-        // }
-        // const transform: LookupTransform = {
-        //   lookup: field,
-        //   from: lookupData
-        // }
-        // handleAction({
-        //   type: SPEC_COLOR_TRANSFORM_SPECIFIED,
-        //   payload: {
-        //     transform: transform,
-        //     fieldDef: fieldDef
-        //   }
-        // });
-      }
-        break;
-      case "FILTER_CATEGORIES": {
-        const {handleAction, filters} = this.props;
-        handleAction({
-          type: ACTIONABLE_MODIFY_ONE_OF_CATEGORIES,
-          payload: {
-            item: item,
-            oneOfCategories: selected
-          }
-        });
-        if (filterHasField(filters, field)) {
-          handleAction({
-            type: FILTER_MODIFY_ONE_OF,
-            payload: {
-              index: filterIndexOf(filters, field),
-              oneOf: selected
-            }
-          });
-        } else {
-          handleAction({
-            type: FILTER_ADD,
-            payload: {
-              filter: {
-                field,
-                oneOf: selected
-              }
-            }
-          });
-        }
-        break;
-      }
-    }
   }
 
   //TODO: Any better algorithm for this?
@@ -359,77 +293,6 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
       if (round >= p.length - 1) round = 0;
     }
     return r;
-  }
-
-  private getNewCategory(selected: string[] | number[] | boolean[] | DateTime[]): any[] {
-    const newC = [];
-    for (let i of this.props.domain) {
-      newC.push((((selected as any[]).indexOf(i) === -1) ? {from: i, to: "Others"} : {from: i, to: i}));
-    }
-    return newC;
-  }
-
-  private toggleCheckbox(option: string | number | boolean | DateTime, actionable: ACTIONABLES) {
-    const {oneOfCategories, selectedCategories} = this.props.item;
-    const selected = (actionable == "FILTER_CATEGORIES" ? oneOfCategories : selectedCategories);
-    const valueIndex = (selected as any[]).indexOf(option);
-    let changedSelectedValues;
-    if (valueIndex === -1) {
-      changedSelectedValues = insertItemToArray(selected, selected.length, option);
-    } else {
-      changedSelectedValues = removeItemFromArray(selected, valueIndex).array;
-    }
-    this.categoryModifyScale(changedSelectedValues, actionable);
-  }
-
-  private onSelectOne(value: string | number | boolean | DateTime, actionable: ACTIONABLES) {
-    this.categoryModifyScale([value], actionable);
-  }
-
-  private onSelectAll(actionable: ACTIONABLES) {
-    const {domain, domainWithFilter} = this.props;
-    const domainInUse = (actionable == "FILTER_CATEGORIES" ? domain : domainWithFilter);
-    this.categoryModifyScale(domainInUse.slice(), actionable);
-  }
-
-  private onClearAll(actionable: ACTIONABLES) {
-    this.categoryModifyScale([], actionable);
-  }
-
-  private onClickSearch() {
-    if (!this.state.hideSearchBar) {
-      const divs = this.getDivs();
-      Array.prototype.forEach.call(divs, (div: HTMLDivElement) => {
-        div.style.display = 'block';
-      });
-    }
-    this.setState({
-      hideSearchBar: !this.state.hideSearchBar
-    });
-  }
-
-  private onSearch(e: any) {
-    const searchedDivs = this.getDivs();
-    Array.prototype.forEach.call(searchedDivs, (searchedDiv: HTMLDivElement) => {
-      // its first child is label, the label's child is checkbox input
-      const searchedOption = searchedDiv.childNodes[0].childNodes[0] as HTMLInputElement;
-      if (searchedOption.value.toLowerCase().indexOf(e.target.value.toLowerCase().trim()) === -1) {
-        searchedDiv.style.display = 'none';
-      } else {
-        searchedDiv.style.display = 'block';
-      }
-    });
-  }
-
-  /**
-   * returns all div nodes in current filter shelf
-   */
-  private getDivs() {
-    // select the current filter shelf
-    const container = document.getElementById(this.props.item.id.toString());
-    // select all divs
-    const divs = container.getElementsByClassName('option-div');
-    return divs;
   }
 }
 

@@ -13,8 +13,8 @@ export interface CategoryPickerProps {
   field: string;
   domain: string[] | number[] | boolean[] | DateTime[];
   selected: string[] | number[] | boolean[] | DateTime[];
-  handleActoin: (action: GuidelineAction | FilterAction | SpecAction) => void;  // Add other actions when needed
-  pickedCategoryAction: ((selected: string[] | number[] | boolean[] | DateTime[]) => void);
+  handleAction: (action: GuidelineAction | FilterAction | SpecAction) => void;  // Add other actions when needed
+  pickedCategoryAction: (selected: string[] | number[] | boolean[] | DateTime[]) => void;
 }
 
 export interface CategoryPickerState {
@@ -172,92 +172,6 @@ export class CategoryPickerBase extends React.PureComponent<CategoryPickerProps,
     const divs = container.getElementsByClassName('option-div');
     return divs;
   }
-
-  /**
-   * what to do with the user-picked categories
-   */
-  // protected pickedCategoryAction(selected: string[] | number[] | boolean[] | DateTime[]) {
-
-  // const {handleAction, item, spec} = this.props;
-  // let field = spec.encoding.color.field.toString();
-
-  // switch (actionable) {
-  //   case "SELECT_CATEGORIES": {
-  //     const {domain} = this.props;
-  //     const fieldSchema = schema.fieldSchema(field);
-  //     const fieldDef = {
-  //       field,
-  //       type: fieldSchema.vlType,
-  //       scale: {
-  //         domain,
-  //         range: this.getRange(selected)
-  //       }
-  //     };
-  //     handleAction({
-  //       type: ACTIONABLE_SELECT_CATEGORIES,
-  //       payload: {
-  //         item: item,
-  //         selectedCategories: selected
-  //       }
-  //     });
-  //     handleAction({
-  //       type: SPEC_COLOR_SCALE_SPECIFIED,
-  //       payload: {
-  //         fieldDef: fieldDef
-  //       }
-  //     });
-  //     // TODO: Is there any nice way to show unselected categories as "Ohters"?
-  //     // const newData = this.getNewCategory(selected);
-  //     // const lookupData: LookupData = {
-  //     //   data: {values: newData},
-  //     //   key: 'from',
-  //     //   fields: ['to']
-  //     // }
-  //     // const transform: LookupTransform = {
-  //     //   lookup: field,
-  //     //   from: lookupData
-  //     // }
-  //     // handleAction({
-  //     //   type: SPEC_COLOR_TRANSFORM_SPECIFIED,
-  //     //   payload: {
-  //     //     transform: transform,
-  //     //     fieldDef: fieldDef
-  //     //   }
-  //     // });
-  //   }
-  //     break;
-  //   case "FILTER_CATEGORIES": {
-  //     const {handleAction, filters} = this.props;
-  //     handleAction({
-  //       type: ACTIONABLE_MODIFY_ONE_OF_CATEGORIES,
-  //       payload: {
-  //         item: item,
-  //         oneOfCategories: selected
-  //       }
-  //     });
-  //     if (filterHasField(filters, field)) {
-  //       handleAction({
-  //         type: FILTER_MODIFY_ONE_OF,
-  //         payload: {
-  //           index: filterIndexOf(filters, field),
-  //           oneOf: selected
-  //         }
-  //       });
-  //     } else {
-  //       handleAction({
-  //         type: FILTER_ADD,
-  //         payload: {
-  //           filter: {
-  //             field,
-  //             oneOf: selected
-  //           }
-  //         }
-  //       });
-  //     }
-  //     break;
-  //   }
-  // }
-  // }
 }
 
 export const CategoryPicker = (CSSModules(CategoryPickerBase, styles));
