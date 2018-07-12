@@ -5,8 +5,8 @@ import * as styles from './actionable-category.scss';
 import {DateTime} from 'vega-lite/build/src/datetime';
 import {ShelfUnitSpec, Schema, toTransforms, ShelfFilter, filterHasField, filterIndexOf} from '../../../models';
 import {Field} from '../../field';
-import {ActionHandler, ShelfAction, SpecAction, SPEC_COLOR_SCALE_SPECIFIED, SPEC_COLOR_TRANSFORM_SPECIFIED, SPEC_FIELD_REMOVE, LogAction, FILTER_MODIFY_ONE_OF, FilterAction} from '../../../actions';
-import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction, ACTIONABLE_TRIGGER_INTERFACE} from '../../../actions/guidelines';
+import {ActionHandler, ShelfAction, SpecAction, SPEC_COLOR_SCALE_SPECIFIED, SPEC_COLOR_TRANSFORM_SPECIFIED, SPEC_FIELD_REMOVE, LogAction, FILTER_MODIFY_ONE_OF, FilterAction, FILTER_ADD} from '../../../actions';
+import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction, ACTIONABLE_TRIGGER_INTERFACE, ACTIONABLE_MODIFY_ONE_OF_CATEGORIES} from '../../../actions/guidelines';
 import {GuidelineItem} from '../../../models/guidelines';
 import {insertItemToArray, removeItemFromArray} from '../../../reducers/util';
 import {COLOR} from 'vega-lite/build/src/channel';
@@ -114,7 +114,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     );
   }
 
-  private onBackButton(){
+  private onBackButton() {
     let actionable: ACTIONABLES = "NONE";
     const {handleAction, item} = this.props;
     handleAction({
@@ -213,8 +213,11 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
   }
 
   private renderCategorySelector(actionable: ACTIONABLES) {
-    const {domain, spec, item} = this.props;
-    const oneOfFilter = (domain as any[]).map(option => {
+    const {domain, domainWithFilter, spec, item} = this.props;
+    const {selectedCategories, oneOfCategories} = this.props.item;
+    const domainInUse = (actionable == "FILTER_CATEGORIES" ? domain : domainWithFilter);
+    const selectedInUse = (actionable == "FILTER_CATEGORIES" ? oneOfCategories : selectedCategories);
+    const oneOfFilter = (domainInUse as any[]).map(option => {
       return (
         <div key={option} className='option-div' styleName='option-row'>
           <label>
@@ -222,7 +225,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
               name={item.id}
               value={option}
               type='checkbox'
-              checked={(item.selectedCategories as any[]).indexOf(option) !== -1}
+              checked={(selectedInUse as any[]).indexOf(option) !== -1}
               onChange={this.toggleCheckbox.bind(this, option, actionable)}
             /> {'' + option}
           </label>
@@ -270,14 +273,6 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     const {handleAction, item, spec} = this.props;
     let field = spec.encoding.color.field.toString();
 
-    handleAction({
-      type: ACTIONABLE_SELECT_CATEGORIES,
-      payload: {
-        item: item,
-        selectedCategories: selected
-      }
-    });
-
     switch (actionable) {
       case "SELECT_CATEGORIES": {
         const {domainWithFilter, schema} = this.props;
@@ -290,6 +285,13 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
             range: this.getRange(selected)
           }
         };
+        handleAction({
+          type: ACTIONABLE_SELECT_CATEGORIES,
+          payload: {
+            item: item,
+            selectedCategories: selected
+          }
+        });
         handleAction({
           type: SPEC_COLOR_SCALE_SPECIFIED,
           payload: {
@@ -318,13 +320,29 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
         break;
       case "FILTER_CATEGORIES": {
         const {handleAction, filters} = this.props;
-        const index = filterIndexOf(filters, field);
-        if (index != -1) {
+        handleAction({
+          type: ACTIONABLE_MODIFY_ONE_OF_CATEGORIES,
+          payload: {
+            item: item,
+            oneOfCategories: selected
+          }
+        });
+        if (filterHasField(filters, field)) {
           handleAction({
             type: FILTER_MODIFY_ONE_OF,
             payload: {
-              index,
+              index: filterIndexOf(filters, field),
               oneOf: selected
+            }
+          });
+        } else {
+          handleAction({
+            type: FILTER_ADD,
+            payload: {
+              filter: {
+                field,
+                oneOf: selected
+              }
             }
           });
         }
@@ -354,7 +372,8 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
   }
 
   private toggleCheckbox(option: string | number | boolean | DateTime, actionable: ACTIONABLES) {
-    const selected = this.props.item.selectedCategories;
+    const {oneOfCategories, selectedCategories} = this.props.item;
+    const selected = (actionable == "FILTER_CATEGORIES" ? oneOfCategories : selectedCategories);
     const valueIndex = (selected as any[]).indexOf(option);
     let changedSelectedValues;
     if (valueIndex === -1) {
@@ -370,8 +389,9 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
   }
 
   private onSelectAll(actionable: ACTIONABLES) {
-    const {domain} = this.props;
-    this.categoryModifyScale(domain.slice(), actionable);
+    const {domain, domainWithFilter} = this.props;
+    const domainInUse = (actionable == "FILTER_CATEGORIES" ? domain : domainWithFilter);
+    this.categoryModifyScale(domainInUse.slice(), actionable);
   }
 
   private onClearAll(actionable: ACTIONABLES) {

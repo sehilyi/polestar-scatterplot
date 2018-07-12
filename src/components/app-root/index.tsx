@@ -54,7 +54,7 @@ class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     }
     return (
       <div className="voyager">
-        <LogPane/>
+        {/* <LogPane/> */}
         {!hideHeader && <Header/>}
         <ClipLoader color={SPINNER_COLOR} loading={dataset.isLoading}/>
         {bottomPane}

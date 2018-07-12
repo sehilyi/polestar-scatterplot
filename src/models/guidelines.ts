@@ -29,6 +29,7 @@ export interface GuidelineItem {
 
   //TODO:
   selectedCategories: string[] | number[] | boolean[] | DateTime[];
+  oneOfCategories: string[] | number[] | boolean[] | DateTime[];
   triggeredActionable: string;
 }
 
@@ -49,6 +50,7 @@ export const GUIDELINE_TOO_MANY_CATEGORIES: GuidelineItem = {
   isExpanded: false,
   guideState: "WARN",
   selectedCategories: [],
+  oneOfCategories: [],
   triggeredActionable: "NONE"
 }
 
