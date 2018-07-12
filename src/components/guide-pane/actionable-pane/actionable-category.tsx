@@ -87,6 +87,11 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
             </a>
           </div>
         </div>
+        <div styleName={triggeredActionable == "NONE" ? 'back-button-hidden' : 'back-button'}
+          onClick={this.onBackButton.bind(this)}>
+          <i className="fa fa-chevron-circle-left" aria-hidden="true" />
+          {' '} Move Back
+        </div>
         <div styleName={triggeredActionable == "FILTER_CATEGORIES" ? 'filter-shelf' : 'filter-shelf-hidden'} key={'1'}>
           <Field
             draggable={false}
@@ -107,6 +112,15 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
         </div>
       </div>
     );
+  }
+
+  private onBackButton(){
+    let actionable: ACTIONABLES = "NONE";
+    const {handleAction, item} = this.props;
+    handleAction({
+      type: ACTIONABLE_TRIGGER_INTERFACE,
+      payload: {item: item, triggeredActionable: actionable}
+    });
   }
 
   private onFilterClick() {
@@ -266,13 +280,13 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
 
     switch (actionable) {
       case "SELECT_CATEGORIES": {
-        const {domain, schema} = this.props;
+        const {domainWithFilter, schema} = this.props;
         const fieldSchema = schema.fieldSchema(field);
         const fieldDef = {
           field,
           type: fieldSchema.vlType,
           scale: {
-            domain: domain,
+            domain: domainWithFilter,
             range: this.getRange(selected)
           }
         };
@@ -311,7 +325,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
             payload: {
               index,
               oneOf: selected
-          }
+            }
           });
         }
         break;

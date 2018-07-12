@@ -32,6 +32,26 @@ $radius: 3px;
   }
 }
 
+.back-button {
+  padding: 10px;
+  margin-bottom: 4px;
+  border-radius: 7px;
+  display: block;
+  text-align: center;
+  border: #dedede solid 1px;
+  flex-grow: 1;
+  cursor: pointer;
+
+  &:hover{
+    background-color: rgb(255, 239, 92);
+  }
+}
+
+.back-button-hidden {
+  @extend .back-button;
+  display: none;
+}
+
 .select-all, .clear-all {
   color: #4B0082;
   cursor: pointer;

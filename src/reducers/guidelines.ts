@@ -10,8 +10,9 @@ export function guidelineReducer(guidelines: Guidelines = DEFAULT_GUIDELINES, ac
     case GUIDELINE_ADD_ITEM: {
       const {item} = action.payload;
       const index = list.map(function (e) {return e.id;}).indexOf(item.id);
-      if (index != -1) list.splice(index, 1);  //This guideline can be only one
-      list.push(item);
+
+      if (index == -1) //list.splice(index, 1);  //This guideline can be only one
+        list.push(item);
 
       return {
         list: list,
