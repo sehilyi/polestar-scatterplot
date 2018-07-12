@@ -49,6 +49,10 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     });
 
     this.plotLogger = new Logger(props.handleAction);
+    this.onFilterClick.bind(this);
+    this.onSelectClick.bind(this);
+    this.onRemoveField.bind(this);
+    this.onBackButton.bind(this);
   }
 
   public render() {
@@ -65,30 +69,24 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     return (
       <div>
         <div styleName={triggeredActionable == "NONE" ? "guide-previews" : "guide-previews-hidden"}>
-          <div styleName="guide-preview" ref={this.vegaLiteWrapperRefHandler} className="preview" onClick={this.onFilterClick.bind(this)}>
-            <a>
-              {vegaReady ? this.renderFilterCategoriesPreview() : null}
-              <i className="fa fa-filter" aria-hidden="true" />
-              {' '} Filter Categories
-            </a>
+          <div styleName="guide-preview" className="preview" onClick={this.onFilterClick} ref={this.vegaLiteWrapperRefHandler} >
+            {vegaReady ? this.renderFilterCategoriesPreview() : null}
+            <i className="fa fa-filter" aria-hidden="true" />
+            {' '} Filter Categories
           </div>
-          <div styleName="guide-preview" ref={this.vegaLiteWrapperRefHandler} className="preview" onClick={this.onSelectClick.bind(this)}>
-            <a>
-              {vegaReady ? this.renderSelectCategoriesPreview() : null}
-              <i className="fa fa-hand-pointer-o" aria-hidden="true" />
-              {' '} Select Categories
-            </a>
+          <div styleName="guide-preview" className="preview" onClick={this.onSelectClick} ref={this.vegaLiteWrapperRefHandler} >
+            {vegaReady ? this.renderSelectCategoriesPreview() : null}
+            <i className="fa fa-hand-pointer-o" aria-hidden="true" />
+            {' '} Select Categories
           </div>
-          <div styleName="guide-preview" onClick={this.onRemoveField.bind(this)} ref={this.vegaLiteWrapperRefHandler} className="preview">
-            <a>
-              {vegaReady ? this.renderRemoveFieldPreview() : null}
-              <i className="fa fa-times" aria-hidden="true" />
-              {' '} Remove Field
-            </a>
+          <div styleName="guide-preview" className="preview" onClick={this.onRemoveField} ref={this.vegaLiteWrapperRefHandler} >
+            {vegaReady ? this.renderRemoveFieldPreview() : null}
+            <i className="fa fa-times" aria-hidden="true" />
+            {' '} Remove Field
           </div>
         </div>
         <div styleName={triggeredActionable == "NONE" ? 'back-button-hidden' : 'back-button'}
-          onClick={this.onBackButton.bind(this)}>
+          onClick={this.onBackButton}>
           <i className="fa fa-chevron-circle-left" aria-hidden="true" />
           {' '} Move Back
         </div>
