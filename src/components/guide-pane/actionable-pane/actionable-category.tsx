@@ -62,7 +62,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     const fieldSchema = schema.fieldSchema(field);
 
     return (
-      <div>
+      <div styleName="ac-root">
         <div styleName={triggeredActionable == "NONE" ? "guide-previews" : "guide-previews-hidden"}>
           <div styleName="guide-preview" className="preview" onClick={this.onFilterClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
             {vegaReady ? this.renderFilterCategoriesPreview() : null}
@@ -86,11 +86,11 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
             </a>
           </div>
         </div>
-        {/* <div styleName={triggeredActionable == "NONE" ? 'back-button-hidden' : 'back-button'}
+        <div styleName={triggeredActionable == "NONE" ? 'back-button-hidden' : 'back-button'}
           onClick={this.onBackButton.bind(this)}>
           <i className="fa fa-chevron-circle-left" aria-hidden="true" />
-          {' '} Move Back
-        </div> */}
+          {' '} Reset and Move Back
+        </div>
         <div styleName={triggeredActionable == "FILTER_CATEGORIES" ? '' : 'hidden'}>
           <CategoryPicker
             id={id + field + "FILTER_CATEGORIES"}
