@@ -5,7 +5,7 @@ import * as styles from "./guide-element.scss";
 import * as warn from '../../../images/warning.png';
 import * as done from '../../../images/done.png';
 import * as ignore from '../../../images/ignore.png';
-import {GuidelineItem} from '../../models/guidelines';
+import {GuidelineItemTypes, GuidelineItemActionableCategories} from '../../models/guidelines';
 import {ActionHandler} from '../../actions';
 import {GuidelineAction, GUIDELINE_SHOW_RECT_INDICATOR, GUIDELINE_HIDE_INDICATOR, GUIDELINE_TOGGLE_IGNORE_ITEM, GUIDELINE_TOGGLE_ISEXPANDED} from '../../actions/guidelines';
 import {ActionableCategory} from './actionable-pane/actionable-category';
@@ -16,7 +16,7 @@ import {Themes} from '../../models/theme/theme';
 import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 
 export interface GuideElementProps extends ActionHandler<GuidelineAction> {
-  item: GuidelineItem;
+  item: GuidelineItemTypes;
 
   schema: Schema;
   spec: ShelfUnitSpec;
@@ -94,7 +94,7 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, {}>
 
         return (
           <ActionableCategory
-            item={item}
+            item={item as GuidelineItemActionableCategories}
             domain={domain}
             domainWithFilter={domainWithFilter}
             spec={spec}

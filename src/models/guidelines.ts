@@ -9,6 +9,7 @@ import {OneOfFilterShelfProps} from "../components/filter-pane/one-of-filter-she
 
 export type GuideState = "WARN" | "DONE" | "IGNORE";
 export type guidelineIds = "GUIDELINE_TOO_MANY_CATEGORIES" | "GUIDELINE_NONE";
+export type GuidelineItemTypes = GuidelineItemActionableCategories | GuidelineItem;
 
 export interface Guidelines {
   list: GuidelineItem[];
@@ -23,14 +24,13 @@ export interface GuidelineItem {
   category?: string;
   title: string;
   content?: string;
-
   isExpanded: boolean;
   guideState: GuideState;
+}
 
-  //TODO:
+export interface GuidelineItemActionableCategories extends GuidelineItem {
   selectedCategories: string[] | number[] | boolean[] | DateTime[];
   oneOfCategories: string[] | number[] | boolean[] | DateTime[];
-  triggeredActionable: string;
 }
 
 export const DEFAULT_GUIDELINES: Guidelines = {
@@ -41,20 +41,19 @@ export const DEFAULT_GUIDELINES: Guidelines = {
   position: {x: 0, y: 0}
 }
 
-export const GUIDELINE_TOO_MANY_CATEGORIES: GuidelineItem = {
+export const GUIDELINE_TOO_MANY_CATEGORIES: GuidelineItemActionableCategories = {
   id: "GUIDELINE_TOO_MANY_CATEGORIES",
   category: 'Too Many Categories',
   title: 'Select at most 10 categories to highlight.',
   content: '',
-
   isExpanded: false,
   guideState: "WARN",
+
   selectedCategories: [],
-  oneOfCategories: [],
-  triggeredActionable: "NONE"
+  oneOfCategories: []
 }
 
-/*
+/**
  * USED BY)
  * ActionableCategory,
  */
@@ -99,7 +98,7 @@ export function guideActionShelf(props: EncodingShelfProps, fieldDef: ShelfField
   }
 }
 
-/*
+/**
  * USED BY)
  * ActionableCategory,
  */

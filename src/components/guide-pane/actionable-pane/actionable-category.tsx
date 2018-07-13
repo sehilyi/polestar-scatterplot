@@ -4,11 +4,9 @@ import * as CSSModules from 'react-css-modules';
 import * as styles from './actionable-category.scss';
 import {DateTime} from 'vega-lite/build/src/datetime';
 import {ShelfUnitSpec, Schema, toTransforms, ShelfFilter, filterHasField, filterIndexOf} from '../../../models';
-import {Field} from '../../field';
-import {ActionHandler, ShelfAction, SpecAction, SPEC_COLOR_SCALE_SPECIFIED, SPEC_COLOR_TRANSFORM_SPECIFIED, SPEC_FIELD_REMOVE, LogAction, FILTER_MODIFY_ONE_OF, FilterAction, FILTER_ADD} from '../../../actions';
-import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction, ACTIONABLE_TRIGGER_INTERFACE, ACTIONABLE_MODIFY_ONE_OF_CATEGORIES} from '../../../actions/guidelines';
-import {GuidelineItem} from '../../../models/guidelines';
-import {insertItemToArray, removeItemFromArray} from '../../../reducers/util';
+import {ActionHandler, SpecAction, SPEC_COLOR_SCALE_SPECIFIED, SPEC_FIELD_REMOVE, LogAction, FILTER_MODIFY_ONE_OF, FilterAction, FILTER_ADD} from '../../../actions';
+import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction, ACTIONABLE_MODIFY_ONE_OF_CATEGORIES} from '../../../actions/guidelines';
+import {GuidelineItemActionableCategories} from '../../../models/guidelines';
 import {COLOR} from 'vega-lite/build/src/channel';
 import {VegaLite} from '../../vega-lite';
 import {InlineData} from 'vega-lite/build/src/data';
@@ -19,7 +17,7 @@ import {OneOfFilter} from 'vega-lite/build/src/filter';
 import {CategoryPicker} from './actionable-common-ui/category-picker';
 
 export interface ActionableCategoryProps extends ActionHandler<GuidelineAction | SpecAction | LogAction | FilterAction> {
-  item: GuidelineItem;
+  item: GuidelineItemActionableCategories;
   domain: string[] | number[] | boolean[] | DateTime[];
   domainWithFilter: string[] | number[] | boolean[] | DateTime[];
   spec: ShelfUnitSpec;
@@ -32,11 +30,13 @@ export interface ActionableCategoryProps extends ActionHandler<GuidelineAction |
   filters: ShelfFilter[];
 }
 
+//TODO: Later, this could be more systematic, including all kinds of actionables in all guidelines
+export type Actionables = "FILTER_CATEGORIES" | "SELECT_CATEGORIES" | "REMOVE_FIELD" | "NONE";
+
 export interface ActionableCategoryState {
   hideSearchBar: boolean;
+  triggeredActionable: Actionables;
 }
-
-export type ACTIONABLES = "FILTER_CATEGORIES" | "SELECT_CATEGORIES" | "REMOVE_FIELD" | "NONE";
 
 export class ActionableCategoryBase extends React.PureComponent<ActionableCategoryProps, ActionableCategoryState>{
 
@@ -46,48 +46,43 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
   constructor(props: ActionableCategoryProps) {
     super(props);
     this.state = ({
-      hideSearchBar: true
+      hideSearchBar: true,
+      triggeredActionable: "NONE"
     });
 
     this.plotLogger = new Logger(props.handleAction);
-    this.onFilterClick = this.onFilterClick.bind(this);
-    this.onSelectClick = this.onSelectClick.bind(this);
-    this.onRemoveField = this.onRemoveField.bind(this);
-    this.onBackButton = this.onBackButton.bind(this);
   }
 
   public render() {
     const vegaReady = typeof this.props.mainSpec != "undefined";
-    const {domain, domainWithFilter, schema, spec, mainSpec, handleAction} = this.props;
-    const {id, triggeredActionable, oneOfCategories, selectedCategories} = this.props.item;
+    const {domain, domainWithFilter, schema, spec, handleAction} = this.props;
+    const {id, oneOfCategories, selectedCategories} = this.props.item;
+    const {triggeredActionable} = this.state;
     let field = spec.encoding.color.field.toString();
     const fieldSchema = schema.fieldSchema(field);
-    const fieldDef = {
-      field,
-      type: fieldSchema.vlType
-    };
 
     return (
       <div>
         <div styleName={triggeredActionable == "NONE" ? "guide-previews" : "guide-previews-hidden"}>
-          <div styleName="guide-preview" className="preview" onClick={this.onFilterClick} ref={this.vegaLiteWrapperRefHandler} >
+          <div styleName="guide-preview" className="preview" onClick={this.onFilterClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
             {vegaReady ? this.renderFilterCategoriesPreview() : null}
             <i className="fa fa-filter" aria-hidden="true" />
             {' '} Filter Categories
           </div>
-          <div styleName="guide-preview" className="preview" onClick={this.onSelectClick} ref={this.vegaLiteWrapperRefHandler} >
+          <div styleName="guide-preview" className="preview" onClick={this.onSelectClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
             {vegaReady ? this.renderSelectCategoriesPreview() : null}
             <i className="fa fa-hand-pointer-o" aria-hidden="true" />
             {' '} Select Categories
           </div>
-          <div styleName="guide-preview" className="preview" onClick={this.onRemoveField} ref={this.vegaLiteWrapperRefHandler} >
+          <div styleName="guide-preview" className="preview" onClick={this.onRemoveField.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
             {vegaReady ? this.renderRemoveFieldPreview() : null}
             <i className="fa fa-times" aria-hidden="true" />
             {' '} Remove Field
           </div>
         </div>
         <div styleName={triggeredActionable == "NONE" ? 'back-button-hidden' : 'back-button'}
-          onClick={this.onBackButton}>
+          onClick={this.onBackButton.bind(this)}>
+          {/* TODO: do we have to put undo button here? */}
           <i className="fa fa-chevron-circle-left" aria-hidden="true" />
           {' '} Move Back
         </div>
@@ -177,30 +172,13 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
   }
 
   private onBackButton() {
-    let actionable: ACTIONABLES = "NONE";
-    const {handleAction, item} = this.props;
-    handleAction({
-      type: ACTIONABLE_TRIGGER_INTERFACE,
-      payload: {item: item, triggeredActionable: actionable}
-    });
+    this.setState({triggeredActionable: "NONE"});
   }
-
   private onFilterClick() {
-    let actionable: ACTIONABLES = "FILTER_CATEGORIES";
-    const {handleAction, item} = this.props;
-    handleAction({
-      type: ACTIONABLE_TRIGGER_INTERFACE,
-      payload: {item: item, triggeredActionable: actionable}
-    });
+    this.setState({triggeredActionable: "FILTER_CATEGORIES"});
   }
-
   private onSelectClick() {
-    let actionable: ACTIONABLES = "SELECT_CATEGORIES";
-    const {handleAction, item} = this.props;
-    handleAction({
-      type: ACTIONABLE_TRIGGER_INTERFACE,
-      payload: {item: item, triggeredActionable: actionable}
-    });
+    this.setState({triggeredActionable: "SELECT_CATEGORIES"});
   }
 
   private vegaLiteWrapperRefHandler = (ref: any) => {
@@ -208,7 +186,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
   }
 
   private renderFilterCategoriesPreview() {
-    const {mainSpec, data, filters} = this.props;
+    const {mainSpec, data} = this.props;
     let previewSpec = (JSON.parse(JSON.stringify(mainSpec))) as FacetedCompositeUnitSpec;
 
     ///temp

@@ -1,7 +1,6 @@
 import {Action} from "../actions";
 import {DEFAULT_GUIDELINES, Guidelines, GuidelineItem, GuideState} from "../models/guidelines";
 import {GUIDELINE_REMOVE_ITEM, GUIDELINE_ADD_ITEM, ACTIONABLE_SELECT_CATEGORIES, GUIDELINE_SHOW_RECT_INDICATOR, GUIDELINE_HIDE_INDICATOR, GUIDELINE_TOGGLE_IGNORE_ITEM, GUIDELINE_TOGGLE_ISEXPANDED, ACTIONABLE_TRIGGER_INTERFACE, ACTIONABLE_MODIFY_ONE_OF_CATEGORIES} from "../actions/guidelines";
-import {modifyItemInArray} from "./util";
 
 export function guidelineReducer(guidelines: Guidelines = DEFAULT_GUIDELINES, action: Action): Guidelines {
   const {list, showHighlight, size, position} = guidelines;
@@ -132,7 +131,8 @@ export function guidelineReducer(guidelines: Guidelines = DEFAULT_GUIDELINES, ac
         position: position
       };
     }
-    case ACTIONABLE_TRIGGER_INTERFACE:{
+    //TODO: remove when not needed anymore
+    case ACTIONABLE_TRIGGER_INTERFACE: {
       const {item, triggeredActionable} = action.payload;
       const modifyOneOf = (item: GuidelineItem) => {
         return {
