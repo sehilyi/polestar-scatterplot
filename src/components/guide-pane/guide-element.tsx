@@ -28,10 +28,17 @@ export interface GuideElementProps extends ActionHandler<GuidelineAction> {
   theme: Themes;
 }
 
-export class GuideElementBase extends React.PureComponent<GuideElementProps, {}> {
+export interface GuideElementState {
+  isExpanded: boolean;
+}
+
+export class GuideElementBase extends React.PureComponent<GuideElementProps, GuideElementState> {
 
   constructor(props: GuideElementProps) {
     super(props);
+    this.state = ({
+      isExpanded: false
+    })
 
     this.onShowIndicator = this.onShowIndicator.bind(this);
     this.onHideIndicator = this.onHideIndicator.bind(this);
@@ -42,10 +49,10 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, {}>
   }
 
   public render() {
-    const {isExpanded, guideState, content, category, title} = this.props.item;
+    const {guideState, content, category, title} = this.props.item;
 
     return (
-      <div styleName={isExpanded ? "expanded" : "guideline"}
+      <div styleName={this.state.isExpanded ? "expanded" : "guideline"}
         onMouseEnter={this.onShowIndicator}
         onMouseLeave={this.onHideIndicator}>
         <div styleName="guide-header">
@@ -145,10 +152,8 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, {}>
   }
 
   private onOpenGuide() {
-    const {item} = this.props;
-    this.props.handleAction({
-      type: GUIDELINE_TOGGLE_ISEXPANDED,
-      payload: {item}
+    this.setState({
+      isExpanded: !this.state.isExpanded
     });
   }
 
@@ -157,6 +162,9 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, {}>
     this.props.handleAction({
       type: GUIDELINE_TOGGLE_IGNORE_ITEM,
       payload: {item}
+    });
+    this.setState({
+      isExpanded: false
     });
   }
 }

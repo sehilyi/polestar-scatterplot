@@ -6,7 +6,7 @@ import {DateTime} from 'vega-lite/build/src/datetime';
 import {ShelfUnitSpec, Schema, toTransforms, ShelfFilter, filterHasField, filterIndexOf} from '../../../models';
 import {ActionHandler, SpecAction, SPEC_COLOR_SCALE_SPECIFIED, SPEC_FIELD_REMOVE, LogAction, FILTER_MODIFY_ONE_OF, FilterAction, FILTER_ADD} from '../../../actions';
 import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction, ACTIONABLE_MODIFY_ONE_OF_CATEGORIES} from '../../../actions/guidelines';
-import {GuidelineItemActionableCategories} from '../../../models/guidelines';
+import {GuidelineItemActionableCategories, getDefaultCategoryPicks} from '../../../models/guidelines';
 import {COLOR} from 'vega-lite/build/src/channel';
 import {VegaLite} from '../../vega-lite';
 import {InlineData} from 'vega-lite/build/src/data';
@@ -86,19 +86,22 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
           <i className="fa fa-chevron-circle-left" aria-hidden="true" />
           {' '} Move Back
         </div>
-        <div styleName={triggeredActionable == "FILTER_CATEGORIES" ? 'filter-shelf' : 'filter-shelf-hidden'}>
+        <div styleName={triggeredActionable == "FILTER_CATEGORIES" ? '' : 'hidden'}>
           <CategoryPicker
             id={id + field + "FILTER_CATEGORIES"}
+            title='Filter'
             field={field}
             domain={domain}
             selected={oneOfCategories}
             handleAction={handleAction}
             pickedCategoryAction={this.pickedCategoryActionForFilter}
+            isCopyFromUI={true}
           />
         </div>
-        <div styleName={triggeredActionable == "SELECT_CATEGORIES" ? 'filter-shelf' : 'filter-shelf-hidden'}>
+        <div styleName={triggeredActionable == "SELECT_CATEGORIES" ? '' : 'hidden'}>
           <CategoryPicker
             id={id + field + "SELECT_CATEGORIES"}
+            title='Select'
             field={field}
             domain={domainWithFilter}
             selected={selectedCategories}
@@ -186,60 +189,38 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
   }
 
   private renderFilterCategoriesPreview() {
-    const {mainSpec, data} = this.props;
-    let previewSpec = (JSON.parse(JSON.stringify(mainSpec))) as FacetedCompositeUnitSpec;
-
-    ///temp
-    let oneOf: any[] = [];
-    const {domainWithFilter, spec} = this.props;
-    let field = spec.encoding.color.field.toString();
-
+    let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
+    let field = this.props.spec.encoding.color.field.toString();
+    let oneOf = getDefaultCategoryPicks(this.props.domainWithFilter);
     const {transform} = previewSpec;
-
-    oneOf.push(domainWithFilter[0]);
-    oneOf.push(domainWithFilter[1]);
-    oneOf.push(domainWithFilter[2]);
-    oneOf.push(domainWithFilter[3]);
-    oneOf.push(domainWithFilter[4]);
     let newFilter: OneOfFilter = {
       field,
       oneOf
     }
     const newTransform = (transform || []).concat(toTransforms([newFilter]));
     previewSpec.transform = newTransform;
-    ///
+
     return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={data} />
+      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
     );
   }
 
   private renderSelectCategoriesPreview() {
-    const {mainSpec, data} = this.props;
-    let previewSpec = (JSON.parse(JSON.stringify(mainSpec))) as FacetedCompositeUnitSpec;
-    ///temp
-    let selected: any[] = [];
-    const {domainWithFilter, schema, spec} = this.props;
-    let field = spec.encoding.color.field.toString();
-
-    const fieldSchema = schema.fieldSchema(field);
-
-    selected.push(domainWithFilter[0]);
-    selected.push(domainWithFilter[1]);
-    selected.push(domainWithFilter[2]);
-    selected.push(domainWithFilter[3]);
-    selected.push(domainWithFilter[4]);
+    let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
+    let field = this.props.spec.encoding.color.field.toString();
+    let selected = getDefaultCategoryPicks(this.props.domainWithFilter);
+    const fieldSchema = this.props.schema.fieldSchema(field);
     previewSpec.encoding.color = {
       field,
       type: fieldSchema.vlType,
       scale: {
-        domain: domainWithFilter,
+        domain: this.props.domainWithFilter,
         range: this.getRange(selected)
       }
     }
-    ///
 
     return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={data} />
+      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
     );
   }
 

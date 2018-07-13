@@ -1,55 +1,17 @@
 $margin: 4px;
 $radius: 3px;
-// TODO: remove unused
-.guide-previews {
-  // width: 100%;
-  align-content: center;
-  // display: flex;
-  margin: 5px;
-  display: flex;
-  flex-wrap: wrap;
-}
 
-.guide-previews-hidden {
-  @extend .guide-previews;
-
-  display: none;
-}
-
-.guide-preview {
+.cropped-border {
   padding: 10px;
-  margin: 5px;
-  border-radius: 7px;
-  width: 100px;
-  display: block;
-  text-align: center;
-  border: #dedede solid 1px;
-  flex-grow: 1;
-  cursor: pointer;
-
-  &:hover{
-    background-color: rgb(255, 239, 92);
-  }
+  border: #B9C5E4 dashed 2px;
+  border-radius: $radius;
+  background: #E2E9F3;
+  margin-top: 5px;
 }
 
-.back-button {
-  padding: 10px;
-  margin-bottom: 4px;
-  border-radius: 7px;
-  display: block;
-  text-align: center;
-  border: #dedede solid 1px;
-  flex-grow: 1;
-  cursor: pointer;
-
-  &:hover{
-    background-color: rgb(255, 239, 92);
-  }
-}
-
-.back-button-hidden {
-  @extend .back-button;
-  display: none;
+.not-cropped {
+  padding: 5px;
+  margin-top: 5px;
 }
 
 .select-all, .clear-all {
@@ -92,23 +54,11 @@ $radius: 3px;
 
 $radius: 3px;
 
-.filter-shelf {
+.picker-shelf {
   background-color: white;
   border-radius: $radius;
   border: 1px solid #ddd;
   margin-bottom: 4px;
   max-height: 150px;
   overflow: scroll;
-}
-
-.filter-shelf-hidden{
-  @extend .filter-shelf;
-
-  display: none;
-}
-
-.filter-pane {
-  max-height: calc(40vh);
-  overflow-y: auto;
-  overflow-x: hidden;
 }

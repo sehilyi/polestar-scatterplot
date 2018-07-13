@@ -37,8 +37,7 @@ export function guidelineReducer(guidelines: Guidelines = DEFAULT_GUIDELINES, ac
       const modifyOneOf = (item: GuidelineItem) => {
         return {
           ...item,
-          guideState: item.guideState == "IGNORE" ? "WARN" as GuideState : "IGNORE" as GuideState,
-          isExpanded: item.guideState == "WARN" ? false : item.isExpanded
+          guideState: item.guideState == "IGNORE" ? "WARN" as GuideState : "IGNORE" as GuideState
         };
       };
 
@@ -53,12 +52,12 @@ export function guidelineReducer(guidelines: Guidelines = DEFAULT_GUIDELINES, ac
         position: position
       };
     }
+    //TODO: remove when not needed anymore
     case GUIDELINE_TOGGLE_ISEXPANDED: {
       const {item} = action.payload;
       const modifyOneOf = (item: GuidelineItem) => {
         return {
-          ...item,
-          isExpanded: !item.isExpanded
+          ...item
         };
       };
 

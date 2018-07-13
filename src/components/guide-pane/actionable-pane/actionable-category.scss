@@ -2,9 +2,7 @@ $margin: 4px;
 $radius: 3px;
 
 .guide-previews {
-  // width: 100%;
   align-content: center;
-  // display: flex;
   margin: 5px;
   display: flex;
   flex-wrap: wrap;
@@ -52,63 +50,6 @@ $radius: 3px;
   display: none;
 }
 
-.select-all, .clear-all {
-  color: #4B0082;
-  cursor: pointer;
-  font-size: 11px;
-  margin: $margin;
-}
-
-.select-all:hover, .clear-all:hover {
-  color: #2980b9;
-}
-
-.keep-only {
-  color: transparent;
-  cursor: pointer;
-  flex-grow: 1;
-  text-align: right;
-}
-
-.keep-only:hover {
-  color: gray;
-}
-
-.option-row {
-  margin: $margin;
-  display: flex;
-  justify-content: space-between;
-}
-
-.search {
-  margin-right: 1px;
-}
-
-.below-header {
-  display: flex;
-  justify-content: space-between;
-  margin: 2px;
-}
-
-$radius: 3px;
-
-.filter-shelf {
-  background-color: white;
-  border-radius: $radius;
-  border: 1px solid #ddd;
-  margin-bottom: 4px;
-  max-height: 150px;
-  overflow: scroll;
-}
-
-.filter-shelf-hidden{
-  @extend .filter-shelf;
-
+.hidden {
   display: none;
-}
-
-.filter-pane {
-  max-height: calc(40vh);
-  overflow-y: auto;
-  overflow-x: hidden;
 }

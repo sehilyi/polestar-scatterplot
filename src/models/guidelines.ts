@@ -11,6 +11,9 @@ export type GuideState = "WARN" | "DONE" | "IGNORE";
 export type guidelineIds = "GUIDELINE_TOO_MANY_CATEGORIES" | "GUIDELINE_NONE";
 export type GuidelineItemTypes = GuidelineItemActionableCategories | GuidelineItem;
 
+//Thresholds
+export const CATEGORY_THRESHOLD = 10;
+
 export interface Guidelines {
   list: GuidelineItem[];
 
@@ -24,7 +27,6 @@ export interface GuidelineItem {
   category?: string;
   title: string;
   content?: string;
-  isExpanded: boolean;
   guideState: GuideState;
 }
 
@@ -46,11 +48,15 @@ export const GUIDELINE_TOO_MANY_CATEGORIES: GuidelineItemActionableCategories = 
   category: 'Too Many Categories',
   title: 'Select at most 10 categories to highlight.',
   content: '',
-  isExpanded: false,
   guideState: "WARN",
 
   selectedCategories: [],
   oneOfCategories: []
+}
+
+//TODO: Be more smart for picking defaults by perhaps considering metadata
+export function getDefaultCategoryPicks(domain: string[] | number[] | boolean[] | DateTime[]): any[] {
+  return domain.length > CATEGORY_THRESHOLD ? domain.slice(0,7) : domain.slice();
 }
 
 /**
@@ -116,7 +122,7 @@ export function guideActionFilter(props: OneOfFilterShelfProps, oneOf: string[] 
             }
           });
         }
-        else{
+        else {
           props.handleAction({
             type: GUIDELINE_REMOVE_ITEM,
             payload: {

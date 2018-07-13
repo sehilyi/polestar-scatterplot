@@ -10,11 +10,14 @@ import {SpecAction, FilterAction, GuidelineAction} from '../../../../actions';
 
 export interface CategoryPickerProps {
   id: string;
+  title?: string;
   field: string;
   domain: string[] | number[] | boolean[] | DateTime[];
   selected: string[] | number[] | boolean[] | DateTime[];
   handleAction: (action: GuidelineAction | FilterAction | SpecAction) => void;  // Add other actions when needed
   pickedCategoryAction: (selected: string[] | number[] | boolean[] | DateTime[]) => void;
+
+  isCopyFromUI?: boolean;
 }
 
 export interface CategoryPickerState {
@@ -30,20 +33,26 @@ export class CategoryPickerBase extends React.PureComponent<CategoryPickerProps,
   }
 
   public render() {
-    const {field, selected} = this.props;
+    const {field, selected, isCopyFromUI, title} = this.props;
     const fieldDef = {
       field,
       selected
     }
     return (
-      <div>
-        <Field
-          draggable={false}
-          fieldDef={fieldDef}
-          caretShow={true}
-          isPill={true}
-        />
-        {this.renderCategorySelector()}
+      <div styleName={isCopyFromUI ? 'cropped-border' : 'not-cropped'}>
+        {title != '' ?
+          <h3>{title}</h3> :
+          null
+        }
+        <div styleName='picker-shelf'>
+          <Field
+            draggable={false}
+            fieldDef={fieldDef}
+            caretShow={true}
+            isPill={true}
+          />
+          {this.renderCategorySelector()}
+        </div>
       </div>
     );
   }
