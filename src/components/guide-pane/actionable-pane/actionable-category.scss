@@ -50,6 +50,21 @@ $radius: 3px;
   display: none;
 }
 
+.ignore-button {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 7px;
+  width: 100%;
+  display: block;
+  text-align: center;
+  border: #dedede solid 1px;
+  flex-grow: 1;
+  cursor: pointer;
+
+  &:hover{
+    background-color: rgb(255, 239, 92);
+  }
+}
 .hidden {
   display: none;
 }

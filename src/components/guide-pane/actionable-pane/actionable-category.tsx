@@ -5,7 +5,7 @@ import * as styles from './actionable-category.scss';
 import {DateTime} from 'vega-lite/build/src/datetime';
 import {ShelfUnitSpec, Schema, toTransforms, ShelfFilter, filterHasField, filterIndexOf} from '../../../models';
 import {ActionHandler, SpecAction, SPEC_COLOR_SCALE_SPECIFIED, SPEC_FIELD_REMOVE, LogAction, FILTER_MODIFY_ONE_OF, FilterAction, FILTER_ADD} from '../../../actions';
-import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction, ACTIONABLE_MODIFY_ONE_OF_CATEGORIES} from '../../../actions/guidelines';
+import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction, ACTIONABLE_MODIFY_ONE_OF_CATEGORIES, GUIDELINE_TOGGLE_IGNORE_ITEM} from '../../../actions/guidelines';
 import {GuidelineItemActionableCategories, getDefaultCategoryPicks} from '../../../models/guidelines';
 import {COLOR} from 'vega-lite/build/src/channel';
 import {VegaLite} from '../../vega-lite';
@@ -78,6 +78,12 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
             {vegaReady ? this.renderRemoveFieldPreview() : null}
             <i className="fa fa-times" aria-hidden="true" />
             {' '} Remove Field
+          </div>
+          <div className="fa-gray" styleName="ignore-button">
+            <a onClick={this.onIgnore.bind(this)}>
+              <i className="fa fa-eye-slash" aria-hidden="true" />
+              {' '} Ignore This Guideline...
+            </a>
           </div>
         </div>
         {/* <div styleName={triggeredActionable == "NONE" ? 'back-button-hidden' : 'back-button'}
@@ -171,6 +177,14 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
         }
       });
     }
+  }
+
+  private onIgnore() {
+    const {item} = this.props;
+    this.props.handleAction({
+      type: GUIDELINE_TOGGLE_IGNORE_ITEM,
+      payload: {item}
+    });
   }
 
   private onBackButton() {

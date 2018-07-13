@@ -44,11 +44,13 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
     this.onHideIndicator = this.onHideIndicator.bind(this);
     this.onOpenGuide = this.onOpenGuide.bind(this);
     this.onIgnore = this.onIgnore.bind(this);
-
-    console.log("constructor of GuideNotificationBase");
   }
 
   public render() {
+
+    if (this.state.isExpanded === true && this.props.item.guideState == "IGNORE")
+      this.setState({isExpanded: false});
+
     const {guideState, content, category, title} = this.props.item;
 
     return (
@@ -66,15 +68,16 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
           <span styleName="decision-button">
             {guideState != "IGNORE" ?
               <a onClick={this.onOpenGuide}>
-                <i className="fa fa-caret-down" styleName="fa-gray" aria-hidden="true" />
+                <i className="fa fa-caret-down fa-gray" aria-hidden="true" />
               </a>
-              : null}
+              : null
+            }
             {guideState != "DONE" ?
               <a onClick={this.onIgnore}>
-                <i className="fa fa-eye-slash" styleName="fa-gray" aria-hidden="true" />
-                {/* <i className="fa fa-times" styleName="fa-gray" /> */}
+                <i className="fa fa-eye-slash fa-gray" aria-hidden="true" />
               </a>
-              : null}
+              : null
+            }
           </span>
         </div>
         <div styleName="splitter" />
@@ -162,9 +165,6 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
     this.props.handleAction({
       type: GUIDELINE_TOGGLE_IGNORE_ITEM,
       payload: {item}
-    });
-    this.setState({
-      isExpanded: false
     });
   }
 }
