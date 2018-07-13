@@ -23,6 +23,7 @@ import {CUSTOMIZABLE_ENCODING_CHANNELS} from './property-editor-schema';
 import {GuidelineAction} from '../../actions/guidelines';
 import {RangeFilter, OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 import {guideActionShelf} from '../../models/guidelines';
+import {Channel} from '../../../node_modules/vega-lite/build/src/channel';
 
 /**
  * Props for react-dnd of EncodingShelf
@@ -186,7 +187,7 @@ class EncodingShelfBase extends React.PureComponent<
     guideActionShelf(
       null,
       null,
-      this.props.id.channel.toString(),
+      this.props.id.channel as Channel,
       null,
       this.props.filters,
       SPEC_FIELD_REMOVE,
@@ -289,7 +290,7 @@ const encodingShelfTarget: DropTargetSpec<EncodingShelfProps> = {
     guideActionShelf(
       fieldDef.field.toString(),
       fieldDef.type,
-      props.id.channel.toString(),
+      props.id.channel as Channel,
       props.schema.domain({field: fieldDef.field.toString()}),
       props.filters,
       SPEC_FIELD_ADD,

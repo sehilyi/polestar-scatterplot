@@ -6,8 +6,8 @@ import {DateTime} from 'vega-lite/build/src/datetime';
 import {ShelfUnitSpec, Schema, toTransforms, ShelfFilter, filterHasField, filterIndexOf} from '../../../models';
 import {ActionHandler, SpecAction, SPEC_COLOR_SCALE_SPECIFIED, SPEC_FIELD_REMOVE, LogAction, FILTER_MODIFY_ONE_OF, FilterAction, FILTER_ADD} from '../../../actions';
 import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction, ACTIONABLE_MODIFY_ONE_OF_CATEGORIES, GUIDELINE_TOGGLE_IGNORE_ITEM} from '../../../actions/guidelines';
-import {GuidelineItemActionableCategories, getDefaultCategoryPicks} from '../../../models/guidelines';
-import {COLOR} from 'vega-lite/build/src/channel';
+import {GuidelineItemActionableCategories, getDefaultCategoryPicks, guideActionShelf} from '../../../models/guidelines';
+import {COLOR, Channel} from 'vega-lite/build/src/channel';
 import {VegaLite} from '../../vega-lite';
 import {InlineData} from 'vega-lite/build/src/data';
 import {FacetedCompositeUnitSpec} from 'vega-lite/build/src/spec';
@@ -202,7 +202,15 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
       type: SPEC_FIELD_REMOVE,
       payload: {channel: COLOR}
     });
-
+    guideActionShelf(
+      null,
+      null,
+      COLOR,
+      null,
+      this.props.filters,
+      SPEC_FIELD_REMOVE,
+      this.props.handleAction
+    );
   }
 
   private vegaLiteWrapperRefHandler = (ref: any) => {

@@ -3,7 +3,7 @@ import {EncodingShelfProps} from "../components/encoding-pane/encoding-shelf";
 import {ShelfFieldDef, filterHasField, filterIndexOf} from "./shelf";
 import {OneOfFilter, RangeFilter} from "vega-lite/build/src/filter";
 import {SPEC_FIELD_REMOVE, SPEC_FIELD_ADD, SPEC_FIELD_MOVE, FILTER_MODIFY_ONE_OF, FilterAction, SpecAction} from "../actions";
-import {COLOR} from "vega-lite/build/src/channel";
+import {COLOR, Channel} from "vega-lite/build/src/channel";
 import {GUIDELINE_REMOVE_ITEM, GUIDELINE_ADD_ITEM, GuidelineAction} from "../actions/guidelines";
 import {OneOfFilterShelfProps} from "../components/filter-pane/one-of-filter-shelf";
 
@@ -63,7 +63,14 @@ export function getDefaultCategoryPicks(domain: string[] | number[] | boolean[] 
  * USED BY)
  * ActionableCategory,
  */
-export function guideActionShelf(field: string, fieldType: string, channel: string, domain: any[], filters: Array<RangeFilter | OneOfFilter>, actionType: string, handleAction: (action: GuidelineAction | FilterAction | SpecAction) => void) {
+export function guideActionShelf(
+  field: string,
+  fieldType: string,
+  channel: Channel,
+  domain: any[],
+  filters: Array<RangeFilter | OneOfFilter>,
+  actionType: string,
+  handleAction: (action: GuidelineAction | FilterAction | SpecAction) => void) {
 
   //Actionable Category Part
   const domainWithFilter = (filterHasField(filters, field) ?
