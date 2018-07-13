@@ -1,10 +1,10 @@
 import {DateTime} from "vega-lite/build/src/datetime";
 import {EncodingShelfProps} from "../components/encoding-pane/encoding-shelf";
 import {ShelfFieldDef, filterHasField, filterIndexOf} from "./shelf";
-import {OneOfFilter} from "vega-lite/build/src/filter";
-import {SPEC_FIELD_REMOVE, SPEC_FIELD_ADD, SPEC_FIELD_MOVE, FILTER_MODIFY_ONE_OF} from "../actions";
+import {OneOfFilter, RangeFilter} from "vega-lite/build/src/filter";
+import {SPEC_FIELD_REMOVE, SPEC_FIELD_ADD, SPEC_FIELD_MOVE, FILTER_MODIFY_ONE_OF, FilterAction, SpecAction} from "../actions";
 import {COLOR} from "vega-lite/build/src/channel";
-import {GUIDELINE_REMOVE_ITEM, GUIDELINE_ADD_ITEM} from "../actions/guidelines";
+import {GUIDELINE_REMOVE_ITEM, GUIDELINE_ADD_ITEM, GuidelineAction} from "../actions/guidelines";
 import {OneOfFilterShelfProps} from "../components/filter-pane/one-of-filter-shelf";
 
 export type GuideState = "WARN" | "DONE" | "IGNORE";
@@ -56,26 +56,23 @@ export const GUIDELINE_TOO_MANY_CATEGORIES: GuidelineItemActionableCategories = 
 
 //TODO: Be more smart for picking defaults by perhaps considering metadata
 export function getDefaultCategoryPicks(domain: string[] | number[] | boolean[] | DateTime[]): any[] {
-  return domain.length > CATEGORY_THRESHOLD ? domain.slice(0,7) : domain.slice();
+  return domain.length > CATEGORY_THRESHOLD ? domain.slice(0, 7) : domain.slice();
 }
 
 /**
  * USED BY)
  * ActionableCategory,
  */
-export function guideActionShelf(props: EncodingShelfProps, fieldDef: ShelfFieldDef, type: string) {
-  const {filters} = props;
-  let domain, field = (fieldDef != null ? fieldDef.field.toString() : '');
-  if (fieldDef != null) domain = props.schema.domain({field});
+export function guideActionShelf(field: string, fieldType: string, channel: string, domain: any[], filters: Array<RangeFilter | OneOfFilter>, actionType: string, handleAction: (action: GuidelineAction | FilterAction | SpecAction) => void) {
 
   //Actionable Category Part
   const domainWithFilter = (filterHasField(filters, field) ?
     (filters[filterIndexOf(filters, field)] as OneOfFilter).oneOf : domain);
 
-  switch (type) {
+  switch (actionType) {
     case SPEC_FIELD_REMOVE:
-      if (props.id.channel == COLOR) {
-        props.handleAction({
+      if (channel == COLOR) {
+        handleAction({
           type: GUIDELINE_REMOVE_ITEM,
           payload: {
             item: GUIDELINE_TOO_MANY_CATEGORIES
@@ -85,15 +82,17 @@ export function guideActionShelf(props: EncodingShelfProps, fieldDef: ShelfField
       break;
     case SPEC_FIELD_ADD:
     case SPEC_FIELD_MOVE:
-      if (props.id.channel == COLOR && domainWithFilter.length > 10 && fieldDef.type == "nominal") {
-        props.handleAction({
+      console.log(channel);
+      console.log(fieldType);
+      if (channel == COLOR && domainWithFilter.length > 10 && fieldType == "nominal") {
+        handleAction({
           type: GUIDELINE_ADD_ITEM,
           payload: {
             item: GUIDELINE_TOO_MANY_CATEGORIES
           }
         });
-      } else if (props.id.channel == COLOR) {
-        props.handleAction({
+      } else if (channel == COLOR) {
+        handleAction({
           type: GUIDELINE_REMOVE_ITEM,
           payload: {
             item: GUIDELINE_TOO_MANY_CATEGORIES

@@ -55,7 +55,7 @@ export interface EncodingShelfState {
 }
 class EncodingShelfBase extends React.PureComponent<
   EncodingShelfProps, EncodingShelfState
-> implements FunctionPickerWildcardHandler {
+  > implements FunctionPickerWildcardHandler {
   private fieldCustomizer: HTMLElement;
   private encodingShelf: HTMLElement;
 
@@ -98,7 +98,7 @@ class EncodingShelfBase extends React.PureComponent<
           >
             {(fieldDef && !isWildcardChannelId(id) && contains(CUSTOMIZABLE_ENCODING_CHANNELS, id.channel)) ?
               <span onClick={this.toggleCustomizer} ref={this.fieldHandler}>
-                {channelName}{' '} <i className={'fa fa-caret-down'}/>
+                {channelName}{' '} <i className={'fa fa-caret-down'} />
               </span> :
               <span>
                 {channelName}
@@ -106,13 +106,13 @@ class EncodingShelfBase extends React.PureComponent<
             }
 
             {this.state.customizerIsOpened &&
-            <div ref={this.popupRefHandler}>
-              <FieldCustomizer
-                shelfId={id}
-                fieldDef={fieldDef}
-                handleAction={handleAction}
-              />
-            </div>
+              <div ref={this.popupRefHandler}>
+                <FieldCustomizer
+                  shelfId={id}
+                  fieldDef={fieldDef}
+                  handleAction={handleAction}
+                />
+              </div>
             }
           </TetherComponent>
         </div>
@@ -183,7 +183,15 @@ class EncodingShelfBase extends React.PureComponent<
       type: SPEC_FIELD_REMOVE,
       payload: id
     });
-    guideActionShelf(this.props, null, SPEC_FIELD_REMOVE);
+    guideActionShelf(
+      null,
+      null,
+      this.props.id.channel.toString(),
+      null,
+      this.props.filters,
+      SPEC_FIELD_REMOVE,
+      this.props.handleAction
+    );
   }
 
   private renderField() {
@@ -277,7 +285,16 @@ const encodingShelfTarget: DropTargetSpec<EncodingShelfProps> = {
       default:
         throw new Error('Field dragged from unregistered source type to EncodingShelf');
     }
-    guideActionShelf(props, fieldDef, SPEC_FIELD_ADD);
+
+    guideActionShelf(
+      fieldDef.field.toString(),
+      fieldDef.type,
+      props.id.channel.toString(),
+      props.schema.domain({field: fieldDef.field.toString()}),
+      props.filters,
+      SPEC_FIELD_ADD,
+      props.handleAction
+    );
   }
 };
 

@@ -196,6 +196,14 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
   private onSelectClick() {
     this.setState({triggeredActionable: "SELECT_CATEGORIES"});
   }
+  private onRemoveField() {
+    const {handleAction} = this.props;
+    handleAction({
+      type: SPEC_FIELD_REMOVE,
+      payload: {channel: COLOR}
+    });
+
+  }
 
   private vegaLiteWrapperRefHandler = (ref: any) => {
     this.vegaLiteWrapper = ref;
@@ -244,15 +252,6 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     return (
       <VegaLite spec={previewSpec} logger={this.plotLogger} data={data} />
     );
-  }
-
-  private onRemoveField() {
-    this.props.item.guideState = "IGNORE";
-    const {handleAction} = this.props;
-    handleAction({
-      type: SPEC_FIELD_REMOVE,
-      payload: {channel: COLOR}
-    });
   }
 
   //TODO: Any better algorithm for this?
