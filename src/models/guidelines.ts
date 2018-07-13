@@ -15,7 +15,7 @@ export type GuidelineItemTypes = GuidelineItemActionableCategories | GuidelineIt
 export const CATEGORY_THRESHOLD = 10;
 
 export interface Guidelines {
-  list: GuidelineItem[];
+  list: GuidelineItemTypes[];
 
   showHighlight: boolean;
   size: {width: number, height: number},
@@ -27,12 +27,15 @@ export interface GuidelineItem {
   category?: string;
   title: string;
   content?: string;
-  guideState: GuideState;
+  guideState: GuideState; //TODO: move to state
 }
 
+//TODO: Later, this could be more systematic, including all kinds of actionables in all guidelines
+export type Actionables = "FILTER_CATEGORIES" | "SELECT_CATEGORIES" | "REMOVE_FIELD" | "NONE";
 export interface GuidelineItemActionableCategories extends GuidelineItem {
   selectedCategories: string[] | number[] | boolean[] | DateTime[];
   oneOfCategories: string[] | number[] | boolean[] | DateTime[];
+  userActionType: Actionables;
 }
 
 export const DEFAULT_GUIDELINES: Guidelines = {
@@ -51,12 +54,25 @@ export const GUIDELINE_TOO_MANY_CATEGORIES: GuidelineItemActionableCategories = 
   guideState: "WARN",
 
   selectedCategories: [],
-  oneOfCategories: []
+  oneOfCategories: [],
+  userActionType: "NONE"
 }
 
 //TODO: Be more smart for picking defaults by perhaps considering metadata
 export function getDefaultCategoryPicks(domain: string[] | number[] | boolean[] | DateTime[]): any[] {
   return domain.length > CATEGORY_THRESHOLD ? domain.slice(0, 7) : domain.slice();
+}
+
+  //TODO: Any better algorithm for this?
+export function getRange(selected: string[] | number[] | boolean[] | DateTime[], domain: string[] | number[] | boolean[] | DateTime[]): string[] {
+  const p = ["#4c78a8", "#f58518", "#e45756", "#72b7b2", "#54a24b", "#eeca3b", "#b279a2", "#ff9da6", "#9d755d", "#bab0ac55"]; //TODO: auto get colors from library
+  const r = [];
+  let round = 0;
+  for (let i of domain) {
+    r.push((((selected as any[]).indexOf(i) !== -1) ? p[round++] : p[p.length - 1]));
+    if (round >= p.length - 1) round = 0;
+  }
+  return r;
 }
 
 /**
@@ -89,8 +105,6 @@ export function guideActionShelf(
       break;
     case SPEC_FIELD_ADD:
     case SPEC_FIELD_MOVE:
-      console.log(channel);
-      console.log(fieldType);
       if (channel == COLOR && domainWithFilter.length > 10 && fieldType == "nominal") {
         handleAction({
           type: GUIDELINE_ADD_ITEM,

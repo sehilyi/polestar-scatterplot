@@ -130,6 +130,7 @@ export const ACTION_TYPE_INDEX: {[k in ActionType]: 1} = {
   ACTIONABLE_SELECT_CATEGORIES: 1,
   ACTIONABLE_MODIFY_ONE_OF_CATEGORIES: 1,
   ACTIONABLE_TRIGGER_INTERFACE: 1,
+  GUIDELINE_SET_USER_ACTION_TYPE: 1,
 };
 
 /** An array of all possible action types. */

@@ -5,8 +5,8 @@ import * as styles from './actionable-category.scss';
 import {DateTime} from 'vega-lite/build/src/datetime';
 import {ShelfUnitSpec, Schema, toTransforms, ShelfFilter, filterHasField, filterIndexOf} from '../../../models';
 import {ActionHandler, SpecAction, SPEC_COLOR_SCALE_SPECIFIED, SPEC_FIELD_REMOVE, LogAction, FILTER_MODIFY_ONE_OF, FilterAction, FILTER_ADD} from '../../../actions';
-import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction, ACTIONABLE_MODIFY_ONE_OF_CATEGORIES, GUIDELINE_TOGGLE_IGNORE_ITEM} from '../../../actions/guidelines';
-import {GuidelineItemActionableCategories, getDefaultCategoryPicks, guideActionShelf} from '../../../models/guidelines';
+import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction, ACTIONABLE_MODIFY_ONE_OF_CATEGORIES, GUIDELINE_TOGGLE_IGNORE_ITEM, GUIDELINE_SET_USER_ACTION_TYPE} from '../../../actions/guidelines';
+import {GuidelineItemActionableCategories, getDefaultCategoryPicks, guideActionShelf, getRange, Actionables} from '../../../models/guidelines';
 import {COLOR, Channel} from 'vega-lite/build/src/channel';
 import {VegaLite} from '../../vega-lite';
 import {InlineData} from 'vega-lite/build/src/data';
@@ -29,9 +29,6 @@ export interface ActionableCategoryProps extends ActionHandler<GuidelineAction |
   theme: Themes;
   filters: ShelfFilter[];
 }
-
-//TODO: Later, this could be more systematic, including all kinds of actionables in all guidelines
-export type Actionables = "FILTER_CATEGORIES" | "SELECT_CATEGORIES" | "REMOVE_FIELD" | "NONE";
 
 export interface ActionableCategoryState {
   hideSearchBar: boolean;
@@ -89,7 +86,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
         <div styleName={triggeredActionable == "NONE" ? 'back-button-hidden' : 'back-button'}
           onClick={this.onBackButton.bind(this)}>
           <i className="fa fa-chevron-circle-left" aria-hidden="true" />
-          {' '} Reset and Move Back
+          {' '} Back
         </div>
         <div styleName={triggeredActionable == "FILTER_CATEGORIES" ? '' : 'hidden'}>
           <CategoryPicker
@@ -129,7 +126,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
       type: fieldSchema.vlType,
       scale: {
         domain: domainWithFilter,
-        range: this.getRange(selected)
+        range: getRange(selected, domainWithFilter)
       }
     };
     handleAction({
@@ -137,12 +134,6 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
       payload: {
         item,
         selectedCategories: selected
-      }
-    });
-    handleAction({
-      type: SPEC_COLOR_SCALE_SPECIFIED,
-      payload: {
-        fieldDef
       }
     });
   }
@@ -187,16 +178,36 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     });
   }
 
+  private setUserActionType(type: Actionables) {
+    const {item} = this.props;
+    this.props.handleAction({
+      type: GUIDELINE_SET_USER_ACTION_TYPE,
+      payload: { item, type }
+    });
+  }
+
   private onBackButton() {
+    // this.setUserActionType("NONE");
     this.setState({triggeredActionable: "NONE"});
   }
   private onFilterClick() {
+    this.pickedCategoryActionForFilter(getDefaultCategoryPicks(this.props.domainWithFilter));
+    // this.setUserActionType("FILTER_CATEGORIES");
     this.setState({triggeredActionable: "FILTER_CATEGORIES"});
   }
   private onSelectClick() {
+    this.props.handleAction({
+      type: ACTIONABLE_SELECT_CATEGORIES,
+      payload: {
+        item: this.props.item,
+        selectedCategories: getDefaultCategoryPicks(this.props.domainWithFilter)
+      }
+    });
+    // this.setUserActionType("SELECT_CATEGORIES");
     this.setState({triggeredActionable: "SELECT_CATEGORIES"});
   }
   private onRemoveField() {
+    // this.setUserActionType("REMOVE_FIELD");
     const {handleAction} = this.props;
     handleAction({
       type: SPEC_FIELD_REMOVE,
@@ -244,10 +255,9 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
       type: fieldSchema.vlType,
       scale: {
         domain: this.props.domainWithFilter,
-        range: this.getRange(selected)
+        range: getRange(selected, this.props.domainWithFilter)
       }
     }
-
     return (
       <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
     );
@@ -260,18 +270,6 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     return (
       <VegaLite spec={previewSpec} logger={this.plotLogger} data={data} />
     );
-  }
-
-  //TODO: Any better algorithm for this?
-  private getRange(selected: string[] | number[] | boolean[] | DateTime[]): string[] {
-    const p = ["#4c78a8", "#f58518", "#e45756", "#72b7b2", "#54a24b", "#eeca3b", "#b279a2", "#ff9da6", "#9d755d", "#bab0ac55"]; //TODO: auto get colors from library
-    const r = [];
-    let round = 0;
-    for (let i of this.props.domain) {
-      r.push((((selected as any[]).indexOf(i) !== -1) ? p[round++] : p[p.length - 1]));
-      if (round >= p.length - 1) round = 0;
-    }
-    return r;
   }
 }
 

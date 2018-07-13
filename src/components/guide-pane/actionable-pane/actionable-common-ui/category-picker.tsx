@@ -101,18 +101,6 @@ export class CategoryPickerBase extends React.PureComponent<CategoryPickerProps,
     );
   }
 
-  //TODO: Any better algorithm for this?
-  private getRange(selected: string[] | number[] | boolean[] | DateTime[]): string[] {
-    const p = ["#4c78a8", "#f58518", "#e45756", "#72b7b2", "#54a24b", "#eeca3b", "#b279a2", "#ff9da6", "#9d755d", "#bab0ac"]; //TODO: auto get colors from library
-    const r = [];
-    let round = 0;
-    for (let i of this.props.domain) {
-      r.push((((selected as any[]).indexOf(i) !== -1) ? p[round++] : p[p.length - 1]));
-      if (round >= p.length - 1) round = 0;
-    }
-    return r;
-  }
-
   private getNewCategory(selected: string[] | number[] | boolean[] | DateTime[]): any[] {
     const newC = [];
     const {domain} = this.props;

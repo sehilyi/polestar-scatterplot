@@ -72,12 +72,9 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
               </a>
               : null
             }
-            {guideState != "DONE" ?
-              <a onClick={this.onIgnore}>
-                <i className="fa fa-eye-slash fa-gray" aria-hidden="true" />
-              </a>
-              : null
-            }
+            <a onClick={this.onIgnore}>
+              <i className="fa fa-eye-slash fa-gray" aria-hidden="true" />
+            </a>
           </span>
         </div>
         <div styleName="splitter" />

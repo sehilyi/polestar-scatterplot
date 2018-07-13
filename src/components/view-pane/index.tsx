@@ -9,14 +9,14 @@ import {ActionHandler, createDispatchHandler} from '../../actions/redux-action';
 import {ShelfAction} from '../../actions/shelf';
 import {SHELF_AUTO_ADD_COUNT_CHANGE, SHELF_GROUP_BY_CHANGE} from '../../actions/shelf/index';
 import {SPEC_FIELD_PROP_CHANGE} from '../../actions/shelf/spec';
-import {State} from '../../models';
+import {State, Schema} from '../../models';
 import {Bookmark} from '../../models/bookmark';
 import {VoyagerConfig} from '../../models/config';
 import {RelatedViews as RelatedViewsModel} from '../../models/related-views';
 import {Result} from '../../models/result/index';
 import {ShelfFilter} from '../../models/shelf/filter';
 import {SHELF_GROUP_BYS, ShelfGroupBy} from '../../models/shelf/index';
-import {selectBookmark, selectConfig, selectMainSpec, selectTheme, selectGuidelines} from '../../selectors';
+import {selectBookmark, selectConfig, selectMainSpec, selectTheme, selectGuidelines, selectDataset} from '../../selectors';
 import {selectFilteredData, selectRelatedViews} from '../../selectors/index';
 import {selectResult} from '../../selectors/result';
 import {
@@ -49,7 +49,8 @@ export interface ViewPaneProps extends ActionHandler<Action> {
 
   theme: Themes;
 
-  guideline: Guidelines;
+  guidelines: Guidelines;
+  schema: Schema;
 }
 
 const NO_PLOT_MESSAGE = `No specified visualization yet. ` +
@@ -75,7 +76,7 @@ class ViewPaneBase extends React.PureComponent<ViewPaneProps, {}> {
 
   public render() {
     const {isQuerySpecific, handleAction, relatedViews, config} = this.props;
-    const {showHighlight, size, position} = this.props.guideline;
+    const {showHighlight, size, position} = this.props.guidelines;
 
     const collapseRelatedViews = relatedViews.isCollapsed === undefined ? config.relatedViews === 'initiallyCollapsed' :
       relatedViews.isCollapsed;
@@ -128,7 +129,7 @@ class ViewPaneBase extends React.PureComponent<ViewPaneProps, {}> {
   }
 
   private renderSpecifiedView() {
-    const {bookmark, data, filters, handleAction, spec, theme, guideline} = this.props;
+    const {bookmark, data, filters, handleAction, spec, theme, guidelines, schema} = this.props;
 
     if (spec) {
       return (
@@ -141,6 +142,9 @@ class ViewPaneBase extends React.PureComponent<ViewPaneProps, {}> {
           showBookmarkButton={true}
           spec={spec}
           theme={theme}
+          isSpecifiedView={true}
+          guidelines={guidelines.list}
+          schema={schema}
         />
       );
     } else {
@@ -229,7 +233,8 @@ export const ViewPane = connect(
       spec: selectMainSpec(state),
       relatedViews: selectRelatedViews(state),
       theme: selectTheme(state),
-      guideline: selectGuidelines(state)
+      guidelines: selectGuidelines(state),
+      schema: selectDataset(state).schema,
     };
   },
   createDispatchHandler<ShelfAction>()

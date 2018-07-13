@@ -1,10 +1,10 @@
-import {GuidelineItemTypes, GuidelineItemActionableCategories} from "../models/guidelines";
+import {GuidelineItemTypes, GuidelineItemActionableCategories, Actionables} from "../models/guidelines";
 import {ReduxAction} from "./redux-action";
 import {DateTime} from "vega-lite/build/src/datetime";
 
 export type GuidelineAction = GuidelineRemoveItem | GuidelineAddItem | ActionableSelectCategories | GuidelineShowIndicator |
   GuidelineHideIndicator | GuidelineToggleIgnoreItem | GuidelineToggleIsExpanded | ActionableTriggerInterface |
-  ActionableModifyOneOfCategories;
+  ActionableModifyOneOfCategories | GuidelineSetUserActionType;
 
 export const GUIDELINE_ADD_ITEM = 'GUIDELINE_ADD_ITEM';
 export type GuidelineAddItem = ReduxAction<typeof GUIDELINE_ADD_ITEM, {
@@ -19,6 +19,12 @@ export type GuidelineRemoveItem = ReduxAction<typeof GUIDELINE_REMOVE_ITEM, {
 export const GUIDELINE_TOGGLE_IGNORE_ITEM = 'GUIDELINE_TOGGLE_IGNORE_ITEM';
 export type GuidelineToggleIgnoreItem = ReduxAction<typeof GUIDELINE_TOGGLE_IGNORE_ITEM, {
   item: GuidelineItemTypes;
+}>;
+
+export const GUIDELINE_SET_USER_ACTION_TYPE = 'GUIDELINE_SET_USER_ACTION_TYPE';
+export type GuidelineSetUserActionType = ReduxAction<typeof GUIDELINE_SET_USER_ACTION_TYPE, {
+  item: GuidelineItemTypes;
+  type: Actionables;
 }>;
 
 export const GUIDELINE_SHOW_RECT_INDICATOR = 'GUIDELINE_SHOW_RECT_INDICATOR';

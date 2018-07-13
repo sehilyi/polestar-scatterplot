@@ -6,6 +6,7 @@ import {InlineData} from 'vega-lite/build/src/data';
 import {isDiscrete, isFieldDef} from 'vega-lite/build/src/fielddef';
 import {SortField, SortOrder} from 'vega-lite/build/src/sort';
 import {FacetedCompositeUnitSpec} from 'vega-lite/build/src/spec';
+import {TopLevelExtendedSpec} from 'vega-lite/build/src/spec';
 import {BOOKMARK_MODIFY_NOTE, BookmarkAction} from '../../actions/bookmark';
 import {LogAction} from '../../actions/log';
 import {ActionHandler} from '../../actions/redux-action';
@@ -15,7 +16,7 @@ import {SHELF_PREVIEW_DISABLE, SHELF_PREVIEW_SPEC, ShelfPreviewAction} from '../
 import {PLOT_HOVER_MIN_DURATION} from '../../constants';
 import {Bookmark} from '../../models/bookmark';
 import {PlotFieldInfo, ResultPlot} from '../../models/result';
-import {ShelfFilter, toTransforms} from '../../models/shelf/filter';
+import {ShelfFilter, toTransforms, filterHasField, filterIndexOf} from '../../models/shelf/filter';
 import {Field} from '../field/index';
 import {Logger} from '../util/util.logger';
 import {VegaLite} from '../vega-lite/index';
@@ -23,8 +24,10 @@ import {BookmarkButton} from './bookmarkbutton';
 import * as styles from './plot.scss';
 import {Themes} from '../../models/theme/theme';
 import {themeDict} from '../../models/theme/theme';
-import {Guidelines} from '../../models/guidelines';
+import {Guidelines, GUIDELINE_TOO_MANY_CATEGORIES, GuidelineItemActionableCategories, getRange, GuidelineItemTypes} from '../../models/guidelines';
 import {GuidelineAction} from '../../actions/guidelines';
+import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
+import {Schema} from '../../models';
 
 export interface PlotProps extends ActionHandler<
   ShelfAction | BookmarkAction | ShelfPreviewAction | ResultAction | LogAction | GuidelineAction
@@ -41,6 +44,10 @@ export interface PlotProps extends ActionHandler<
   spec: FacetedCompositeUnitSpec;
   bookmark?: Bookmark;
   theme: Themes;
+
+  guidelines?: GuidelineItemTypes[];
+  schema?: Schema;
+  isSpecifiedView?: boolean;
 
   // specified when it's in the modal
   // so we can close the modal when the specify button is clicked.
@@ -77,6 +84,7 @@ export class PlotBase extends React.PureComponent<PlotProps, PlotState> {
     this.onPreviewMouseLeave = this.onPreviewMouseLeave.bind(this);
     this.onSpecify = this.onSpecify.bind(this);
     this.onSort = this.onSort.bind(this);
+    this.getGuidedSpec = this.getGuidedSpec.bind(this);
 
     this.plotLogger = new Logger(props.handleAction);
   }
@@ -142,7 +150,8 @@ export class PlotBase extends React.PureComponent<PlotProps, PlotState> {
           onMouseEnter={this.onMouseEnter}
           onMouseLeave={this.onMouseLeave}
         >
-          <VegaLite spec={spec} logger={this.plotLogger} data={data} theme={theme}/>
+          {/* TODO: Do we also have to consider 'data'? */}
+          <VegaLite spec={this.getGuidedSpec()} logger={this.plotLogger} data={data} theme={theme} />
         </div>
         {notesDiv}
       </div>
@@ -214,6 +223,49 @@ export class PlotBase extends React.PureComponent<PlotProps, PlotState> {
       const sort = channelDef.sort === 'descending' ? undefined : 'descending';
       onSort(channel, sort);
     }
+  }
+
+  //TODO: combine spec with guideline results
+  private getGuidedSpec(): TopLevelExtendedSpec {
+    if (!this.props.isSpecifiedView) {
+      return this.props.spec;
+    }
+
+    const {guidelines, schema} = this.props;
+    let newSpec = (JSON.parse(JSON.stringify(this.props.spec))) as FacetedCompositeUnitSpec;
+    guidelines.forEach(item => {
+      const itemDetail = (item as GuidelineItemActionableCategories);
+      const {id} = item;
+      switch (id) {
+        case "GUIDELINE_TOO_MANY_CATEGORIES": {
+          ///// Move To Another Method
+          if (itemDetail.selectedCategories.length === 0) {
+            break;
+          }
+          //TODO: filter (early apply) vs. selection (late apply)
+          // if(itemDetail.userActionType != "SELECT_CATEGORIES"){
+          //   break;
+          // }
+          let field = newSpec.encoding.color["field"].toString();
+          const domainWithFilter = (filterHasField(this.props.filters, field) ?
+            (this.props.filters[filterIndexOf(this.props.filters, field)] as OneOfFilter).oneOf :
+            schema.domain({field}));
+          let selected = itemDetail.selectedCategories;
+          newSpec.encoding.color = {
+            ...newSpec.encoding.color,
+            scale: {
+              domain: domainWithFilter,
+              range: getRange(selected, domainWithFilter)
+            }
+          }
+          ///// End Of Move To Another Method
+          break;
+        }
+        default:
+          break;
+      }
+    });
+    return newSpec;
   }
 
   private onSpecify() {
