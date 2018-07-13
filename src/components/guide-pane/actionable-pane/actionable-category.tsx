@@ -80,12 +80,11 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
             {' '} Remove Field
           </div>
         </div>
-        <div styleName={triggeredActionable == "NONE" ? 'back-button-hidden' : 'back-button'}
+        {/* <div styleName={triggeredActionable == "NONE" ? 'back-button-hidden' : 'back-button'}
           onClick={this.onBackButton.bind(this)}>
-          {/* TODO: do we have to put undo button here? */}
           <i className="fa fa-chevron-circle-left" aria-hidden="true" />
           {' '} Move Back
-        </div>
+        </div> */}
         <div styleName={triggeredActionable == "FILTER_CATEGORIES" ? '' : 'hidden'}>
           <CategoryPicker
             id={id + field + "FILTER_CATEGORIES"}
