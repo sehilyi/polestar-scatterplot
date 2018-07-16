@@ -31,9 +31,9 @@ $guideline-margin: 8px;
 
   box-shadow: 0 0 7px rgba(0,0,0,0.1);
 
-  &:hover{
-    box-shadow: 0 0 12px 0 rgba(0,0,0,0.2);
-  }
+  // &:hover{
+  //   box-shadow: 0 0 12px 0 rgba(0,0,0,0.2);
+  // }
 }
 
 .expanded {
@@ -101,6 +101,15 @@ $guideline-margin: 8px;
   height: $sub-pill-height;
 }
 
+.guide-category span {
+  &:hover{
+    background-color: #ebcfd7;
+  }
+  // transition: background-color 0.3s ease-in-out;
+}
+.guide-category .fa-dim {
+  color: #c2c1c1 !important;
+}
 .guide-title {
   @extend .guide-category-and-title;
 

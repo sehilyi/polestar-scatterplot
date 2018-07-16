@@ -54,15 +54,20 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
     const {guideState, content, category, title} = this.props.item;
 
     return (
-      <div styleName={this.state.isExpanded ? "expanded" : "guideline"}
-        onMouseEnter={this.onShowIndicator}
-        onMouseLeave={this.onHideIndicator}>
+      <div styleName={this.state.isExpanded ? "expanded" : "guideline"}>
         <div styleName="guide-header">
           <img styleName={guideState == "WARN" ? 'icon-show' : 'icon-hide'} src={warn} />
           <img styleName={guideState == "DONE" ? 'icon-show' : 'icon-hide'} src={done} />
           <img styleName={guideState == "IGNORE" ? 'icon-show' : 'icon-hide'} src={ignore} />
           <div styleName="guide-label">
-            <span styleName={guideState == "WARN" ? "guide-category" : guideState == "DONE" ? "guide-category-done" : "guide-category-ignore"}>{category}</span>
+            <span styleName={guideState == "WARN" ? "guide-category" : guideState == "DONE" ? "guide-category-done" : "guide-category-ignore"}
+              onMouseEnter={this.onShowIndicator}
+              onMouseLeave={this.onHideIndicator}>
+              <span>
+                {category + ' '}
+                <i className="fa fa-question" styleName="fa-dim" aria-hidden="true"/>
+              </span>
+            </span>
             <span styleName={guideState == "WARN" ? "guide-title" : guideState == "DONE" ? "guide-title-done" : "guide-title-ignore"}>{title}</span>
           </div>
           <span styleName="decision-button">
