@@ -14,6 +14,7 @@ import {InlineData} from 'vega-lite/build/src/data';
 import {FacetedCompositeUnitSpec} from 'vega-lite/build/src/spec';
 import {Themes} from '../../models/theme/theme';
 import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
+import {COLOR, SHAPE} from '../../../node_modules/vega-lite/build/src/channel';
 
 export interface GuideElementProps extends ActionHandler<GuidelineAction> {
   item: GuidelineItemTypes;
@@ -51,7 +52,7 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
     if (this.state.isExpanded === true && this.props.item.guideState == "IGNORE")
       this.setState({isExpanded: false});
 
-    const {guideState, content, category, title} = this.props.item;
+    const {guideState, content, title, subtitle} = this.props.item;
 
     return (
       <div styleName={this.state.isExpanded ? "expanded" : "guideline"}>
@@ -64,11 +65,11 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
               onMouseEnter={this.onShowIndicator}
               onMouseLeave={this.onHideIndicator}>
               <span>
-                {category + ' '}
-                <i className="fa fa-question" styleName="fa-dim" aria-hidden="true"/>
+                {title + ' '}
+                <i className="fa fa-question" styleName="fa-dim" aria-hidden="true" />
               </span>
             </span>
-            <span styleName={guideState == "WARN" ? "guide-title" : guideState == "DONE" ? "guide-title-done" : "guide-title-ignore"}>{title}</span>
+            <span styleName={guideState == "WARN" ? "guide-title" : guideState == "DONE" ? "guide-title-done" : "guide-title-ignore"}>{subtitle}</span>
           </div>
           <span styleName="decision-button">
             {guideState != "IGNORE" ?
@@ -94,10 +95,10 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
   }
   private renderActionablePane() {
     const {id} = this.props.item;
+    const {item, schema, spec, handleAction, data, mainSpec, theme, filters} = this.props;
 
     switch (id) {
-      case "GUIDELINE_TOO_MANY_CATEGORIES": {
-        const {item, schema, spec, handleAction, data, mainSpec, theme, filters} = this.props;
+      case "GUIDELINE_TOO_MANY_COLOR_CATEGORIES": {
         let field = spec.encoding.color.field.toString();
         const domainWithFilter = (filterHasField(filters, field) ?
           (filters[filterIndexOf(filters, field)] as OneOfFilter).oneOf :
@@ -107,11 +108,41 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
         return (
           <ActionableCategory
             item={item as GuidelineItemActionableCategories}
+            field={field}
+            channel={COLOR}
             domain={domain}
             domainWithFilter={domainWithFilter}
             spec={spec}
             schema={schema}
             handleAction={handleAction}
+            isSelectionUsing={true}
+
+            // for vega preview
+            data={data}
+            mainSpec={mainSpec}
+            theme={theme}
+            filters={filters}
+          />
+        );
+      }
+      case "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES": {
+        let field = spec.encoding.shape.field.toString();
+        const domainWithFilter = (filterHasField(filters, field) ?
+          (filters[filterIndexOf(filters, field)] as OneOfFilter).oneOf :
+          schema.domain({field}));
+        const domain = schema.domain({field});
+
+        return (
+          <ActionableCategory
+            item={item as GuidelineItemActionableCategories}
+            field={field}
+            channel={SHAPE}
+            domain={domain}
+            domainWithFilter={domainWithFilter}
+            spec={spec}
+            schema={schema}
+            handleAction={handleAction}
+            isSelectionUsing={false}
 
             // for vega preview
             data={data}
@@ -126,11 +157,15 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
     }
   }
 
+  // As reviewed, legends are shown with the following order: color, size, shape
   private onShowIndicator() {
+
     const BOX_MARGIN = 4;
     const root = document.getElementById('root'),
-      legend = root.getElementsByClassName('role-legend')[0],
-      specifiedView = document.getElementById('specified-view');
+      legends = root.getElementsByClassName('role-legend'),
+      specifiedView = document.getElementById('specified-view'),
+      legend_index = this.bestGuessLegendIndex();
+    const legend = legends[legend_index];
 
     let size = {width: legend.getBoundingClientRect().width, height: legend.getBoundingClientRect().height},
       position = {x: legend.getBoundingClientRect().left, y: legend.getBoundingClientRect().top};
@@ -147,6 +182,18 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
         position
       }
     })
+  }
+
+  private bestGuessLegendIndex(): number {
+    switch (this.props.item.id) {
+      case "GUIDELINE_TOO_MANY_COLOR_CATEGORIES":
+        return 0;
+      case "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES":
+        if (typeof this.props.spec.encoding.color == 'undefined' && typeof this.props.spec.encoding.size == 'undefined') return 0;
+        else if (typeof this.props.spec.encoding.color != 'undefined' && typeof this.props.spec.encoding.size != 'undefined') return 2;
+        else return 1;
+    }
+    return 0;
   }
 
   private onHideIndicator() {

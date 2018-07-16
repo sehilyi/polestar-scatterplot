@@ -24,7 +24,7 @@ import {BookmarkButton} from './bookmarkbutton';
 import * as styles from './plot.scss';
 import {Themes} from '../../models/theme/theme';
 import {themeDict} from '../../models/theme/theme';
-import {Guidelines, GUIDELINE_TOO_MANY_CATEGORIES, GuidelineItemActionableCategories, getRange, GuidelineItemTypes} from '../../models/guidelines';
+import {Guidelines, GuidelineItemActionableCategories, getRange, GuidelineItemTypes} from '../../models/guidelines';
 import {GuidelineAction} from '../../actions/guidelines';
 import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 import {Schema} from '../../models';
@@ -237,7 +237,7 @@ export class PlotBase extends React.PureComponent<PlotProps, PlotState> {
       const itemDetail = (item as GuidelineItemActionableCategories);
       const {id} = item;
       switch (id) {
-        case "GUIDELINE_TOO_MANY_CATEGORIES": {
+        case "GUIDELINE_TOO_MANY_COLOR_CATEGORIES": {
           ///// Move To Another Method
           if (itemDetail.selectedCategories.length === 0) {
             break;
@@ -261,10 +261,34 @@ export class PlotBase extends React.PureComponent<PlotProps, PlotState> {
           ///// End Of Move To Another Method
           break;
         }
+        case "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES": {
+          ///// Move To Another Method
+          if (itemDetail.selectedCategories.length === 0) {
+            break;
+          }
+          let field = newSpec.encoding.shape["field"].toString();
+          const domainWithFilter = (filterHasField(this.props.filters, field) ?
+            (this.props.filters[filterIndexOf(this.props.filters, field)] as OneOfFilter).oneOf :
+            schema.domain({field}));
+          let selected = itemDetail.selectedCategories;
+          newSpec.encoding.shape = {
+            ...newSpec.encoding.shape,
+            scale: {
+              domain: domainWithFilter,
+              range: getRange(selected, domainWithFilter)
+            }
+          }
+          ///// End Of Move To Another Method
+          break;
+        }
         default:
           break;
       }
     });
+    ///
+    console.log("newSpec:");
+    console.log(newSpec);
+    ///
     return newSpec;
   }
 

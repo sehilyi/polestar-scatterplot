@@ -3,12 +3,13 @@ import {EncodingShelfProps} from "../components/encoding-pane/encoding-shelf";
 import {ShelfFieldDef, filterHasField, filterIndexOf} from "./shelf";
 import {OneOfFilter, RangeFilter} from "vega-lite/build/src/filter";
 import {SPEC_FIELD_REMOVE, SPEC_FIELD_ADD, SPEC_FIELD_MOVE, FILTER_MODIFY_ONE_OF, FilterAction, SpecAction} from "../actions";
-import {COLOR, Channel} from "vega-lite/build/src/channel";
+import {COLOR, Channel, SHAPE} from "vega-lite/build/src/channel";
 import {GUIDELINE_REMOVE_ITEM, GUIDELINE_ADD_ITEM, GuidelineAction} from "../actions/guidelines";
 import {OneOfFilterShelfProps} from "../components/filter-pane/one-of-filter-shelf";
+import {NOMINAL} from "../../node_modules/vega-lite/build/src/type";
 
-export type GuideState = "WARN" | "DONE" | "IGNORE";
-export type guidelineIds = "GUIDELINE_TOO_MANY_CATEGORIES" | "GUIDELINE_NONE";
+export type GuideState = "WARN" | "TIP" | "DONE" | "IGNORE";
+export type guidelineIds = "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" | "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES" | "GUIDELINE_NONE";
 export type GuidelineItemTypes = GuidelineItemActionableCategories | GuidelineItem;
 
 //Thresholds
@@ -24,8 +25,8 @@ export interface Guidelines {
 
 export interface GuidelineItem {
   id: guidelineIds;
-  category?: string;
-  title: string;
+  title?: string;
+  subtitle: string;
   content?: string;
   guideState: GuideState; //TODO: move to state
 }
@@ -46,10 +47,22 @@ export const DEFAULT_GUIDELINES: Guidelines = {
   position: {x: 0, y: 0}
 }
 
-export const GUIDELINE_TOO_MANY_CATEGORIES: GuidelineItemActionableCategories = {
-  id: "GUIDELINE_TOO_MANY_CATEGORIES",
-  category: 'Too Many Categories',
-  title: 'Select at most 10 categories to highlight.',
+export const GUIDELINE_TOO_MANY_COLOR_CATEGORIES: GuidelineItemActionableCategories = {
+  id: "GUIDELINE_TOO_MANY_COLOR_CATEGORIES",
+  title: 'Too Many Categories For Color',
+  subtitle: 'Select at most 10 categories to color',
+  content: '',
+  guideState: "WARN",
+
+  selectedCategories: [],
+  oneOfCategories: [],
+  userActionType: "NONE"
+}
+
+export const GUIDELINE_TOO_MANY_SHAPE_CATEGORIES: GuidelineItemActionableCategories = {
+  id: "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES",
+  title: 'Too Many Categories For Shape',
+  subtitle: 'Select at most 10 categories to apply shape',
   content: '',
   guideState: "WARN",
 
@@ -63,7 +76,7 @@ export function getDefaultCategoryPicks(domain: string[] | number[] | boolean[] 
   return domain.length > CATEGORY_THRESHOLD ? domain.slice(0, 7) : domain.slice();
 }
 
-  //TODO: Any better algorithm for this?
+//TODO: Any better algorithm for this?
 export function getRange(selected: string[] | number[] | boolean[] | DateTime[], domain: string[] | number[] | boolean[] | DateTime[]): string[] {
   const p = ["#4c78a8", "#f58518", "#e45756", "#72b7b2", "#54a24b", "#eeca3b", "#b279a2", "#ff9da6", "#9d755d", "#bab0ac55"]; //TODO: auto get colors from library
   const r = [];
@@ -77,7 +90,8 @@ export function getRange(selected: string[] | number[] | boolean[] | DateTime[],
 
 /**
  * USED BY)
- * ActionableCategory,
+ * GUIDELINE_TOO_MANY_COLOR_CATEGORIES
+ * GUIDELINE_TOO_MANY_SHAPE_CATEGORIES
  */
 export function guideActionShelf(
   field: string,
@@ -88,37 +102,23 @@ export function guideActionShelf(
   actionType: string,
   handleAction: (action: GuidelineAction | FilterAction | SpecAction) => void) {
 
-  //Actionable Category Part
+
   const domainWithFilter = (filterHasField(filters, field) ?
     (filters[filterIndexOf(filters, field)] as OneOfFilter).oneOf : domain);
 
   switch (actionType) {
     case SPEC_FIELD_REMOVE:
-      if (channel == COLOR) {
-        handleAction({
-          type: GUIDELINE_REMOVE_ITEM,
-          payload: {
-            item: GUIDELINE_TOO_MANY_CATEGORIES
-          }
-        });
-      }
+      if (channel == COLOR) removeGuidelineItem(GUIDELINE_TOO_MANY_COLOR_CATEGORIES, handleAction);
+      else if (channel == SHAPE) removeGuidelineItem(GUIDELINE_TOO_MANY_SHAPE_CATEGORIES, handleAction);
       break;
     case SPEC_FIELD_ADD:
     case SPEC_FIELD_MOVE:
-      if (channel == COLOR && domainWithFilter.length > 10 && fieldType == "nominal") {
-        handleAction({
-          type: GUIDELINE_ADD_ITEM,
-          payload: {
-            item: GUIDELINE_TOO_MANY_CATEGORIES
-          }
-        });
-      } else if (channel == COLOR) {
-        handleAction({
-          type: GUIDELINE_REMOVE_ITEM,
-          payload: {
-            item: GUIDELINE_TOO_MANY_CATEGORIES
-          }
-        });
+      if (domainWithFilter.length > 10 && fieldType == NOMINAL) {
+        if (channel == COLOR) addGuidelineItem(GUIDELINE_TOO_MANY_COLOR_CATEGORIES, handleAction);
+        else if (channel == SHAPE) addGuidelineItem(GUIDELINE_TOO_MANY_SHAPE_CATEGORIES, handleAction);
+      } else {
+        if (channel == COLOR) removeGuidelineItem(GUIDELINE_TOO_MANY_COLOR_CATEGORIES, handleAction);
+        else if (channel == SHAPE) removeGuidelineItem(GUIDELINE_TOO_MANY_SHAPE_CATEGORIES, handleAction);
       }
       break;
   }
@@ -126,33 +126,39 @@ export function guideActionShelf(
 
 /**
  * USED BY)
- * ActionableCategory,
+ * GUIDELINE_TOO_MANY_COLOR_CATEGORIES
+ * GUIDELINE_TOO_MANY_SHAPE_CATEGORIES
  */
 export function guideActionFilter(props: OneOfFilterShelfProps, oneOf: string[] | number[] | boolean[] | DateTime[], type: string) {
   const {spec, filter} = props;
   switch (type) {
     case FILTER_MODIFY_ONE_OF: {
+      //TODO: Should check if nominal
       if (typeof spec.encoding != 'undefined' && typeof spec.encoding.color != 'undefined' &&
         spec.encoding.color.field == filter.field) {
-        if (oneOf.length > 10) {
-          props.handleAction({
-            type: GUIDELINE_ADD_ITEM,
-            payload: {
-              item: GUIDELINE_TOO_MANY_CATEGORIES
-            }
-          });
-        }
-        else {
-          props.handleAction({
-            type: GUIDELINE_REMOVE_ITEM,
-            payload: {
-              item: GUIDELINE_TOO_MANY_CATEGORIES
-            }
-          })
-        }
+        if (oneOf.length > 10) addGuidelineItem(GUIDELINE_TOO_MANY_COLOR_CATEGORIES, props.handleAction);
+        else removeGuidelineItem(GUIDELINE_TOO_MANY_COLOR_CATEGORIES, props.handleAction);
+      }
+      else if (typeof spec.encoding != 'undefined' && typeof spec.encoding.shape != 'undefined' &&
+        spec.encoding.shape.field == filter.field) {
+        if (oneOf.length > 10) addGuidelineItem(GUIDELINE_TOO_MANY_SHAPE_CATEGORIES, props.handleAction);
+        else removeGuidelineItem(GUIDELINE_TOO_MANY_SHAPE_CATEGORIES, props.handleAction);
       }
       else {} // do nothing
       break;
     }
   }
+}
+
+export function addGuidelineItem(item: GuidelineItemTypes, handleAction: (action: GuidelineAction) => void) {
+  handleAction({
+    type: GUIDELINE_ADD_ITEM,
+    payload: {item}
+  });
+}
+export function removeGuidelineItem(item: GuidelineItemTypes, handleAction: (action: GuidelineAction) => void) {
+  handleAction({
+    type: GUIDELINE_REMOVE_ITEM,
+    payload: {item}
+  });
 }

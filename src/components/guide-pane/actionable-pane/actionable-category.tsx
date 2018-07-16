@@ -3,11 +3,10 @@ import * as CSSModules from 'react-css-modules';
 
 import * as styles from './actionable-category.scss';
 import {DateTime} from 'vega-lite/build/src/datetime';
-import {ShelfUnitSpec, Schema, toTransforms, ShelfFilter, filterHasField, filterIndexOf} from '../../../models';
+import {ShelfUnitSpec, Schema, toTransforms, ShelfFilter, filterHasField, filterIndexOf, ShelfWildcardChannelId} from '../../../models';
 import {ActionHandler, SpecAction, SPEC_COLOR_SCALE_SPECIFIED, SPEC_FIELD_REMOVE, LogAction, FILTER_MODIFY_ONE_OF, FilterAction, FILTER_ADD} from '../../../actions';
 import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction, ACTIONABLE_MODIFY_ONE_OF_CATEGORIES, GUIDELINE_TOGGLE_IGNORE_ITEM, GUIDELINE_SET_USER_ACTION_TYPE} from '../../../actions/guidelines';
 import {GuidelineItemActionableCategories, getDefaultCategoryPicks, guideActionShelf, getRange, Actionables} from '../../../models/guidelines';
-import {COLOR, Channel} from 'vega-lite/build/src/channel';
 import {VegaLite} from '../../vega-lite';
 import {InlineData} from 'vega-lite/build/src/data';
 import {FacetedCompositeUnitSpec} from 'vega-lite/build/src/spec';
@@ -15,13 +14,18 @@ import {Logger} from '../../util/util.logger';
 import {Themes} from '../../../models/theme/theme';
 import {OneOfFilter} from 'vega-lite/build/src/filter';
 import {CategoryPicker} from './actionable-common-ui/category-picker';
+import {Channel} from '../../../../node_modules/vega-lite/build/src/channel';
 
 export interface ActionableCategoryProps extends ActionHandler<GuidelineAction | SpecAction | LogAction | FilterAction> {
   item: GuidelineItemActionableCategories;
+  field: string;
+  channel: Channel;
   domain: string[] | number[] | boolean[] | DateTime[];
   domainWithFilter: string[] | number[] | boolean[] | DateTime[];
   spec: ShelfUnitSpec;
   schema: Schema;
+
+  isSelectionUsing?: boolean;
 
   //preveiw
   data: InlineData;
@@ -52,10 +56,9 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
 
   public render() {
     const vegaReady = typeof this.props.mainSpec != "undefined";
-    const {domain, domainWithFilter, schema, spec, handleAction} = this.props;
+    const {domain, domainWithFilter, schema, spec, field, handleAction} = this.props;
     const {id, oneOfCategories, selectedCategories} = this.props.item;
     const {triggeredActionable} = this.state;
-    let field = spec.encoding.color.field.toString();
     const fieldSchema = schema.fieldSchema(field);
 
     return (
@@ -66,11 +69,14 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
             <i className="fa fa-filter" aria-hidden="true" />
             {' '} Filter Categories
           </div>
-          <div styleName="guide-preview" className="preview" onClick={this.onSelectClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
-            {vegaReady ? this.renderSelectCategoriesPreview() : null}
-            <i className="fa fa-hand-pointer-o" aria-hidden="true" />
-            {' '} Select Categories
-          </div>
+          {this.props.isSelectionUsing ?
+            <div styleName="guide-preview" className="preview" onClick={this.onSelectClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+              {vegaReady ? this.renderSelectCategoriesPreview() : null}
+              <i className="fa fa-hand-pointer-o" aria-hidden="true" />
+              {' '} Select Categories\
+              </div> :
+            null
+          }
           <div styleName="guide-preview" className="preview" onClick={this.onRemoveField.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
             {vegaReady ? this.renderRemoveFieldPreview() : null}
             <i className="fa fa-times" aria-hidden="true" />
@@ -116,8 +122,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
   }
 
   pickedCategoryActionForSelect = (selected: string[] | number[] | boolean[] | DateTime[]) => {
-    const {handleAction, item, spec} = this.props;
-    let field = spec.encoding.color.field.toString();
+    const {handleAction, item, spec, field} = this.props;
 
     const {domainWithFilter, schema} = this.props;
     const fieldSchema = schema.fieldSchema(field);
@@ -139,8 +144,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
   }
 
   pickedCategoryActionForFilter = (selected: string[] | number[] | boolean[] | DateTime[]) => {
-    const {handleAction, item, spec, filters} = this.props;
-    let field = spec.encoding.color.field.toString();
+    const {handleAction, item, filters, field} = this.props;
 
     handleAction({
       type: ACTIONABLE_MODIFY_ONE_OF_CATEGORIES,
@@ -182,7 +186,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     const {item} = this.props;
     this.props.handleAction({
       type: GUIDELINE_SET_USER_ACTION_TYPE,
-      payload: { item, type }
+      payload: {item, type}
     });
   }
 
@@ -208,15 +212,15 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
   }
   private onRemoveField() {
     // this.setUserActionType("REMOVE_FIELD");
-    const {handleAction} = this.props;
+    const {handleAction, channel} = this.props;
     handleAction({
       type: SPEC_FIELD_REMOVE,
-      payload: {channel: COLOR}
+      payload: {channel}
     });
     guideActionShelf(
       null,
       null,
-      COLOR,
+      channel,
       null,
       this.props.filters,
       SPEC_FIELD_REMOVE,
@@ -230,11 +234,10 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
 
   private renderFilterCategoriesPreview() {
     let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
-    let field = this.props.spec.encoding.color.field.toString();
     let oneOf = getDefaultCategoryPicks(this.props.domainWithFilter);
     const {transform} = previewSpec;
     let newFilter: OneOfFilter = {
-      field,
+      field: this.props.field,
       oneOf
     }
     const newTransform = (transform || []).concat(toTransforms([newFilter]));
@@ -247,11 +250,10 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
 
   private renderSelectCategoriesPreview() {
     let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
-    let field = this.props.spec.encoding.color.field.toString();
     let selected = getDefaultCategoryPicks(this.props.domainWithFilter);
-    const fieldSchema = this.props.schema.fieldSchema(field);
-    previewSpec.encoding.color = {
-      field,
+    const fieldSchema = this.props.schema.fieldSchema(this.props.field);
+    previewSpec.encoding[this.props.channel.toString()] = {
+      field: this.props.field,
       type: fieldSchema.vlType,
       scale: {
         domain: this.props.domainWithFilter,
@@ -264,9 +266,9 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
   }
 
   private renderRemoveFieldPreview() {
-    const {mainSpec, data} = this.props;
+    const {mainSpec, data, channel} = this.props;
     let previewSpec = (JSON.parse(JSON.stringify(mainSpec)));
-    delete previewSpec.encoding.color;
+    delete previewSpec.encoding[channel];
     return (
       <VegaLite spec={previewSpec} logger={this.plotLogger} data={data} />
     );
