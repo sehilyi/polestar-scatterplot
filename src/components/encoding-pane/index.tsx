@@ -21,6 +21,7 @@ import * as styles from './encoding-pane.scss';
 import {EncodingShelf} from './encoding-shelf';
 import {MarkPicker} from './mark-picker';
 import {GuidelineAction} from '../../actions/guidelines';
+import {checkGuideline} from '../../models/guidelines';
 
 interface EncodingPanelProps extends ActionHandler<ShelfAction | ResultAsyncAction | FilterAction | GuidelineAction> {
   spec: ShelfUnitSpec;
@@ -173,7 +174,7 @@ class EncodingPanelBase extends React.PureComponent<EncodingPanelProps, {}> {
 export const EncodingPane = connect(
   (state: State) => {
     const presentUndoableState = state.undoable.present;
-    return {
+    const newProps = {
       spec: selectShelfSpec(state),
       filters: selectFilters(state),
       schema: selectDataset(state).schema,
@@ -181,6 +182,8 @@ export const EncodingPane = connect(
       specPreview: selectShelfPreview(state).spec,
       config: selectConfig(state)
     };
+    // checkGuideline(newProps); // Temporaly moved to
+    return newProps;
   },
   createDispatchHandler<ShelfAction>()
 )(CSSModules(EncodingPanelBase, styles));

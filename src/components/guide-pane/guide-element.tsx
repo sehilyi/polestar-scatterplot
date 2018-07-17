@@ -3,6 +3,7 @@ import * as CSSModules from 'react-css-modules';
 
 import * as styles from "./guide-element.scss";
 import * as warn from '../../../images/warning.png';
+import * as tip from '../../../images/tip.png';
 import * as done from '../../../images/done.png';
 import * as ignore from '../../../images/ignore.png';
 import {GuidelineItemTypes, GuidelineItemActionableCategories} from '../../models/guidelines';
@@ -15,6 +16,7 @@ import {FacetedCompositeUnitSpec} from 'vega-lite/build/src/spec';
 import {Themes} from '../../models/theme/theme';
 import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 import {COLOR, SHAPE} from '../../../node_modules/vega-lite/build/src/channel';
+import {ActionableNewVis} from './actionable-pane/actionable-new-vis';
 
 export interface GuideElementProps extends ActionHandler<GuidelineAction> {
   item: GuidelineItemTypes;
@@ -58,6 +60,7 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
       <div styleName={this.state.isExpanded ? "expanded" : "guideline"}>
         <div styleName="guide-header">
           <img styleName={guideState == "WARN" ? 'icon-show' : 'icon-hide'} src={warn} />
+          <img styleName={guideState == "TIP" ? 'icon-show' : 'icon-hide'} src={tip} />
           <img styleName={guideState == "DONE" ? 'icon-show' : 'icon-hide'} src={done} />
           <img styleName={guideState == "IGNORE" ? 'icon-show' : 'icon-hide'} src={ignore} />
           <div styleName="guide-label">
@@ -151,6 +154,10 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
             filters={filters}
           />
         );
+      }
+      case "NEW_CHART_BINNED_SCATTERPLOT": {
+        <ActionableNewVis
+        />
       }
       case "GUIDELINE_NONE":
         break;

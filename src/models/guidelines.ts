@@ -2,14 +2,16 @@ import {DateTime} from "vega-lite/build/src/datetime";
 import {EncodingShelfProps} from "../components/encoding-pane/encoding-shelf";
 import {ShelfFieldDef, filterHasField, filterIndexOf} from "./shelf";
 import {OneOfFilter, RangeFilter} from "vega-lite/build/src/filter";
-import {SPEC_FIELD_REMOVE, SPEC_FIELD_ADD, SPEC_FIELD_MOVE, FILTER_MODIFY_ONE_OF, FilterAction, SpecAction} from "../actions";
+import {SPEC_FIELD_REMOVE, SPEC_FIELD_ADD, SPEC_FIELD_MOVE, FILTER_MODIFY_ONE_OF, FilterAction, SpecAction, createDispatchHandler, ActionHandler} from "../actions";
 import {COLOR, Channel, SHAPE} from "vega-lite/build/src/channel";
 import {GUIDELINE_REMOVE_ITEM, GUIDELINE_ADD_ITEM, GuidelineAction} from "../actions/guidelines";
 import {OneOfFilterShelfProps} from "../components/filter-pane/one-of-filter-shelf";
-import {NOMINAL} from "../../node_modules/vega-lite/build/src/type";
+import {NOMINAL, QUANTITATIVE} from "../../node_modules/vega-lite/build/src/type";
+import {POINT, CIRCLE, SQUARE} from "vega-lite/build/src/mark";
 
 export type GuideState = "WARN" | "TIP" | "DONE" | "IGNORE";
-export type guidelineIds = "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" | "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES" | "GUIDELINE_NONE";
+export type guidelineIds = "NEW_CHART_BINNED_SCATTERPLOT" | "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" | "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES" |
+  "GUIDELINE_NONE";
 export type GuidelineItemTypes = GuidelineItemActionableCategories | GuidelineItem;
 
 //Thresholds
@@ -29,6 +31,7 @@ export interface GuidelineItem {
   subtitle: string;
   content?: string;
   guideState: GuideState; //TODO: move to state
+  noneIndicator?: boolean;
 }
 
 //TODO: Later, this could be more systematic, including all kinds of actionables in all guidelines
@@ -45,6 +48,15 @@ export const DEFAULT_GUIDELINES: Guidelines = {
   showHighlight: false,
   size: {width: 0, height: 0},
   position: {x: 0, y: 0}
+}
+
+export const NEW_CHART_BINNED_SCATTERPLOT: GuidelineItem = {
+  id: "NEW_CHART_BINNED_SCATTERPLOT",
+  title: 'Alternative Chart',
+  subtitle: 'Binned Scatterplot',
+  content: '',
+  guideState: "TIP",
+  noneIndicator: false
 }
 
 export const GUIDELINE_TOO_MANY_COLOR_CATEGORIES: GuidelineItemActionableCategories = {
@@ -87,6 +99,33 @@ export function getRange(selected: string[] | number[] | boolean[] | DateTime[],
   }
   return r;
 }
+/**
+ * spec, filters, schema, fieldDefs, specPreview, config
+ * TODO: Any better way to compare the states?
+ */
+export function checkGuideline(props: any) {
+  ///
+  console.log("MainSpec:");
+  console.log(props);
+  ///
+
+  if (typeof props.spec == "undefined") return; // vega spec is not ready
+
+  const {spec} = props;
+  const {encoding, mark} = spec;
+
+  // GUIDELINE_TOO_MANY_COLOR_CATEGORIES
+  {
+    try {
+      // x and y.type == quantitative && mark == point, circle, or square && size, shape, text, and detail == null
+      if (encoding.x.type == QUANTITATIVE && encoding.y.type == QUANTITATIVE &&
+        (mark == POINT || mark == CIRCLE || mark == SQUARE) &&
+        typeof encoding.size == 'undefined' && typeof encoding.shape == 'undefined' && typeof encoding.text == 'undefined' && typeof encoding.detail == 'undefined') {
+        addGuidelineItem(NEW_CHART_BINNED_SCATTERPLOT, props.handleAction);
+      } else {removeGuidelineItem(NEW_CHART_BINNED_SCATTERPLOT, props.handleAction);}
+    } catch (e) {removeGuidelineItem(NEW_CHART_BINNED_SCATTERPLOT, props.handleAction);}
+  }
+}
 
 /**
  * USED BY)
@@ -101,7 +140,6 @@ export function guideActionShelf(
   filters: Array<RangeFilter | OneOfFilter>,
   actionType: string,
   handleAction: (action: GuidelineAction | FilterAction | SpecAction) => void) {
-
 
   const domainWithFilter = (filterHasField(filters, field) ?
     (filters[filterIndexOf(filters, field)] as OneOfFilter).oneOf : domain);
@@ -150,13 +188,13 @@ export function guideActionFilter(props: OneOfFilterShelfProps, oneOf: string[] 
   }
 }
 
-export function addGuidelineItem(item: GuidelineItemTypes, handleAction: (action: GuidelineAction) => void) {
+export function addGuidelineItem(item: GuidelineItemTypes, handleAction?: (action: GuidelineAction) => void) {
   handleAction({
     type: GUIDELINE_ADD_ITEM,
     payload: {item}
   });
 }
-export function removeGuidelineItem(item: GuidelineItemTypes, handleAction: (action: GuidelineAction) => void) {
+export function removeGuidelineItem(item: GuidelineItemTypes, handleAction?: (action: GuidelineAction) => void) {
   handleAction({
     type: GUIDELINE_REMOVE_ITEM,
     payload: {item}

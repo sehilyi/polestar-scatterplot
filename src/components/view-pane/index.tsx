@@ -29,7 +29,7 @@ import {RelatedViews} from './related-views';
 import {RelatedViewsButton} from './related-views-button';
 import * as styles from './view-pane.scss';
 import {Themes} from '../../models/theme/theme';
-import {Guidelines} from '../../models/guidelines';
+import {Guidelines, checkGuideline} from '../../models/guidelines';
 
 export interface ViewPaneProps extends ActionHandler<Action> {
   isQuerySpecific: boolean;
@@ -99,7 +99,7 @@ class ViewPaneBase extends React.PureComponent<ViewPaneProps, {}> {
           <div className="pane" id="specified-view" styleName={collapseRelatedViews ? 'view-pane-specific-stretch' : 'view-pane-specific'}>
             <h2>Specified View</h2>
             {this.renderSpecifiedView()}
-            <div styleName={showHighlight?'highlighter-show':'highlighter'}
+            <div styleName={showHighlight ? 'highlighter-show' : 'highlighter'}
               style={{
                 width: size.width + 'px',
                 height: size.height + 'px',
@@ -216,6 +216,11 @@ class ViewPaneBase extends React.PureComponent<ViewPaneProps, {}> {
       type: SHELF_GROUP_BY_CHANGE,
       payload: {groupBy: event.target.value}
     });
+  }
+
+  componentDidUpdate(prevProps: ViewPaneProps) {
+    if(prevProps.spec !== this.props.spec)
+      checkGuideline(this.props);
   }
 }
 export const ViewPane = connect(

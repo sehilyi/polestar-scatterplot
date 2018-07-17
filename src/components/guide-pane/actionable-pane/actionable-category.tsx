@@ -73,7 +73,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
             <div styleName="guide-preview" className="preview" onClick={this.onSelectClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
               {vegaReady ? this.renderSelectCategoriesPreview() : null}
               <i className="fa fa-hand-pointer-o" aria-hidden="true" />
-              {' '} Select Categories\
+              {' '} Select Categories
               </div> :
             null
           }
