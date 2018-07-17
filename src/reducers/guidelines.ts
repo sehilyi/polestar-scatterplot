@@ -24,7 +24,8 @@ export function guidelineReducer(guidelines: Guidelines = DEFAULT_GUIDELINES, ac
     case GUIDELINE_REMOVE_ITEM: {
       const {item} = action.payload;
       const index = list.map(function (e) {return e.id;}).indexOf(item.id);
-      list.splice(index, 1);
+      if(index != -1)
+        list.splice(index, 1);
 
       return {
         list,
