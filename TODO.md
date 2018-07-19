@@ -1,3 +1,8 @@
+# Guidelines
+- NEW_CHART_BINNED_SCATTERPLOT
+- GROUP_VISUAL_ELEMENTS_COLOR
+- CLUTTER_REDUCTION
+
 # Main Features
 - Add descriptions for novices (e.g., chart title)
 - SVG save
