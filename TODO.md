@@ -1,14 +1,18 @@
+# Main Features
 - Add descriptions for novices (e.g., chart title)
-- Add abstract value selection on Encoding
 - SVG save
-- Improve View panel for novices
-- handle undo-redo actions (remove theme change action)
-- Focus plot by click
+- Add explanations in guideline
+  - Technical reasons
+  - Academic reasons
+- Issue on reset and undo
+- Show results of user actions (e.g., “5 categories filtered and 12 selected”)
 
-- Things to read
-  - redux: https://deminoth.github.io/redux/basics/Reducers.html
-- Debug
-  - https://blogs.msdn.microsoft.com/jtarquino/2016/01/24/debugging-typescript-in-visual-studio-code-and-chrome/
+# Bugs
+- Ignore => unIgnore, always state == WARN
+- When removing filter, category related guideline should inserted
+- When two fields swaped, "
+- sometimes, legends are not indicated well (e.g., shape and color in a same legend)
+- RESULT_RECEIVE repeatedly occur
 
 ## One way to color etc categories.
 {
