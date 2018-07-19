@@ -1,3 +1,49 @@
-.test-css {
-  background: white;
+$margin: 4px;
+$radius: 3px;
+
+.ac-root {
+  position: relative;
+}
+
+.guide-previews {
+  align-content: center;
+  margin: 5px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.guide-preview {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 7px;
+  width: 100px;
+  display: block;
+  text-align: center;
+  border: #dedede solid 1px;
+  flex-grow: 1;
+  cursor: pointer;
+
+  &:hover{
+    background-color: rgb(255, 239, 92);
+  }
+}
+
+.ignore-button {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 7px;
+  width: 100%;
+  display: block;
+  text-align: center;
+  border: #dedede solid 1px;
+  flex-grow: 1;
+  cursor: pointer;
+
+  &:hover{
+    background-color: rgb(255, 239, 92);
+  }
+}
+
+.hidden {
+  display: none;
 }

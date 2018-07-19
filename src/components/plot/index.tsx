@@ -150,7 +150,6 @@ export class PlotBase extends React.PureComponent<PlotProps, PlotState> {
           onMouseEnter={this.onMouseEnter}
           onMouseLeave={this.onMouseLeave}
         >
-          {/* TODO: Do we also have to consider 'data'? */}
           <VegaLite spec={this.getGuidedSpec()} logger={this.plotLogger} data={data} theme={theme} />
         </div>
         {notesDiv}

@@ -6,7 +6,7 @@ import * as CSSModules from 'react-css-modules';
 import {GuideElement} from "./guide-element";
 import {GuidelineItem, Guidelines} from "../../models/guidelines";
 import {selectGuidelines, selectDataset, selectShelfSpec, selectFilteredData, selectMainSpec, selectTheme, selectFilters} from "../../selectors";
-import {ActionHandler, createDispatchHandler, SpecAction, LogAction} from "../../actions";
+import {ActionHandler, createDispatchHandler, SpecAction, LogAction, SpecMarkChangeType} from "../../actions";
 import {Action} from "../../actions/index";
 import {GuidelineAction} from "../../actions/guidelines";
 import {InlineData} from "vega-lite/build/src/data";
@@ -99,5 +99,5 @@ export const GuidePane = connect(
       filters: selectFilters(state),
     };
   },
-  createDispatchHandler<GuidelineAction | SpecAction | LogAction>()
+  createDispatchHandler<GuidelineAction | SpecAction | LogAction | SpecMarkChangeType>()
 )(CSSModules(GuidePaneBase, styles));

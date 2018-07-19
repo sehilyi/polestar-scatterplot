@@ -114,7 +114,8 @@ export function checkGuideline(props: any) {
   const {spec} = props;
   const {encoding, mark} = spec;
 
-  // GUIDELINE_TOO_MANY_COLOR_CATEGORIES
+  // NEW_CHART_BINNED_SCATTERPLOT
+  // TODO: also have to check if x, y fn is not bin
   {
     try {
       // x and y.type == quantitative && mark == point, circle, or square && size, shape, text, and detail == null
