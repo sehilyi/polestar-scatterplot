@@ -64,7 +64,7 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
           <img styleName={guideState == "DONE" ? 'icon-show' : 'icon-hide'} src={done} />
           <img styleName={guideState == "IGNORE" ? 'icon-show' : 'icon-hide'} src={ignore} />
           <div styleName="guide-label">
-            <span styleName={guideState == "WARN" ? "guide-category" : guideState == "DONE" ? "guide-category-done" : "guide-category-ignore"}
+            <span styleName={guideState == "WARN" || guideState == "TIP"? "guide-category" : guideState == "DONE" ? "guide-category-done" : "guide-category-ignore"}
               onMouseEnter={this.onShowIndicator}
               onMouseLeave={this.onHideIndicator}>
               <span>
@@ -72,7 +72,7 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
                 <i className="fa fa-question" styleName="fa-dim" aria-hidden="true" />
               </span>
             </span>
-            <span styleName={guideState == "WARN" ? "guide-title" : guideState == "DONE" ? "guide-title-done" : "guide-title-ignore"}>{subtitle}</span>
+            <span styleName={guideState == "WARN" || guideState == "TIP"? "guide-title" : guideState == "DONE" ? "guide-title-done" : "guide-title-ignore"}>{subtitle}</span>
           </div>
           <span styleName="decision-button">
             {guideState != "IGNORE" ?
