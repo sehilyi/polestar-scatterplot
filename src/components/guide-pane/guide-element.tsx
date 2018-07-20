@@ -63,13 +63,13 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
           <img styleName={guideState == "TIP" ? 'icon-show' : 'icon-hide'} src={tip} />
           <img styleName={guideState == "DONE" ? 'icon-show' : 'icon-hide'} src={done} />
           <img styleName={guideState == "IGNORE" ? 'icon-show' : 'icon-hide'} src={ignore} />
-          <div styleName="guide-label">
+          <div styleName="guide-label" className="hover-background">
             <span styleName={guideState == "WARN" || guideState == "TIP" ? "guide-category" : guideState == "DONE" ? "guide-category-done" : "guide-category-ignore"}
               onMouseEnter={this.onShowIndicator}
               onMouseLeave={this.onHideIndicator}>
-              <span>
+              <span styleName={this.props.item.noneIndicator ? null : "guide-hover-highlighter"}>
                 {title + ' '}
-                <i className="fa fa-question" styleName="fa-dim" aria-hidden="true" />
+                {this.props.item.noneIndicator ? null : <i className="fa fa-question" styleName="fa-dim" aria-hidden="true" />}
               </span>
             </span>
             <span styleName={guideState == "WARN" || guideState == "TIP" ? "guide-title" : guideState == "DONE" ? "guide-title-done" : "guide-title-ignore"}>{subtitle}</span>
@@ -175,6 +175,7 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
 
   // As reviewed, legends are shown with the following order: color, size, shape
   private onShowIndicator() {
+    if (this.props.item.noneIndicator) return;
 
     const BOX_MARGIN = 4;
     const root = document.getElementById('root'),
@@ -212,18 +213,18 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
       case "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES": {
         const {encoding} = this.props.spec;
         if (typeof encoding.color == 'undefined' && typeof encoding.size == 'undefined') return 0;
-        else if(typeof encoding.color != 'undefined' && typeof encoding.size == 'undefined'){
-          if(encoding.color == encoding.shape) return 0;
+        else if (typeof encoding.color != 'undefined' && typeof encoding.size == 'undefined') {
+          if (encoding.color == encoding.shape) return 0;
           else return 1;
         }
-        else if(typeof encoding.color == 'undefined' && typeof encoding.size != 'undefined'){
-          if(encoding.size == encoding.shape) return 0;
+        else if (typeof encoding.color == 'undefined' && typeof encoding.size != 'undefined') {
+          if (encoding.size == encoding.shape) return 0;
           else return 1;
         }
         else if (typeof encoding.color != 'undefined' && typeof encoding.size != 'undefined') {
           if (encoding.color == encoding.shape) return 0; // shape legend will be combined with the color's
-          else if(encoding.size == encoding.shape) return 1;  //shape legend will be combined with the size's
-          else if(encoding.color == encoding.size) return 1;  //shape legend will be combined with the size's
+          else if (encoding.size == encoding.shape) return 1;  //shape legend will be combined with the size's
+          else if (encoding.color == encoding.size) return 1;  //shape legend will be combined with the size's
           else return 2;
         }
       }

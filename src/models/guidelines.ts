@@ -56,7 +56,7 @@ export const NEW_CHART_BINNED_SCATTERPLOT: GuidelineItem = {
   subtitle: 'Binned Scatterplot',
   content: '',
   guideState: "TIP",
-  noneIndicator: false
+  noneIndicator: true
 }
 
 export const GUIDELINE_TOO_MANY_COLOR_CATEGORIES: GuidelineItemActionableCategories = {
