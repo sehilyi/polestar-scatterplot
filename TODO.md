@@ -1,26 +1,27 @@
 # Guidelines
-<!-- - NEW_CHART_BINNED_SCATTERPLOT -->
-- GROUP_VISUAL_ELEMENTS_COLOR
-- CLUTTER_REDUCTION
+- [V] NEW_CHART_BINNED_SCATTERPLOT => Some bug indentified
+- [ ] GROUP_VISUAL_ELEMENTS_COLOR
+- [ ] CLUTTER_REDUCTION
+- [ ] ...
 
 # Main Features
-- Add descriptions for novices (e.g., chart title)
-- SVG save
-- Add explanations in guideline
-  - Technical reasons
-  - Academic reasons
-- Issue on reset and undo
-- Show results of user actions (e.g., “5 categories filtered and 12 selected”)
+- [ ] Add descriptions for novices (e.g., chart title)
+- [ ] SVG save
+- [ ] Add explanations in guideline
+  - [ ] Technical reasons
+  - [ ] Academic reasons
+- [ ] Issue on reset and undo
+- [ ] Show results of user actions (e.g., “5 categories filtered and 12 selected”)
 
 # Bugs
-- NEW_CHART_BINNED_SCATTERPLOT, last update is not working after spec change
-- Ignore => unIgnore, always state == WARN
-- When removing filter, category related guideline should inserted
-- When two fields swaped, "
-- sometimes, legends are not indicated well (e.g., shape and color in a same legend)
-- RESULT_RECEIVE repeatedly occur
+- [ ] NEW_CHART_BINNED_SCATTERPLOT, last update is not working after spec change
+- [ ] Ignore => unIgnore, always state == WARN
+- [ ] When removing filter, category related guideline should inserted
+- [ ] When two fields swaped, "
+- [V] sometimes, legends are not indicated well (e.g., shape and color in a same legend)
+- [ ] RESULT_RECEIVE action repeatedly occur
 
-## One way to color etc categories.
+## One way to dim "Others" categories
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v2.json",
   "data": {"url": "data/barley.json"},
