@@ -200,14 +200,33 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
     })
   }
 
+  /**
+   * Legend priority: color => size => shape
+   * But they can be combined if fields are the same
+   * TODO: should also consider when color scale is specified
+   */
   private bestGuessLegendIndex(): number {
     switch (this.props.item.id) {
       case "GUIDELINE_TOO_MANY_COLOR_CATEGORIES":
         return 0;
-      case "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES":
-        if (typeof this.props.spec.encoding.color == 'undefined' && typeof this.props.spec.encoding.size == 'undefined') return 0;
-        else if (typeof this.props.spec.encoding.color != 'undefined' && typeof this.props.spec.encoding.size != 'undefined') return 2;
-        else return 1;
+      case "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES": {
+        const {encoding} = this.props.spec;
+        if (typeof encoding.color == 'undefined' && typeof encoding.size == 'undefined') return 0;
+        else if(typeof encoding.color != 'undefined' && typeof encoding.size == 'undefined'){
+          if(encoding.color == encoding.shape) return 0;
+          else return 1;
+        }
+        else if(typeof encoding.color == 'undefined' && typeof encoding.size != 'undefined'){
+          if(encoding.size == encoding.shape) return 0;
+          else return 1;
+        }
+        else if (typeof encoding.color != 'undefined' && typeof encoding.size != 'undefined') {
+          if (encoding.color == encoding.shape) return 0; // shape legend will be combined with the color's
+          else if(encoding.size == encoding.shape) return 1;  //shape legend will be combined with the size's
+          else if(encoding.color == encoding.size) return 1;  //shape legend will be combined with the size's
+          else return 2;
+        }
+      }
     }
     return 0;
   }
