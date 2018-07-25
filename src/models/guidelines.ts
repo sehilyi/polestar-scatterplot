@@ -105,8 +105,8 @@ export function getRange(selected: string[] | number[] | boolean[] | DateTime[],
  */
 export function checkGuideline(props: any) {
   ///
-  console.log("MainSpec:");
-  console.log(props);
+  // console.log("MainSpec:");
+  // console.log(props);
   ///
 
   if (typeof props.spec == "undefined") return; // vega spec is not ready

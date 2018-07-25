@@ -84,7 +84,7 @@ export class PlotBase extends React.PureComponent<PlotProps, PlotState> {
     this.onPreviewMouseLeave = this.onPreviewMouseLeave.bind(this);
     this.onSpecify = this.onSpecify.bind(this);
     this.onSort = this.onSort.bind(this);
-    this.getGuidedSpec = this.getGuidedSpec.bind(this);
+    // this.getGuidedSpec = this.getGuidedSpec.bind(this);
 
     this.plotLogger = new Logger(props.handleAction);
   }
@@ -102,7 +102,8 @@ export class PlotBase extends React.PureComponent<PlotProps, PlotState> {
   }
 
   public render() {
-    const {isPlotListItem, onSort, showBookmarkButton, showSpecifyButton, spec, data, theme} = this.props;
+    const {isPlotListItem, onSort, showBookmarkButton, showSpecifyButton, spec, data, theme,
+      guidelines, schema, filters, isSpecifiedView} = this.props;
 
     let notesDiv;
     const specKey = JSON.stringify(spec);
@@ -150,7 +151,11 @@ export class PlotBase extends React.PureComponent<PlotProps, PlotState> {
           onMouseEnter={this.onMouseEnter}
           onMouseLeave={this.onMouseLeave}
         >
-          <VegaLite spec={this.getGuidedSpec()} logger={this.plotLogger} data={data} theme={theme} />
+          <VegaLite spec={spec} logger={this.plotLogger} data={data} theme={theme}
+            isSpecifiedView={isSpecifiedView}
+            guidelines={guidelines}
+            schema={schema}
+            filters={filters}/>
         </div>
         {notesDiv}
       </div>
@@ -222,73 +227,6 @@ export class PlotBase extends React.PureComponent<PlotProps, PlotState> {
       const sort = channelDef.sort === 'descending' ? undefined : 'descending';
       onSort(channel, sort);
     }
-  }
-
-  //TODO: combine spec with guideline results
-  private getGuidedSpec(): TopLevelExtendedSpec {
-    if (!this.props.isSpecifiedView) {
-      return this.props.spec;
-    }
-
-    const {guidelines, schema} = this.props;
-    let newSpec = (JSON.parse(JSON.stringify(this.props.spec))) as FacetedCompositeUnitSpec;
-    guidelines.forEach(item => {
-      const itemDetail = (item as GuidelineItemActionableCategories);
-      const {id} = item;
-      switch (id) {
-        case "GUIDELINE_TOO_MANY_COLOR_CATEGORIES": {
-          ///// Move To Another Method
-          if (itemDetail.selectedCategories.length === 0) {
-            break;
-          }
-          //TODO: filter (early apply) vs. selection (late apply)
-          // if(itemDetail.userActionType != "SELECT_CATEGORIES"){
-          //   break;
-          // }
-          let field = newSpec.encoding.color["field"].toString();
-          const domainWithFilter = (filterHasField(this.props.filters, field) ?
-            (this.props.filters[filterIndexOf(this.props.filters, field)] as OneOfFilter).oneOf :
-            schema.domain({field}));
-          let selected = itemDetail.selectedCategories;
-          newSpec.encoding.color = {
-            ...newSpec.encoding.color,
-            scale: {
-              domain: domainWithFilter,
-              range: getRange(selected, domainWithFilter)
-            }
-          }
-          ///// End Of Move To Another Method
-          break;
-        }
-        case "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES": {
-          ///// Move To Another Method
-          if (itemDetail.selectedCategories.length === 0) {
-            break;
-          }
-          let field = newSpec.encoding.shape["field"].toString();
-          const domainWithFilter = (filterHasField(this.props.filters, field) ?
-            (this.props.filters[filterIndexOf(this.props.filters, field)] as OneOfFilter).oneOf :
-            schema.domain({field}));
-          let selected = itemDetail.selectedCategories;
-          newSpec.encoding.shape = {
-            ...newSpec.encoding.shape,
-            scale: {
-              domain: domainWithFilter,
-              range: getRange(selected, domainWithFilter)
-            }
-          }
-          ///// End Of Move To Another Method
-          break;
-        }
-        default:
-          break;
-      }
-    });
-    ///
-    console.log("newSpec:");
-    console.log(newSpec);
-    ///
-    return newSpec;
   }
 
   private onSpecify() {

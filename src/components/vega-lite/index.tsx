@@ -3,12 +3,14 @@ import {ClipLoader} from 'react-spinners';
 import * as vega from 'vega';
 import * as vl from 'vega-lite';
 import {InlineData, isNamedData} from 'vega-lite/build/src/data';
-import {TopLevelExtendedSpec} from 'vega-lite/build/src/spec';
+import {TopLevelExtendedSpec, FacetedCompositeUnitSpec} from 'vega-lite/build/src/spec';
 import * as vegaTooltip from 'vega-tooltip';
 import {SPINNER_COLOR} from '../../constants';
 import {Logger} from '../util/util.logger';
 import {Themes, themeDict} from '../../models/theme/theme';
-import {Guidelines} from '../../models/guidelines';
+import {Guidelines, GuidelineItemTypes, GuidelineItemActionableCategories, getRange} from '../../models/guidelines';
+import {Schema, ShelfFilter, filterHasField, filterIndexOf} from '../../models';
+import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 
 export interface VegaLiteProps {
   spec: TopLevelExtendedSpec;
@@ -22,6 +24,11 @@ export interface VegaLiteProps {
   theme?: Themes;
 
   viewRunAfter?: (view: vega.View) => any;
+
+  guidelines?: GuidelineItemTypes[];
+  schema?: Schema;
+  isSpecifiedView?: boolean;
+  filters?: ShelfFilter[];
 }
 
 export interface VegaLiteState {
@@ -184,9 +191,76 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
 
   private getChartSize(): {width: number, height: number} {
     const chart = this.refs[CHART_REF] as HTMLElement;
+    console.log(chart);
     const chartContainer = chart.querySelector(this.props.renderer || 'svg');
     const width = Number(chartContainer.getAttribute('width'));
     const height = Number(chartContainer.getAttribute('height'));
     return {width, height};
+  }
+   //TODO: combine spec with guideline results
+   private getGuidedSpec(): TopLevelExtendedSpec {
+    if (!this.props.isSpecifiedView) {
+      return this.props.spec;
+    }
+
+    const {guidelines, schema} = this.props;
+    let newSpec = (JSON.parse(JSON.stringify(this.props.spec))) as FacetedCompositeUnitSpec;
+    guidelines.forEach(item => {
+      const itemDetail = (item as GuidelineItemActionableCategories);
+      const {id} = item;
+      switch (id) {
+        case "GUIDELINE_TOO_MANY_COLOR_CATEGORIES": {
+          ///// Move To Another Method
+          if (itemDetail.selectedCategories.length === 0) {
+            break;
+          }
+          //TODO: filter (early apply) vs. selection (late apply)
+          // if(itemDetail.userActionType != "SELECT_CATEGORIES"){
+          //   break;
+          // }
+          let field = newSpec.encoding.color["field"].toString();
+          const domainWithFilter = (filterHasField(this.props.filters, field) ?
+            (this.props.filters[filterIndexOf(this.props.filters, field)] as OneOfFilter).oneOf :
+            schema.domain({field}));
+          let selected = itemDetail.selectedCategories;
+          newSpec.encoding.color = {
+            ...newSpec.encoding.color,
+            scale: {
+              domain: domainWithFilter,
+              range: getRange(selected, domainWithFilter)
+            }
+          }
+          ///// End Of Move To Another Method
+          break;
+        }
+        case "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES": {
+          ///// Move To Another Method
+          if (itemDetail.selectedCategories.length === 0) {
+            break;
+          }
+          let field = newSpec.encoding.shape["field"].toString();
+          const domainWithFilter = (filterHasField(this.props.filters, field) ?
+            (this.props.filters[filterIndexOf(this.props.filters, field)] as OneOfFilter).oneOf :
+            schema.domain({field}));
+          let selected = itemDetail.selectedCategories;
+          newSpec.encoding.shape = {
+            ...newSpec.encoding.shape,
+            scale: {
+              domain: domainWithFilter,
+              range: getRange(selected, domainWithFilter)
+            }
+          }
+          ///// End Of Move To Another Method
+          break;
+        }
+        default:
+          break;
+      }
+    });
+    ///
+    // console.log("newSpec:");
+    // console.log(newSpec);
+    ///
+    return newSpec;
   }
 }
