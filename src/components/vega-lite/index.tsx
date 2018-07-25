@@ -80,7 +80,8 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
   }
 
   public componentWillReceiveProps(nextProps: VegaLiteProps) {
-    if (nextProps.spec !== this.props.spec && nextProps.guidelines !== this.props.guidelines) {
+    if (nextProps.spec !== this.props.spec && nextProps.guidelines !== this.props.guidelines && true /*check if guideline have reasonable change*/) {
+    // if (this.getGuidedSpec(nextProps) != this.getGuidedSpec()) {
       this.setState({
         isLoading: true
       });
@@ -193,7 +194,6 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
 
   private getChartSize(): {width: number, height: number} {
     const chart = this.refs[CHART_REF] as HTMLElement;
-    console.log(chart);
     const chartContainer = chart.querySelector(this.props.renderer || 'svg');
     const width = Number(chartContainer.getAttribute('width'));
     const height = Number(chartContainer.getAttribute('height'));
@@ -205,57 +205,17 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     if (!this.props.isSpecifiedView) {
       return this.props.spec;
     }
-
-    const {guidelines, schema} = this.props;
     let newSpec = (JSON.parse(JSON.stringify(this.props.spec))) as FacetedCompositeUnitSpec;
+    const {guidelines, schema} = this.props;
     guidelines.forEach(item => {
       const itemDetail = (item as GuidelineItemActionableCategories);
       const {id} = item;
       switch (id) {
-        case "GUIDELINE_TOO_MANY_COLOR_CATEGORIES": {
-          ///// Move To Another Method
-          if (itemDetail.selectedCategories.length === 0) {
-            break;
-          }
-          //TODO: filter (early apply) vs. selection (late apply)
-          // if(itemDetail.userActionType != "SELECT_CATEGORIES"){
-          //   break;
-          // }
-          let field = newSpec.encoding.color["field"].toString();
-          const domainWithFilter = (filterHasField(this.props.filters, field) ?
-            (this.props.filters[filterIndexOf(this.props.filters, field)] as OneOfFilter).oneOf :
-            schema.domain({field}));
-          let selected = itemDetail.selectedCategories;
-          newSpec.encoding.color = {
-            ...newSpec.encoding.color,
-            scale: {
-              domain: domainWithFilter,
-              range: getRange(selected, domainWithFilter)
-            }
-          }
-          ///// End Of Move To Another Method
+        case "GUIDELINE_TOO_MANY_COLOR_CATEGORIES":
+        case "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES":
+          if (itemDetail.selectedCategories.length !== 0)
+            newSpec = this.handleTooManyCategories(newSpec, itemDetail, schema, "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" === id);
           break;
-        }
-        case "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES": {
-          ///// Move To Another Method
-          if (itemDetail.selectedCategories.length === 0) {
-            break;
-          }
-          let field = newSpec.encoding.shape["field"].toString();
-          const domainWithFilter = (filterHasField(this.props.filters, field) ?
-            (this.props.filters[filterIndexOf(this.props.filters, field)] as OneOfFilter).oneOf :
-            schema.domain({field}));
-          let selected = itemDetail.selectedCategories;
-          newSpec.encoding.shape = {
-            ...newSpec.encoding.shape,
-            scale: {
-              domain: domainWithFilter,
-              range: getRange(selected, domainWithFilter)
-            }
-          }
-          ///// End Of Move To Another Method
-          break;
-        }
         default:
           break;
       }
@@ -264,6 +224,32 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     // console.log("newSpec:");
     // console.log(newSpec);
     ///
+    return newSpec;
+  }
+
+  private handleTooManyCategories(newSpec: FacetedCompositeUnitSpec, itemDetail: GuidelineItemActionableCategories, schema: Schema, isColor: boolean) {
+    let field = newSpec.encoding.color["field"].toString();
+    const domainWithFilter = (filterHasField(this.props.filters, field) ?
+      (this.props.filters[filterIndexOf(this.props.filters, field)] as OneOfFilter).oneOf :
+      schema.domain({field}));
+    let selected = itemDetail.selectedCategories;
+    if (isColor) {
+      newSpec.encoding.color = {
+        ...newSpec.encoding.color,
+        scale: {
+          domain: domainWithFilter,
+          range: getRange(selected, domainWithFilter)
+        }
+      }
+    } else {
+      newSpec.encoding.shape = {
+        ...newSpec.encoding.shape,
+        scale: {
+          domain: domainWithFilter,
+          range: getRange(selected, domainWithFilter)
+        }
+      }
+    }
     return newSpec;
   }
 }

@@ -14,6 +14,7 @@
 - [ ] Show results of user actions (e.g., “5 categories filtered and 12 selected”)
 
 # Bugs
+- [ ] Update vlchart when selected
 - [V] NEW_CHART_BINNED_SCATTERPLOT, last update is not working after spec change
 - [ ] Ignore => unIgnore, always state == WARN
 - [ ] When removing filter, category related guideline should inserted
