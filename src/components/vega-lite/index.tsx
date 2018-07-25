@@ -25,9 +25,10 @@ export interface VegaLiteProps {
 
   viewRunAfter?: (view: vega.View) => any;
 
+  // For considering guidelines
+  isSpecifiedView?: boolean;
   guidelines?: GuidelineItemTypes[];
   schema?: Schema;
-  isSpecifiedView?: boolean;
   filters?: ShelfFilter[];
 }
 
@@ -79,7 +80,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
   }
 
   public componentWillReceiveProps(nextProps: VegaLiteProps) {
-    if (nextProps.spec !== this.props.spec) {
+    if (nextProps.spec !== this.props.spec && nextProps.guidelines !== this.props.guidelines) {
       this.setState({
         isLoading: true
       });
@@ -148,7 +149,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     //   }
     // };
     const {logger} = this.props;
-    const vlSpec = this.props.spec;
+    const vlSpec = this.getGuidedSpec();// this.props.spec;
     // const vlConfig = themeDict[this.props.theme.theme];
 
     try {
@@ -169,8 +170,9 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
 
   private bindData() {
     const {data, spec} = this.props;
-    if (data && isNamedData(spec.data)) {
-      this.view.change(spec.data.name,
+    const guidedSpec = this.getGuidedSpec();
+    if (data && isNamedData(guidedSpec.data)) {
+      this.view.change(guidedSpec.data.name,
         vega.changeset()
           .remove(() => true) // remove previous data
           .insert(data.values)
@@ -197,8 +199,9 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     const height = Number(chartContainer.getAttribute('height'));
     return {width, height};
   }
-   //TODO: combine spec with guideline results
-   private getGuidedSpec(): TopLevelExtendedSpec {
+
+  //TODO: combine spec with guideline results
+  private getGuidedSpec(): TopLevelExtendedSpec {
     if (!this.props.isSpecifiedView) {
       return this.props.spec;
     }

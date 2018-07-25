@@ -1,5 +1,5 @@
 # Guidelines
-- [V] NEW_CHART_BINNED_SCATTERPLOT => Some bug indentified
+- [V] NEW_CHART_BINNED_SCATTERPLOT => Some bug indentified => Fixed
 - [ ] GROUP_VISUAL_ELEMENTS_COLOR
 - [ ] CLUTTER_REDUCTION
 - [ ] ...
@@ -14,12 +14,12 @@
 - [ ] Show results of user actions (e.g., “5 categories filtered and 12 selected”)
 
 # Bugs
-- [ ] NEW_CHART_BINNED_SCATTERPLOT, last update is not working after spec change
+- [V] NEW_CHART_BINNED_SCATTERPLOT, last update is not working after spec change
 - [ ] Ignore => unIgnore, always state == WARN
 - [ ] When removing filter, category related guideline should inserted
 - [ ] When two fields swaped, "
 - [V] sometimes, legends are not indicated well (e.g., shape and color in a same legend)
-- [ ] RESULT_RECEIVE action repeatedly occur
+- [V] RESULT_RECEIVE action repeatedly occur
 
 ## One way to dim "Others" categories
 {
