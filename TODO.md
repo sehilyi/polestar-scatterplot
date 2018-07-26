@@ -5,6 +5,7 @@
 - [ ] ...
 
 # Main Features
+- [ ] Support two-way linking between guide-pane and others
 - [ ] Add descriptions for novices (e.g., chart title)
 - [ ] SVG save
 - [ ] Add explanations in guideline
@@ -14,13 +15,13 @@
 - [ ] Show results of user actions (e.g., “5 categories filtered and 12 selected”)
 
 # Bugs
-- [ ] Update vlchart when selected
-- [V] NEW_CHART_BINNED_SCATTERPLOT, last update is not working after spec change
 - [ ] Ignore => unIgnore, always state == WARN
 - [ ] When removing filter, category related guideline should inserted
 - [ ] When two fields swaped, "
 - [V] sometimes, legends are not indicated well (e.g., shape and color in a same legend)
 - [V] RESULT_RECEIVE action repeatedly occur
+- [V] NEW_CHART_BINNED_SCATTERPLOT, last update is not working after spec change
+- [V] Update vlchart when selected
 
 ## One way to dim "Others" categories
 {

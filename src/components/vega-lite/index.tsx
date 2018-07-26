@@ -80,8 +80,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
   }
 
   public componentWillReceiveProps(nextProps: VegaLiteProps) {
-    if (nextProps.spec !== this.props.spec && nextProps.guidelines !== this.props.guidelines && true /*check if guideline have reasonable change*/) {
-    // if (this.getGuidedSpec(nextProps) != this.getGuidedSpec()) {
+    if (nextProps.spec !== this.props.spec || nextProps.guidelines !== this.props.guidelines) {
       this.setState({
         isLoading: true
       });
@@ -95,7 +94,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     }
     this.updateTimeout = window.setTimeout(
       (spec: TopLevelExtendedSpec, data: InlineData) => {
-        if (prevProps.spec !== spec) {
+        if (prevProps.spec !== spec || prevProps.guidelines !== this.props.guidelines) {
           const chart = this.refs[CHART_REF] as HTMLElement;
           chart.style.width = this.size.width + 'px';
           chart.style.height = this.size.height + 'px';
