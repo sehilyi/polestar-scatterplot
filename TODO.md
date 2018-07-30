@@ -1,13 +1,13 @@
 # Guidelines
-- [V] NEW_CHART_BINNED_SCATTERPLOT => Some bug indentified => Fixed
-- [ ] GROUP_VISUAL_ELEMENTS_COLOR
 - [ ] CLUTTER_REDUCTION
+- [ ] GROUP_VISUAL_ELEMENTS_COLOR
 - [ ] ...
 
 # Main Features
 - [ ] Support two-way linking between guide-pane and others
 - [ ] Add descriptions for novices (e.g., chart title)
 - [ ] SVG save
+- [ ] Clarify actions (e.g., desc or show on mouse over)
 - [ ] Add explanations in guideline
   - [ ] Technical reasons
   - [ ] Academic reasons

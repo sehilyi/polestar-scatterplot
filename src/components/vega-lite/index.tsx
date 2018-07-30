@@ -199,7 +199,6 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     return {width, height};
   }
 
-  //TODO: combine spec with guideline results
   private getGuidedSpec(): TopLevelExtendedSpec {
     if (!this.props.isSpecifiedView) {
       return this.props.spec;

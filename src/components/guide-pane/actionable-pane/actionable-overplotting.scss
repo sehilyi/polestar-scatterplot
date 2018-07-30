@@ -1,0 +1,79 @@
+// TODO: remove unused
+
+$margin: 4px;
+$radius: 3px;
+
+.ac-root {
+  position: relative;
+}
+
+.guide-previews {
+  align-content: center;
+  margin: 5px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.guide-previews-hidden {
+  @extend .guide-previews;
+
+  display: none;
+}
+
+.guide-preview {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 7px;
+  width: 100px;
+  display: block;
+  text-align: center;
+  border: #dedede solid 1px;
+  flex-grow: 1;
+  cursor: pointer;
+
+  &:hover{
+    background-color: rgb(255, 239, 92);
+  }
+}
+
+.back-button {
+  padding: 10px;
+  margin-bottom: 4px;
+  border-radius: 7px;
+  position: absolute;
+  right: 0;
+  display: block;
+  text-align: center;
+  // border: #dedede solid 1px;
+  flex-grow: 1;
+  cursor: pointer;
+
+  &:hover{
+    color: #575757;
+    // background-color: rgb(255, 239, 92);
+  }
+}
+
+.back-button-hidden {
+  @extend .back-button;
+  display: none;
+}
+
+.ignore-button {
+  padding: 10px;
+  margin: 5px;
+  border-radius: 7px;
+  width: 100%;
+  display: block;
+  text-align: center;
+  border: #dedede solid 1px;
+  flex-grow: 1;
+  cursor: pointer;
+
+  &:hover{
+    background-color: rgb(255, 239, 92);
+  }
+}
+.hidden {
+  display: none;
+}

@@ -119,7 +119,7 @@ export class ActionableNewVisBase extends React.PureComponent<ActionableNewVisPr
     };
 
     previewSpec.encoding.y = {
-      ...previewSpec.encoding.x,
+      ...previewSpec.encoding.y,
       bin: true
     };
 

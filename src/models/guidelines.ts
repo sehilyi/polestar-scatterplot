@@ -8,10 +8,11 @@ import {GUIDELINE_REMOVE_ITEM, GUIDELINE_ADD_ITEM, GuidelineAction} from "../act
 import {OneOfFilterShelfProps} from "../components/filter-pane/one-of-filter-shelf";
 import {NOMINAL, QUANTITATIVE} from "../../node_modules/vega-lite/build/src/type";
 import {POINT, CIRCLE, SQUARE} from "vega-lite/build/src/mark";
+import {FacetedCompositeUnitSpec} from "../../node_modules/vega-lite/build/src/spec";
 
 export type GuideState = "WARN" | "TIP" | "DONE" | "IGNORE";
 export type guidelineIds = "NEW_CHART_BINNED_SCATTERPLOT" | "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" | "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES" |
-  "GUIDELINE_NONE";
+  "GUIDELINE_OVER_PLOTTING" | "GUIDELINE_NONE";
 export type GuidelineItemTypes = GuidelineItemActionableCategories | GuidelineItem;
 
 //Thresholds
@@ -48,6 +49,16 @@ export const DEFAULT_GUIDELINES: Guidelines = {
   showHighlight: false,
   size: {width: 0, height: 0},
   position: {x: 0, y: 0}
+}
+
+// TODO: should we consider too many categories?
+export const GUIDELINE_OVER_PLOTTING: GuidelineItem = {
+  id: 'GUIDELINE_OVER_PLOTTING',
+  title: 'Is Your Chart Too Cluttered?',
+  subtitle: 'Use clutter reduction methods',
+  content: '',
+  guideState: 'TIP',
+  noneIndicator: true
 }
 
 export const NEW_CHART_BINNED_SCATTERPLOT: GuidelineItem = {
@@ -114,6 +125,16 @@ export function checkGuideline(props: any) {
   const {spec} = props;
   const {encoding, mark} = spec;
 
+  // OVER_PLOTTING
+  {
+    // TODO: only considering scatterplot for now
+    if (isScatterPlot(spec)) {
+      addGuidelineItem(GUIDELINE_OVER_PLOTTING, props.handleAction);
+    } else {
+      removeGuidelineItem(GUIDELINE_OVER_PLOTTING, props.handleAction);
+    }
+  }
+
   // NEW_CHART_BINNED_SCATTERPLOT
   // TODO: also have to check if x, y fn is not bin
   {
@@ -125,6 +146,21 @@ export function checkGuideline(props: any) {
         addGuidelineItem(NEW_CHART_BINNED_SCATTERPLOT, props.handleAction);
       } else {removeGuidelineItem(NEW_CHART_BINNED_SCATTERPLOT, props.handleAction);}
     } catch (e) {removeGuidelineItem(NEW_CHART_BINNED_SCATTERPLOT, props.handleAction);}
+  }
+}
+
+export function isScatterPlot(spec: any) {
+  const {encoding, mark} = spec;
+  try {
+    // TODO: any other spec to make this not scatterplot?
+    if (encoding.x.type == QUANTITATIVE && encoding.y.type == QUANTITATIVE &&
+      (mark == POINT || mark == CIRCLE || mark == SQUARE)) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (e) { // when some parts of spec are not defined
+    return false;
   }
 }
 

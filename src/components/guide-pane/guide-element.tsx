@@ -17,6 +17,7 @@ import {Themes} from '../../models/theme/theme';
 import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 import {COLOR, SHAPE} from '../../../node_modules/vega-lite/build/src/channel';
 import {ActionableNewVis} from './actionable-pane/actionable-new-vis';
+import {ActionableOverplotting} from './actionable-pane/actionable-overplotting';
 
 export interface GuideElementProps extends ActionHandler<GuidelineAction> {
   item: GuidelineItemTypes;
@@ -101,6 +102,20 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
     const {item, schema, spec, handleAction, data, mainSpec, theme, filters} = this.props;
 
     switch (id) {
+      case 'GUIDELINE_OVER_PLOTTING': {
+        return (
+          <ActionableOverplotting
+            item={item as GuidelineItemActionableCategories}
+            //
+            handleAction={handleAction}
+
+            // for vega preview
+            data={data}
+            mainSpec={mainSpec}
+            theme={theme}
+          />
+        );
+      }
       case "GUIDELINE_TOO_MANY_COLOR_CATEGORIES": {
         let field = spec.encoding.color.field.toString();
         const domainWithFilter = (filterHasField(filters, field) ?
