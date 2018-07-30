@@ -48,31 +48,31 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           <div styleName="guide-preview" className="preview" onClick={this.onFilterClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
             {/* TODO: move title to the head? */}
             {/* TODO: how to best decide the default of the filtering target? */}
+            Filter {' '}
             <i className="fa fa-filter" aria-hidden="true" />
-            {' '} Filter
             {vegaReady ? this.renderFilterPreview() : null}
           </div>
           {vegaReady && this.isChangePointSizeUsing() ?
             <div styleName="guide-preview" className="preview" onClick={this.onChangePointSizeClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
-              <i className="fa fa-hand-pointer-o" aria-hidden="true" />
-              {' '} Change Point Size
+              Change Point Size {' '}
+              <i className="fa fa-compress" aria-hidden="true" />
               {vegaReady ? this.renderChangePointSizePreview() : null}
             </div> :
             null
           }
           {vegaReady && this.isChangeOpacityUsing() ?
             <div styleName="guide-preview" className="preview" onClick={this.onChangeOpacityClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+              Change Opacity {' '}
+              <i className="fa fa-tint" aria-hidden="true" />
               {vegaReady ? this.renderChangeOpacityPreview() : null}
-              <i className="fa fa-times" aria-hidden="true" />
-              {' '} Change Opacity
             </div> :
             null
           }
           {vegaReady && this.isRemoveFillColorUsing() ?
             <div styleName="guide-preview" className="preview" onClick={this.onRemoveFillColorClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+              Remove Fill Color {' '}
+              <i className="fa fa-circle-o" aria-hidden="true" />
               {vegaReady ? this.renderRemoveFillColorPreview() : null}
-              <i className="fa fa-times" aria-hidden="true" />
-              {' '} Remove Fill Color
             </div> :
             null
           }
@@ -108,7 +108,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       if (mark == CIRCLE || mark == SQUARE) {
         return true;
       }
-      else{
+      else {
         return false;
       }
     } catch (e) {
