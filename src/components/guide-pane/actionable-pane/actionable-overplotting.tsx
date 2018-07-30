@@ -8,7 +8,8 @@ import {Logger} from '../../util/util.logger';
 import {Themes} from '../../../models/theme/theme';
 import {FacetedCompositeUnitSpec} from '../../../../node_modules/vega-lite/build/src/spec';
 import {InlineData} from '../../../../node_modules/vega-lite/build/src/data';
-import {CIRCLE, SQUARE} from '../../../../node_modules/vega-lite/build/src/mark';
+import {CIRCLE, SQUARE, POINT, Mark} from '../../../../node_modules/vega-lite/build/src/mark';
+import {VegaLite} from '../../vega-lite';
 
 export interface ActionableOverplottingProps extends ActionHandler<GuidelineAction | LogAction> {
   item: GuidelineItem;
@@ -129,23 +130,41 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
 
   private renderFilterPreview() {
+    // TODO: how to set default filter?
+    let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
     return (
-      <div></div>
+      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
     );
   }
   private renderChangePointSizePreview() {
+    // TODO: handle a case where size is already used
+    let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
+    previewSpec.encoding = {
+      ...previewSpec.encoding,
+      size: {value: 10}
+    }
     return (
-      <div></div>
+      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
     );
   }
   private renderChangeOpacityPreview() {
+    let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
+    previewSpec.encoding = {
+      ...previewSpec.encoding,
+      opacity: {value: 0.3}
+    }
     return (
-      <div></div>
+      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
     );
   }
   private renderRemoveFillColorPreview() {
+    let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
+    previewSpec.mark = {
+      type: previewSpec.mark as Mark,
+      filled: false
+    };
     return (
-      <div></div>
+      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
     );
   }
 
