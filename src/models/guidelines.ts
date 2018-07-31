@@ -35,6 +35,46 @@ export interface GuidelineItem {
   noneIndicator?: boolean;
 }
 
+export interface GuideActionItem {
+  title: string;
+  subtitle: string;
+  faIcon?: string;
+  pros?: string;
+  cons?: string;
+}
+
+export const ACTIONABLE_FILTER_GENERAL: GuideActionItem = {
+  title: 'Filter',
+  subtitle: 'Remove unneccessary values in the chart if there are any',
+  faIcon: 'fa fa-filter',
+  pros: 'Scalable to large data. Can show point attrubute (color/shape).',
+  cons: 'Do not retain data. Cannot see overlap density. \'Uninteresting\' data should be predetermined.'
+}
+
+export const ACTIONABLE_POINT_SIZE: GuideActionItem = {
+  title: 'Change Point Size',
+  subtitle: 'Reduce the size of marks when over-plotting is relatively minor',
+  faIcon: 'fa fa-compress',
+  pros: 'Retain data. Can show point attrubute (color/shape)',
+  cons: 'Not scalable to large data. Cannot see overlap density.'
+}
+
+export const ACTIONABLE_POINT_OPACITY: GuideActionItem = {
+  title: 'Change Point Opacity',
+  subtitle: '',
+  faIcon: 'fa fa-tint',
+  pros: 'Retain data. Can see overlap density.',
+  cons: 'Point attribute (color/shape) become less distinguishable. Dim outliers. Not scalable to large data.'
+}
+
+export const ACTIONABLE_REMOVE_FILL_COLOR: GuideActionItem = {
+  title: 'Remove Fill Color',
+  subtitle: '',
+  faIcon: 'fa fa-circle-o',
+  pros: 'Retain data. Can show point attrubute (color/shape)',
+  cons: 'Not scalable to large data. Cannot see overlap density.'
+}
+
 //TODO: Later, this could be more systematic, including all kinds of actionables in all guidelines
 export type Actionables = "FILTER_CATEGORIES" | "SELECT_CATEGORIES" | "REMOVE_FIELD" | "NONE";
 export interface GuidelineItemActionableCategories extends GuidelineItem {
@@ -55,7 +95,7 @@ export const DEFAULT_GUIDELINES: Guidelines = {
 export const GUIDELINE_OVER_PLOTTING: GuidelineItem = {
   id: 'GUIDELINE_OVER_PLOTTING',
   title: 'Is Your Chart Too Cluttered?',
-  subtitle: 'Use clutter reduction methods',
+  subtitle: 'Use clutter reduction methods to unveil visual pattern!',
   content: '',
   guideState: 'TIP',
   noneIndicator: true
@@ -237,3 +277,4 @@ export function removeGuidelineItem(item: GuidelineItemTypes, handleAction?: (ac
     payload: {item}
   });
 }
+

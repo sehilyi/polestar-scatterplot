@@ -36,6 +36,30 @@ $radius: 3px;
   }
 }
 
+.pros {
+  color: #4d4dd1;
+}
+
+.cons {
+  color: #d55353;
+}
+
+.preview-title {
+  font-size: 12px;
+  // font-weight: bold;
+  margin: 0px;
+}
+.preview-desc {
+  color: #545454;
+  font-size: 11px;
+  margin-top: 10px;
+  margin-bottom: 0px;
+  margin: 0px 3px 3px 3px;
+  text-align: start;
+  white-space: pre-line;
+  line-height: 16px;
+}
+
 .back-button {
   padding: 10px;
   margin-bottom: 4px;

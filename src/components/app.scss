@@ -146,6 +146,10 @@
     width: 125px !important;
     height: 125px !important;
   }
+  .preview-larg .chart {
+    margin-top: -7px;
+    margin-bottom: -7px;
+  }
 
   .preview .react-spinners--clip, .preview-large .react-spinners--clip {
     display: none;
