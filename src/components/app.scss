@@ -137,12 +137,17 @@
     margin: auto;
   }
 
-  .preview .chart, .preview .marks{
+  .preview .chart, .preview .marks {
     width: 100px !important;
     height: 100px !important;
   }
 
-  .preview .react-spinners--clip {
+  .preview-large .chart, .preview-large .marks {
+    width: 125px !important;
+    height: 125px !important;
+  }
+
+  .preview .react-spinners--clip, .preview-large .react-spinners--clip {
     display: none;
   }
 
@@ -150,11 +155,6 @@
     &.fa-times, &.fa-search, &.fa-pencil, &.fa-caret-down, &.fa-times , &.fa-plus, &.fa-filter, &.fa-eye-slash {
       padding: 0px;
       border-radius: 0px;
-
-      &:hover {
-        color: black;
-        background-color: transparent;
-      }
     }
   }
 

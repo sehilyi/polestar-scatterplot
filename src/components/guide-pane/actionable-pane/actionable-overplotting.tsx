@@ -45,7 +45,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       <div styleName="ac-root">
         <div styleName={triggeredActionable == "NONE" ? "guide-previews" : "guide-previews-hidden"}>
           {/* TODO: show action filter */}
-          <div styleName="guide-preview" className="preview" onClick={this.onFilterClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+          <div styleName="guide-preview" className="preview-large" onClick={this.onFilterClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
             {/* TODO: move title to the head? */}
             {/* TODO: how to best decide the default of the filtering target? */}
             Filter {' '}
@@ -53,7 +53,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             {vegaReady ? this.renderFilterPreview() : null}
           </div>
           {vegaReady && this.isChangePointSizeUsing() ?
-            <div styleName="guide-preview" className="preview" onClick={this.onChangePointSizeClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+            <div styleName="guide-preview" className="preview-large" onClick={this.onChangePointSizeClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
               Change Point Size {' '}
               <i className="fa fa-compress" aria-hidden="true" />
               {vegaReady ? this.renderChangePointSizePreview() : null}
@@ -61,7 +61,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             null
           }
           {vegaReady && this.isChangeOpacityUsing() ?
-            <div styleName="guide-preview" className="preview" onClick={this.onChangeOpacityClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+            <div styleName="guide-preview" className="preview-large" onClick={this.onChangeOpacityClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
               Change Opacity {' '}
               <i className="fa fa-tint" aria-hidden="true" />
               {vegaReady ? this.renderChangeOpacityPreview() : null}
@@ -69,7 +69,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             null
           }
           {vegaReady && this.isRemoveFillColorUsing() ?
-            <div styleName="guide-preview" className="preview" onClick={this.onRemoveFillColorClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+            <div styleName="guide-preview" className="preview-large" onClick={this.onRemoveFillColorClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
               Remove Fill Color {' '}
               <i className="fa fa-circle-o" aria-hidden="true" />
               {vegaReady ? this.renderRemoveFillColorPreview() : null}
