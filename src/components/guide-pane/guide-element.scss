@@ -157,6 +157,14 @@ $guideline-margin: 8px;
 
 .guide-content{
   flex-grow: 1;
+
+  margin: 10px 30px 4px 20px;
+  color: #a7a7a7;
+  border-left: solid;
+  text-align: justify;
+  padding-left: 10px;
+  font-style: italic;
+  font-family: "Roboto Condensed";
 }
 
 .guide-content-text{

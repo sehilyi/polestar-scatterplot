@@ -95,8 +95,8 @@ export const DEFAULT_GUIDELINES: Guidelines = {
 export const GUIDELINE_OVER_PLOTTING: GuidelineItem = {
   id: 'GUIDELINE_OVER_PLOTTING',
   title: 'Is Your Chart Too Cluttered?',
-  subtitle: 'Use clutter reduction methods to unveil visual pattern!',
-  content: '',
+  subtitle: 'Use clutter reduction methods to unveil visual patterns',
+  content: 'In some graphs, especially those that use data points or lines to encode data, multiple objects can end up sharing the same space, positioned on top of one another. This makes it difficult or impossible to see the individual values, which in turn makes analysis of the data difficult.',
   guideState: 'TIP',
   noneIndicator: true
 }

@@ -88,11 +88,11 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
           </span>
         </div>
         <div styleName="splitter" />
-        <div styleName="actionable-pane">
-          {this.renderActionablePane()}
-        </div>
         <div styleName="guide-content">
           <span styleName="guide-content-text">{content}</span>
+        </div>
+        <div styleName="actionable-pane">
+          {this.renderActionablePane()}
         </div>
       </div>
     );
