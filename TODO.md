@@ -13,6 +13,7 @@
   - [ ] Academic reasons
 - [ ] Issue on reset and undo
 - [ ] Show results of user actions (e.g., “5 categories filtered and 12 selected”)
+- [ ] Change border-radius for all guideline types in css
 
 # Bugs
 - [ ] Ignore => unIgnore, always state == WARN
