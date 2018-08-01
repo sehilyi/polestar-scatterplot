@@ -58,13 +58,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               {/* <span styleName='preview-score'>77%</span> */}
             </p>
             {vegaReady ? this.renderFilterPreview() : null}
-            <p styleName='preview-desc'>
-                <i className="fa fa-thumbs-o-up" styleName='pros' aria-hidden="true" />
-                {' ' + filter.pros}
-                {'\n'}
-                <i className="fa fa-thumbs-o-down" styleName='cons' aria-hidden="true" />
-                {' ' + filter.cons}
-              </p>
+            <ul styleName='preview-desc' className='fa-ul'>
+              <li><i className="fa-li fa fa-thumbs-o-up" styleName='pros' aria-hidden="true" />{filter.pros}</li>
+              <li><i className="fa-li fa fa-thumbs-o-down" styleName='cons' aria-hidden="true" />{filter.cons}</li>
+            </ul>
           </div>
           {vegaReady && this.isChangePointSizeUsing() ?
             <div styleName="guide-preview" className="preview-large" onClick={this.onChangePointSizeClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
@@ -73,13 +70,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
                 {' ' + pointSize.title}
               </p>
               {vegaReady ? this.renderChangePointSizePreview() : null}
-              <p styleName='preview-desc'>
-                <i className="fa fa-thumbs-o-up" styleName='pros' aria-hidden="true" />
-                {' ' + pointSize.pros}
-                {'\n'}
-                <i className="fa fa-thumbs-o-down" styleName='cons' aria-hidden="true" />
-                {' ' + pointSize.cons}
-              </p>
+              <ul styleName='preview-desc' className='fa-ul'>
+                <li><i className="fa-li fa fa-thumbs-o-up" styleName='pros' aria-hidden="true" />{pointSize.pros}</li>
+                <li><i className="fa-li fa fa-thumbs-o-down" styleName='cons' aria-hidden="true" />{pointSize.cons}</li>
+              </ul>
             </div> :
             null
           }
@@ -90,13 +84,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
                 {' ' + pointOpacity.title}
               </p>
               {vegaReady ? this.renderChangeOpacityPreview() : null}
-              <p styleName='preview-desc'>
-                <i className="fa fa-thumbs-o-up" styleName='pros' aria-hidden="true" />
-                {' ' + pointOpacity.pros}
-                {'\n'}
-                <i className="fa fa-thumbs-o-down" styleName='cons' aria-hidden="true" />
-                {' ' + pointOpacity.cons}
-              </p>
+              <ul styleName='preview-desc' className='fa-ul'>
+                <li><i className="fa-li fa fa-thumbs-o-up" styleName='pros' aria-hidden="true" />{pointOpacity.pros}</li>
+                <li><i className="fa-li fa fa-thumbs-o-down" styleName='cons' aria-hidden="true" />{pointOpacity.cons}</li>
+              </ul>
             </div> :
             null
           }
@@ -107,13 +98,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
                 {' ' + removeFill.title}
               </p>
               {vegaReady ? this.renderRemoveFillColorPreview() : null}
-              <p styleName='preview-desc'>
-                <i className="fa fa-thumbs-o-up" styleName='pros' aria-hidden="true" />
-                {' ' + removeFill.pros}
-                {'\n'}
-                <i className="fa fa-thumbs-o-down" styleName='cons' aria-hidden="true" />
-                {' ' + removeFill.cons}
-              </p>
+              <ul styleName='preview-desc' className='fa-ul'>
+                <li><i className="fa-li fa fa-thumbs-o-up" styleName='pros' aria-hidden="true" />{removeFill.pros}</li>
+                <li><i className="fa-li fa fa-thumbs-o-down" styleName='cons' aria-hidden="true" />{removeFill.cons}</li>
+              </ul>
             </div> :
             null
           }
