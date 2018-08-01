@@ -53,8 +53,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             {/* TODO: move title to the head? */}
             {/* TODO: how to best decide the default of the filtering target? */}
             <p styleName="preview-title">
-              {filter.title + ' '}
               <i className={filter.faIcon} aria-hidden="true" />
+              {' ' + filter.title}
+              {/* <span styleName='preview-score'>77%</span> */}
             </p>
             {vegaReady ? this.renderFilterPreview() : null}
             <p styleName='preview-desc'>
@@ -68,8 +69,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           {vegaReady && this.isChangePointSizeUsing() ?
             <div styleName="guide-preview" className="preview-large" onClick={this.onChangePointSizeClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
               <p styleName="preview-title">
-                {pointSize.title + ' '}
                 <i className={pointSize.faIcon} aria-hidden="true" />
+                {' ' + pointSize.title}
               </p>
               {vegaReady ? this.renderChangePointSizePreview() : null}
               <p styleName='preview-desc'>
@@ -85,8 +86,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           {vegaReady && this.isChangeOpacityUsing() ?
             <div styleName="guide-preview" className="preview-large" onClick={this.onChangeOpacityClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
               <p styleName="preview-title">
-                {pointOpacity.title + ' '}
                 <i className={pointOpacity.faIcon} aria-hidden="true" />
+                {' ' + pointOpacity.title}
               </p>
               {vegaReady ? this.renderChangeOpacityPreview() : null}
               <p styleName='preview-desc'>
@@ -102,8 +103,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           {vegaReady && this.isRemoveFillColorUsing() ?
             <div styleName="guide-preview" className="preview-large" onClick={this.onRemoveFillColorClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
               <p styleName="preview-title">
-                {removeFill.title + ' '}
                 <i className={removeFill.faIcon} aria-hidden="true" />
+                {' ' + removeFill.title}
               </p>
               {vegaReady ? this.renderRemoveFillColorPreview() : null}
               <p styleName='preview-desc'>

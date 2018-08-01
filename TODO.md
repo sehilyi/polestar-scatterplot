@@ -18,10 +18,6 @@
 - [ ] Ignore => unIgnore, always state == WARN
 - [ ] When removing filter, category related guideline should inserted
 - [ ] When two fields swaped, "
-- [V] sometimes, legends are not indicated well (e.g., shape and color in a same legend)
-- [V] RESULT_RECEIVE action repeatedly occur
-- [V] NEW_CHART_BINNED_SCATTERPLOT, last update is not working after spec change
-- [V] Update vlchart when selected
 
 ## One way to dim "Others" categories
 {

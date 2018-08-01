@@ -36,6 +36,15 @@ $radius: 3px;
   }
 }
 
+.preview-score {
+  color: white;
+  position: absolute;
+  background: #a1deff;
+  border-radius: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
 .pros {
   color: #4d4dd1;
 }
@@ -57,7 +66,7 @@ $radius: 3px;
   margin: 0px 3px 3px 3px;
   text-align: start;
   white-space: pre-line;
-  line-height: 16px;
+  line-height: 18px;
 }
 
 .back-button {

@@ -160,11 +160,9 @@ $guideline-margin: 8px;
 
   margin: 10px 30px 4px 20px;
   color: #a7a7a7;
-  border-left: solid;
-  text-align: justify;
+  border-left: #e7e7e7 4px solid;
+  text-align: left;
   padding-left: 10px;
-  font-style: italic;
-  font-family: "Roboto Condensed";
 }
 
 .guide-content-text{
@@ -176,8 +174,7 @@ $guideline-margin: 8px;
   text-overflow: ellipsis;
 
   font-size: 12px;
-  margin: 4px;
-  line-height: 14px;
+  line-height: 18px;
 }
 
 .actionable-pane{
