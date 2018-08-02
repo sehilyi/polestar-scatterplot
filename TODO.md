@@ -17,6 +17,7 @@
 - [ ] Show results of user actions (e.g., “5 categories filtered and 12 selected”)
 - [ ] Change border-radius for all guideline types in css
 - [ ] Zoom preview when it is too small
+- [ ] Performance issues when too many points in previews
 
 # Bugs
 - [ ] Ignore => unIgnore, always state == WARN
