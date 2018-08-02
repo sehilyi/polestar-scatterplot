@@ -1,15 +1,18 @@
-// TODO: remove unused
-
 $margin: 4px;
 $radius: 2px;
+$grid-margin: 2px;
+$grid-margin-double: 4px;
 
 .ac-root {
   position: relative;
+  background: #f0efef;
+  padding: $grid-margin;
+  padding-bottom: 0px;
+  border-top: 1px solid #D4D4D4;
 }
 
 .guide-previews {
   align-content: center;
-  margin: 5px;
   display: flex;
   flex-wrap: wrap;
 }
@@ -21,9 +24,9 @@ $radius: 2px;
 }
 
 .guide-preview {
-  padding: 7px;
-  margin: 5px;
-  border-radius: $radius;
+  padding: 10px;
+  margin: $grid-margin;
+  background: #fcfcfc;
   width: 125px;
   display: block;
   text-align: center;
@@ -32,7 +35,7 @@ $radius: 2px;
   cursor: pointer;
 
   &:hover{
-    background-color: rgb(255, 239, 92);
+    box-shadow: 0 0 3px 0px rgba(0, 0, 0, 0.3);
   }
 }
 
@@ -55,8 +58,10 @@ $radius: 2px;
 
 .preview-title {
   font-size: 12px;
-  // font-weight: bold;
   margin: 0px;
+  margin-bottom: 4px;
+  font-weight: bold;
+  color: #2e2e2e;
 }
 .preview-desc {
   color: #545454;
@@ -76,18 +81,15 @@ $radius: 2px;
 .back-button {
   padding: 10px;
   margin-bottom: 4px;
-  border-radius: $radius;
   position: absolute;
   right: 0;
   display: block;
   text-align: center;
-  // border: #dedede solid 1px;
   flex-grow: 1;
   cursor: pointer;
 
   &:hover{
     color: #575757;
-    // background-color: rgb(255, 239, 92);
   }
 }
 
@@ -98,8 +100,9 @@ $radius: 2px;
 
 .ignore-button {
   padding: 10px;
-  margin: 5px;
-  border-radius: $radius;
+  margin: $grid-margin;
+  margin-bottom: $grid-margin-double;
+  background: #fcfcfc;
   width: 100%;
   display: block;
   text-align: center;
@@ -108,7 +111,7 @@ $radius: 2px;
   cursor: pointer;
 
   &:hover{
-    background-color: rgb(255, 239, 92);
+    box-shadow: 0 0 3px 0px rgba(0, 0, 0, 0.3);
   }
 }
 .hidden {

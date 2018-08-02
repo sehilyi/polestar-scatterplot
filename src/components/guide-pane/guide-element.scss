@@ -20,7 +20,6 @@ $guideline-margin: 8px;
   border: 1px solid rgb(206, 206, 206);
 
   margin-bottom: 4px;
-  padding: 4px;
   overflow: hidden;
 
   transition: max-height 0.5s ease-in-out, box-shadow 0.1s ease;
@@ -158,11 +157,12 @@ $guideline-margin: 8px;
 .guide-content{
   flex-grow: 1;
 
-  margin: 10px 30px 4px 20px;
+  // margin: 10px 30px 4px 20px;
   color: #a7a7a7;
-  border-left: #e7e7e7 4px solid;
+  border-left: #a9cbd7 10px solid;
   text-align: left;
-  padding-left: 10px;
+  padding: 10px;
+  padding-right: 20px;
 }
 
 .guide-content-text{
@@ -179,7 +179,7 @@ $guideline-margin: 8px;
 
 .actionable-pane{
   flex-grow: 1;
-  margin: 5px;
+  // margin: 5px;
   height: 100%;
   border-radius: $pill-radius;
 }

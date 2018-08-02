@@ -88,7 +88,7 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
           </span>
         </div>
         <div styleName="splitter" />
-        <div styleName="guide-content">
+        <div styleName={content != '' ? "guide-content" : null}>
           {content != '' ?
             <h2>Why Is This Matter?</h2> :
             null
