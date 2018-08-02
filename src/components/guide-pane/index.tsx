@@ -43,7 +43,7 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
         <h2 className="H2-in-guideline">
           <i className="fa fa-bolt" aria-hidden="true" />
           {' '}
-          Guidelines {' (' + list.length + ')'}
+          Actionable Guidelines {' (' + list.length + ')'}
         </h2>
 
         <div styleName="guide-group">
