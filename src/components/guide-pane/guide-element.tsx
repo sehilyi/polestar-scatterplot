@@ -110,7 +110,7 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
         return (
           <ActionableOverplotting
             item={item as GuidelineItemActionableCategories}
-            //
+            schema={schema}
             handleAction={handleAction}
 
             // for vega preview

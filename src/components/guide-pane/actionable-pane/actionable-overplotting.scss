@@ -40,12 +40,10 @@ $grid-margin-double: 4px;
 }
 
 .preview-score {
-  color: white;
-  position: absolute;
-  background: #a1deff;
-  border-radius: $radius;
-  padding-left: 5px;
-  padding-right: 5px;
+  color: #b6b6b6;
+  padding: 0px;
+  margin: 6px;
+  font-weight: normal;
 }
 
 .pros {

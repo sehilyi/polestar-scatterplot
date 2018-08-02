@@ -7,6 +7,8 @@
 - [ ] Support two-way linking between guide-pane and others
 - [ ] Add descriptions for novices (e.g., chart title)
 - [ ] SVG save
+- [ ] When x, y are aggregated by nominal value, TOO_MANY_CATEGORY shouldn't be shown (can we check number of points in the chart???)
+- [ ] Change Basic look and feel for charts
 - [ ] Clarify actions (e.g., desc or show on mouse over)
 - [ ] Add explanations in guideline
   - [ ] Technical reasons
@@ -14,6 +16,7 @@
 - [ ] Issue on reset and undo
 - [ ] Show results of user actions (e.g., “5 categories filtered and 12 selected”)
 - [ ] Change border-radius for all guideline types in css
+- [ ] Zoom preview when it is too small
 
 # Bugs
 - [ ] Ignore => unIgnore, always state == WARN

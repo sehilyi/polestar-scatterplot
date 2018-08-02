@@ -75,6 +75,39 @@ export const ACTIONABLE_REMOVE_FILL_COLOR: GuideActionItem = {
   cons: 'Not scalable to large data. Cannot see overlap density.'
 }
 
+// TODO: change pros and cons for these four actions
+export const ACTIONABLE_CHANGE_SHAPE: GuideActionItem = {
+  title: 'Change Shape',
+  subtitle: '',
+  faIcon: 'fa fa-square-o',
+  pros: 'Retain data. Can show point attrubute (color/shape)',
+  cons: 'Not scalable to large data. Cannot see overlap density.'
+}
+
+export const ACTIONABLE_AGGREGATE: GuideActionItem = {
+  title: 'Aggregate Points',
+  subtitle: '',
+  faIcon: 'fa fa-object-group',
+  pros: 'Retain data. Can show point attrubute (color/shape)',
+  cons: 'Not scalable to large data. Cannot see overlap density.'
+}
+
+export const ACTIONABLE_ENCODING_DENSITY: GuideActionItem = {
+  title: 'Use Desnsity Plot',
+  subtitle: '',
+  faIcon: 'fa fa-th',
+  pros: 'Retain data. Can show point attrubute (color/shape)',
+  cons: 'Not scalable to large data. Cannot see overlap density.'
+}
+
+export const ACTIONABLE_SEPARATE_GRAPH: GuideActionItem = {
+  title: 'Separate Graph',
+  subtitle: '',
+  faIcon: 'fa fa-clone',
+  pros: 'Retain data. Can show point attrubute (color/shape)',
+  cons: 'Not scalable to large data. Cannot see overlap density.'
+}
+
 //TODO: Later, this could be more systematic, including all kinds of actionables in all guidelines
 export type Actionables = "FILTER_CATEGORIES" | "SELECT_CATEGORIES" | "REMOVE_FIELD" | "NONE";
 export interface GuidelineItemActionableCategories extends GuidelineItem {
