@@ -311,7 +311,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     // TODO: how to set default filter?
     let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
     return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
+      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true} />
     );
   }
   private renderChangePointSizePreview() {
@@ -322,7 +322,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       size: {value: 10}
     }
     return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
+      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true} />
     );
   }
   private renderChangeOpacityPreview() {
@@ -332,7 +332,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       opacity: {value: 0.3}
     }
     return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
+      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true} />
     );
   }
   private renderRemoveFillColorPreview() {
@@ -342,14 +342,14 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       filled: false
     };
     return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
+      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true} />
     );
   }
   private renderChangeShapePreview() {
     let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
 
     return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
+      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true} />
     );
   }
   private renderAggregatePreview() {
@@ -372,7 +372,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     };
 
     return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
+      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true} />
     );
   }
   private renderEncodingDensityPreview() {
@@ -399,7 +399,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     previewSpec.mark = RECT;
 
     return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
+      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true} />
     );
   }
   private renderSeparateGraphPreview() {
@@ -425,7 +425,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       }
     }
     return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
+      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true} />
     );
   }
 

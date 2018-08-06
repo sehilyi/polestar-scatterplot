@@ -32,6 +32,7 @@ export interface VegaLiteProps {
   guidelines?: GuidelineItemTypes[];
   schema?: Schema;
   filters?: ShelfFilter[];
+  isPreview?: boolean;
 }
 
 export interface VegaLiteState {
@@ -162,7 +163,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
         .initialize(this.refs[CHART_REF] as any)
         .renderer(this.props.renderer || 'svg')
         .hover();
-      vegaTooltip.vega(this.view);
+      if(!this.props.isPreview) vegaTooltip.vega(this.view);
       this.bindData();
     } catch (err) {
       logger.error(err);
@@ -218,12 +219,6 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
             newSpec = this.handleTooManyCategories(newSpec, itemDetail, schema, "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" === id);
           break;
         }
-        // case 'GUIDELINE_OVER_PLOTTING': {
-        //   const itemDetail = (item as GuidelineItemOverPlotting);
-        //   if(this.props.schema.fieldNames().indexOf(itemDetail.fieldToSeparate) != -1)
-        //     newSpec = this.separateGraph(newSpec, itemDetail.fieldToSeparate);
-        //   break;
-        // }
         default:
           break;
       }
