@@ -1,0 +1,66 @@
+// TODO: remove unused
+
+$margin: 4px;
+$radius: 3px;
+
+.cropped-border {
+  padding: 10px;
+  border: #B9C5E4 dashed 2px;
+  border-radius: $radius;
+  background: #E2E9F3;
+  margin-top: 5px;
+}
+
+.not-cropped {
+  padding: 5px;
+  margin-top: 5px;
+}
+
+.select-all, .clear-all {
+  color: #4B0082;
+  cursor: pointer;
+  font-size: 11px;
+  margin: $margin;
+}
+
+.select-all:hover, .clear-all:hover {
+  color: #2980b9;
+}
+
+.keep-only {
+  color: transparent;
+  cursor: pointer;
+  flex-grow: 1;
+  text-align: right;
+}
+
+.keep-only:hover {
+  color: gray;
+}
+
+.option-row {
+  margin: $margin;
+  display: flex;
+  justify-content: space-between;
+}
+
+.search {
+  margin-right: 1px;
+}
+
+.below-header {
+  display: flex;
+  justify-content: space-between;
+  margin: 2px;
+}
+
+$radius: 3px;
+
+.picker-shelf {
+  background-color: white;
+  border-radius: $radius;
+  border: 1px solid #ddd;
+  margin-bottom: 4px;
+  max-height: 250px;
+  overflow: scroll;
+}

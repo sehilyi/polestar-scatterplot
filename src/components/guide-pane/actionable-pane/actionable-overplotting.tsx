@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as CSSModules from 'react-css-modules';
 
 import * as styles from './actionable-overplotting.scss';
-import {Actionables, GuidelineItem, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_CHANGE_SHAPE, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH} from '../../../models/guidelines';
+import {Actionables, GuidelineItem, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_CHANGE_SHAPE, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting} from '../../../models/guidelines';
 import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_MARK_CHANGE_TYPE, SPEC_FIELD_ADD, SPEC_FUNCTION_CHANGE, SpecAction, SPEC_TO_DENSITY_PLOT} from '../../../actions';
 import {Logger} from '../../util/util.logger';
 import {Themes} from '../../../models/theme/theme';
@@ -13,10 +13,11 @@ import {VegaLite} from '../../vega-lite';
 import {QUANTITATIVE, NOMINAL} from '../../../../node_modules/vega-lite/build/src/type';
 import {Schema, FieldSchema} from '../../../models';
 import {forEach} from '../../../../node_modules/vega-lite/build/src/encoding';
-import {COLOR, X, Y} from '../../../../node_modules/vega-lite/build/src/channel';
+import {COLOR, X, Y, COLUMN} from '../../../../node_modules/vega-lite/build/src/channel';
+import {FieldPicker} from './actionable-common-ui/field-picker';
 
 export interface ActionableOverplottingProps extends ActionHandler<GuidelineAction | LogAction | SpecAction> {
-  item: GuidelineItem;
+  item: GuidelineItemOverPlotting;
   schema: Schema;
 
   //preveiw
@@ -26,7 +27,7 @@ export interface ActionableOverplottingProps extends ActionHandler<GuidelineActi
 }
 
 export interface ActionableOverplottingState {
-  triggeredActionable: Actionables;
+  triggeredAction: Actionables;
 }
 
 export class ActionableOverplottingBase extends React.PureComponent<ActionableOverplottingProps, ActionableOverplottingState>{
@@ -37,14 +38,14 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   constructor(props: ActionableOverplottingProps) {
     super(props);
     this.state = ({
-      triggeredActionable: "NONE"
+      triggeredAction: "NONE"
     });
     this.plotLogger = new Logger(props.handleAction);
   }
 
   public render() {
     const vegaReady = typeof this.props.mainSpec != 'undefined';
-    const {triggeredActionable} = this.state;
+    const {triggeredAction} = this.state;
     const filter = ACTIONABLE_FILTER_GENERAL,
       pointSize = ACTIONABLE_POINT_SIZE,
       pointOpacity = ACTIONABLE_POINT_OPACITY,
@@ -57,7 +58,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     return (
       // TODO: this should be more general
       <div styleName="ac-root">
-        <div styleName={triggeredActionable == "NONE" ? "guide-previews" : "guide-previews-hidden"}>
+        <div styleName={triggeredAction == "NONE" ? "guide-previews" : "guide-previews-hidden"}>
           {/* TODO: show action filter */}
           <div styleName="guide-preview" className="preview-large" onClick={this.onFilterClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
             {/* TODO: how to best decide the default of the filtering target? */}
@@ -163,7 +164,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             null
           }
           {vegaReady && this.isSeparateGraphUsing() ?
-            <div styleName="guide-preview" className="preview-large" onClick={this.onRemoveFillColorClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+            <div styleName="guide-preview" className="preview-large" onClick={this.onSeparateGraphClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
               <p styleName="preview-title">
                 <i className={separateGraph.faIcon} aria-hidden="true" />
                 {' ' + separateGraph.title}
@@ -184,10 +185,21 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             </a>
           </div>
         </div>
-        <div styleName={triggeredActionable == "NONE" ? 'back-button-hidden' : 'back-button'}
+        <div styleName={triggeredAction == "NONE" ? 'back-button-hidden' : 'back-button'}
           onClick={this.onBackButton.bind(this)}>
           <i className="fa fa-chevron-circle-left" aria-hidden="true" />
           {' '} Back
+        </div>
+        <div styleName={triggeredAction == "SEPARATE_GRAPH" ? '' : 'hidden'}>
+          <FieldPicker
+            id={this.props.item.id + "SEPARATE_GRAPH"}
+            title='Separate Graph'
+            subtitle='Select one of nominal fields to separate'
+            fields={this.getNominalFieldNames()}
+            schema={this.props.schema}
+            defaultField={this.getDefaultNominalFieldName()}
+            pickedFieldAction={this.pickedFieldAction}
+          />
         </div>
       </div>
     );
@@ -228,8 +240,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     return true;
   }
   private isSeparateGraphUsing() {
-    // TOOD:
-    return this.isThereNominalField();
+    return this.isThereSmallSizedNominalField();
   }
 
   private onFilterClick() {
@@ -244,6 +255,23 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   private onRemoveFillColorClick() {
 
   }
+  private onSeparateGraphClick() {
+    this.pickedFieldAction(this.getDefaultNominalFieldName());
+    this.setState({triggeredAction: 'SEPARATE_GRAPH'});
+  }
+  pickedFieldAction = (picked: string) => {
+    this.props.handleAction({
+      type: SPEC_FIELD_ADD,
+      payload: {
+        shelfId: {channel:COLUMN},
+        fieldDef: {
+          field: picked,
+          type: NOMINAL
+        },
+        replace: true}
+    });
+  }
+
   private onEncodingDensityClick() {
     this.props.handleAction({
       type: SPEC_TO_DENSITY_PLOT
@@ -364,16 +392,30 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
 
   private getDefaultNominalFieldName() {
-    for (let f of this.props.schema.fieldSchemas) {
-      if (f.vlType == NOMINAL)
-        return f.name;
+    let minSize = 100, field = '';
+    const {schema} = this.props;
+    for (let f of schema.fieldSchemas) {
+      if (f.vlType == NOMINAL && schema.domain({field: f.name}).length < minSize){
+        field = f.name;
+        minSize = schema.domain({field: f.name}).length;
+      }
     }
-    return null;
+    return field;
   }
 
-  private isThereNominalField() {
+  private getNominalFieldNames(){
+    let nFields: string[] = [];
     for (let f of this.props.schema.fieldSchemas) {
       if (f.vlType == NOMINAL)
+        nFields.push(f.name);
+    }
+    return nFields;
+  }
+
+  private isThereSmallSizedNominalField() {
+    const {schema} = this.props;
+    for (let f of schema.fieldSchemas) {
+      if (f.vlType == NOMINAL && schema.domain({field: f.name}).length < 10)
         return true;
     }
     return false;
@@ -388,7 +430,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
 
   private onBackButton() {
-    this.setState({triggeredActionable: "NONE"});
+    this.setState({triggeredAction: "NONE"});
   }
 
   private vegaLiteWrapperRefHandler = (ref: any) => {

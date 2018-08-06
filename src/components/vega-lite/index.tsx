@@ -8,10 +8,11 @@ import * as vegaTooltip from 'vega-tooltip';
 import {SPINNER_COLOR} from '../../constants';
 import {Logger} from '../util/util.logger';
 import {Themes, themeDict} from '../../models/theme/theme';
-import {Guidelines, GuidelineItemTypes, GuidelineItemActionableCategories, getRange} from '../../models/guidelines';
+import {Guidelines, GuidelineItemTypes, GuidelineItemActionableCategories, getRange, GuidelineItemOverPlotting} from '../../models/guidelines';
 import {Schema, ShelfFilter, filterHasField, filterIndexOf} from '../../models';
 import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 import {X} from '../../../node_modules/vega-lite/build/src/channel';
+import {NOMINAL} from '../../../node_modules/vega-lite/build/src/type';
 
 export interface VegaLiteProps {
   spec: TopLevelExtendedSpec;
@@ -200,39 +201,55 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     return {width, height};
   }
 
-  private getGuidedSpec(): TopLevelExtendedSpec {
+  private getGuidedSpec(spec?: TopLevelExtendedSpec): TopLevelExtendedSpec {
     if (!this.props.isSpecifiedView) {
       return this.props.spec;
     }
+    // console.log(spec);
     let newSpec = (JSON.parse(JSON.stringify(this.props.spec))) as FacetedCompositeUnitSpec;
     const {guidelines, schema} = this.props;
     guidelines.forEach(item => {
-      const itemDetail = (item as GuidelineItemActionableCategories);
       const {id} = item;
       switch (id) {
         case "GUIDELINE_TOO_MANY_COLOR_CATEGORIES":
-        case "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES":
+        case "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES": {
+          const itemDetail = (item as GuidelineItemActionableCategories);
           if (itemDetail.selectedCategories.length !== 0)
             newSpec = this.handleTooManyCategories(newSpec, itemDetail, schema, "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" === id);
           break;
+        }
+        // case 'GUIDELINE_OVER_PLOTTING': {
+        //   const itemDetail = (item as GuidelineItemOverPlotting);
+        //   if(this.props.schema.fieldNames().indexOf(itemDetail.fieldToSeparate) != -1)
+        //     newSpec = this.separateGraph(newSpec, itemDetail.fieldToSeparate);
+        //   break;
+        // }
         default:
           break;
       }
     });
 
     // HACK to put maxbins if binned for better look and feel
-    if (newSpec.encoding.x['bin'] === true) {
-      newSpec.encoding.x['bin'] = {maxbins: 60};
-    }
-    if (newSpec.encoding.y['bin'] === true) {
-      newSpec.encoding.y['bin'] = {maxbins: 60};
-    }
+    try {
+      if (newSpec.encoding.x['bin'] === true) {
+        newSpec.encoding.x['bin'] = {maxbins: 60};
+      }
+    } catch (e) {}
+    try {
+      if (newSpec.encoding.y['bin'] === true) {
+        newSpec.encoding.y['bin'] = {maxbins: 60};
+      }
+    } catch (e) {}
 
-    // console.log("newSpec:");
-    // console.log(newSpec);
+    console.log("newSpec:");
+    console.log(newSpec);
     return newSpec;
   }
 
+  private separateGraph(newSpec: FacetedCompositeUnitSpec, field: string){
+    newSpec.encoding.column = {field, type: NOMINAL};
+    return newSpec;
+  }
   private handleTooManyCategories(newSpec: FacetedCompositeUnitSpec, itemDetail: GuidelineItemActionableCategories, schema: Schema, isColor: boolean) {
     let field = newSpec.encoding.color["field"].toString();
     const domainWithFilter = (filterHasField(this.props.filters, field) ?

@@ -13,7 +13,7 @@ import {FacetedCompositeUnitSpec} from "../../node_modules/vega-lite/build/src/s
 export type GuideState = "WARN" | "TIP" | "DONE" | "IGNORE";
 export type guidelineIds = "NEW_CHART_BINNED_SCATTERPLOT" | "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" | "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES" |
   "GUIDELINE_OVER_PLOTTING" | "GUIDELINE_NONE";
-export type GuidelineItemTypes = GuidelineItemActionableCategories | GuidelineItem;
+export type GuidelineItemTypes = GuidelineItemOverPlotting | GuidelineItemActionableCategories | GuidelineItem;
 
 //Thresholds
 export const CATEGORY_THRESHOLD = 10;
@@ -34,6 +34,75 @@ export interface GuidelineItem {
   guideState: GuideState; //TODO: move to state
   noneIndicator?: boolean;
 }
+
+export interface GuidelineItemOverPlotting extends GuidelineItem {
+  fieldToSeparate?: string;
+  // TODO: add more
+}
+
+export interface GuidelineItemActionableCategories extends GuidelineItem {
+  selectedCategories: string[] | number[] | boolean[] | DateTime[];
+  oneOfCategories: string[] | number[] | boolean[] | DateTime[];
+  userActionType: Actionables;
+}
+
+export const DEFAULT_GUIDELINES: Guidelines = {
+  list: [],
+
+  showHighlight: false,
+  size: {width: 0, height: 0},
+  position: {x: 0, y: 0}
+}
+
+// TODO: should we consider too many categories?
+export const GUIDELINE_OVER_PLOTTING: GuidelineItemOverPlotting = {
+  id: 'GUIDELINE_OVER_PLOTTING',
+  title: 'Is Your Chart Too Cluttered?',
+  subtitle: 'Use clutter reduction methods to unveil visual patterns',
+  content: 'In some graphs, especially those that use data points or lines to encode data, multiple objects can end up sharing the same space, positioned on top of one another. This makes it difficult or impossible to see the individual values, which in turn makes analysis of the data difficult.',
+  guideState: 'TIP',
+  noneIndicator: true,
+
+  fieldToSeparate: ''
+  // TODO: add more
+}
+
+export const NEW_CHART_BINNED_SCATTERPLOT: GuidelineItem = {
+  id: "NEW_CHART_BINNED_SCATTERPLOT",
+  title: 'Alternative Chart',
+  subtitle: 'Binned Scatterplot',
+  content: '',
+  guideState: "TIP",
+  noneIndicator: true
+}
+
+export const GUIDELINE_TOO_MANY_COLOR_CATEGORIES: GuidelineItemActionableCategories = {
+  id: "GUIDELINE_TOO_MANY_COLOR_CATEGORIES",
+  title: 'Too Many Categories For Color',
+  subtitle: 'Select at most 10 categories to color',
+  content: '',
+  guideState: "WARN",
+
+  selectedCategories: [],
+  oneOfCategories: [],
+  userActionType: "NONE"
+}
+
+export const GUIDELINE_TOO_MANY_SHAPE_CATEGORIES: GuidelineItemActionableCategories = {
+  id: "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES",
+  title: 'Too Many Categories For Shape',
+  subtitle: 'Select at most 10 categories to apply shape',
+  content: '',
+  guideState: "WARN",
+
+  selectedCategories: [],
+  oneOfCategories: [],
+  userActionType: "NONE"
+}
+
+//TODO: Later, this could be more systematic, including all kinds of actionables in all guidelines
+export type Actionables = "SEPARATE_GRAPH" |
+  "FILTER_CATEGORIES" | "SELECT_CATEGORIES" | "REMOVE_FIELD" | "NONE";
 
 export interface GuideActionItem {
   title: string;
@@ -108,65 +177,6 @@ export const ACTIONABLE_SEPARATE_GRAPH: GuideActionItem = {
   cons: 'Not scalable to large data. Cannot see overlap density.'
 }
 
-//TODO: Later, this could be more systematic, including all kinds of actionables in all guidelines
-export type Actionables = "FILTER_CATEGORIES" | "SELECT_CATEGORIES" | "REMOVE_FIELD" | "NONE";
-export interface GuidelineItemActionableCategories extends GuidelineItem {
-  selectedCategories: string[] | number[] | boolean[] | DateTime[];
-  oneOfCategories: string[] | number[] | boolean[] | DateTime[];
-  userActionType: Actionables;
-}
-
-export const DEFAULT_GUIDELINES: Guidelines = {
-  list: [],
-
-  showHighlight: false,
-  size: {width: 0, height: 0},
-  position: {x: 0, y: 0}
-}
-
-// TODO: should we consider too many categories?
-export const GUIDELINE_OVER_PLOTTING: GuidelineItem = {
-  id: 'GUIDELINE_OVER_PLOTTING',
-  title: 'Is Your Chart Too Cluttered?',
-  subtitle: 'Use clutter reduction methods to unveil visual patterns',
-  content: 'In some graphs, especially those that use data points or lines to encode data, multiple objects can end up sharing the same space, positioned on top of one another. This makes it difficult or impossible to see the individual values, which in turn makes analysis of the data difficult.',
-  guideState: 'TIP',
-  noneIndicator: true
-}
-
-export const NEW_CHART_BINNED_SCATTERPLOT: GuidelineItem = {
-  id: "NEW_CHART_BINNED_SCATTERPLOT",
-  title: 'Alternative Chart',
-  subtitle: 'Binned Scatterplot',
-  content: '',
-  guideState: "TIP",
-  noneIndicator: true
-}
-
-export const GUIDELINE_TOO_MANY_COLOR_CATEGORIES: GuidelineItemActionableCategories = {
-  id: "GUIDELINE_TOO_MANY_COLOR_CATEGORIES",
-  title: 'Too Many Categories For Color',
-  subtitle: 'Select at most 10 categories to color',
-  content: '',
-  guideState: "WARN",
-
-  selectedCategories: [],
-  oneOfCategories: [],
-  userActionType: "NONE"
-}
-
-export const GUIDELINE_TOO_MANY_SHAPE_CATEGORIES: GuidelineItemActionableCategories = {
-  id: "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES",
-  title: 'Too Many Categories For Shape',
-  subtitle: 'Select at most 10 categories to apply shape',
-  content: '',
-  guideState: "WARN",
-
-  selectedCategories: [],
-  oneOfCategories: [],
-  userActionType: "NONE"
-}
-
 //TODO: Be more smart for picking defaults by perhaps considering metadata
 export function getDefaultCategoryPicks(domain: string[] | number[] | boolean[] | DateTime[]): any[] {
   return domain.length > CATEGORY_THRESHOLD ? domain.slice(0, 7) : domain.slice();
@@ -202,7 +212,7 @@ export function checkGuideline(props: any) {
     if (isScatterPlot(spec)) {
       addGuidelineItem(GUIDELINE_OVER_PLOTTING, props.handleAction);
     } else {
-      removeGuidelineItem(GUIDELINE_OVER_PLOTTING, props.handleAction);
+      // removeGuidelineItem(GUIDELINE_OVER_PLOTTING, props.handleAction);
     }
   }
 
@@ -223,8 +233,8 @@ export function checkGuideline(props: any) {
 }
 
 export function isScatterPlot(spec: any) {
-  console.log("MainSpec:");
-  console.log(spec);
+  // console.log("MainSpec:");
+  // console.log(spec);
   const {encoding, mark} = spec;
   try {
     // TODO: any other spec to make this not scatterplot?

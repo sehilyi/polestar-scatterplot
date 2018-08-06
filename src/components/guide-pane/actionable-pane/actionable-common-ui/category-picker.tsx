@@ -14,7 +14,7 @@ export interface CategoryPickerProps {
   field: string;
   domain: string[] | number[] | boolean[] | DateTime[];
   selected: string[] | number[] | boolean[] | DateTime[];
-  handleAction: (action: GuidelineAction | FilterAction | SpecAction) => void;  // Add other actions when needed
+  handleAction: (action: GuidelineAction | FilterAction | SpecAction) => void;
   pickedCategoryAction: (selected: string[] | number[] | boolean[] | DateTime[]) => void;
 
   isCopyFromUI?: boolean;
