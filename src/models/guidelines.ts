@@ -188,10 +188,8 @@ export function getRange(selected: string[] | number[] | boolean[] | DateTime[],
  * TODO: Any better way to compare the states?
  */
 export function checkGuideline(props: any) {
-  ///
   // console.log("MainSpec:");
   // console.log(props);
-  ///
 
   if (typeof props.spec == "undefined") return; // vega spec is not ready
 
@@ -208,8 +206,9 @@ export function checkGuideline(props: any) {
     }
   }
 
+  /*
   // NEW_CHART_BINNED_SCATTERPLOT
-  // TODO: also have to check if x, y fn is not bin
+  // Added to over-plotting
   {
     try {
       // x and y.type == quantitative && mark == point, circle, or square && size, shape, text, and detail == null
@@ -220,14 +219,19 @@ export function checkGuideline(props: any) {
       } else {removeGuidelineItem(NEW_CHART_BINNED_SCATTERPLOT, props.handleAction);}
     } catch (e) {removeGuidelineItem(NEW_CHART_BINNED_SCATTERPLOT, props.handleAction);}
   }
+  */
 }
 
 export function isScatterPlot(spec: any) {
+  console.log("MainSpec:");
+  console.log(spec);
   const {encoding, mark} = spec;
   try {
     // TODO: any other spec to make this not scatterplot?
-    if (encoding.x.type == QUANTITATIVE && encoding.y.type == QUANTITATIVE &&
-      (mark == POINT || mark == CIRCLE || mark == SQUARE)) {
+    if (encoding.x.type === QUANTITATIVE && encoding.y.type === QUANTITATIVE &&
+      typeof encoding.x.bin == 'undefined' && typeof encoding.y.bin == 'undefined' &&
+      (mark === POINT || mark === CIRCLE || mark === SQUARE) &&
+      typeof encoding.row == 'undefined' && typeof encoding.column == 'undefined') {
       return true;
     } else {
       return false;
