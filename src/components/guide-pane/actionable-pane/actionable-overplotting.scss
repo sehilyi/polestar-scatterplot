@@ -78,12 +78,15 @@ $grid-margin-double: 4px;
 
 .back-button {
   padding: 10px;
+  padding-right: 20px;
+  padding-top: 15px;
   margin-bottom: 4px;
   position: absolute;
   right: 0;
   display: block;
   text-align: center;
   flex-grow: 1;
+  color: #2e2e2e;
   cursor: pointer;
 
   &:hover{

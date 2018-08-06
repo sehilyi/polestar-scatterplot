@@ -3,7 +3,7 @@ import * as CSSModules from 'react-css-modules';
 
 import * as styles from './actionable-overplotting.scss';
 import {Actionables, GuidelineItem, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_CHANGE_SHAPE, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting} from '../../../models/guidelines';
-import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_MARK_CHANGE_TYPE, SPEC_FIELD_ADD, SPEC_FUNCTION_CHANGE, SpecAction, SPEC_TO_DENSITY_PLOT} from '../../../actions';
+import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_MARK_CHANGE_TYPE, SPEC_FIELD_ADD, SPEC_FUNCTION_CHANGE, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR} from '../../../actions';
 import {Logger} from '../../util/util.logger';
 import {Themes} from '../../../models/theme/theme';
 import {FacetedCompositeUnitSpec} from '../../../../node_modules/vega-lite/build/src/spec';
@@ -134,7 +134,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             null
           }
           {vegaReady && this.isAggregateUsing() ?
-            <div styleName="guide-preview" className="preview-large" onClick={this.onRemoveFillColorClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+            <div styleName="guide-preview" className="preview-large" onClick={this.onAggregatePointsClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
               <p styleName="preview-title">
                 <i className={aggregate.faIcon} aria-hidden="true" />
                 {' ' + aggregate.title}
@@ -190,15 +190,26 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           <i className="fa fa-chevron-circle-left" aria-hidden="true" />
           {' '} Back
         </div>
+        <div styleName={triggeredAction == "AGGREGATE_POINTS" ? '' : 'hidden'}>
+          <FieldPicker
+            id={this.props.item.id + "AGGREGATE_POINTS"}
+            title='Aggregate Points'
+            subtitle='Select one of nominal fields to aggregate points'
+            fields={this.getNominalFieldNames()}
+            schema={this.props.schema}
+            defaultField={this.getDefaultSmallSizedNominalFieldName()}
+            pickedFieldAction={this.aggregateByFieldAction}
+          />
+        </div>
         <div styleName={triggeredAction == "SEPARATE_GRAPH" ? '' : 'hidden'}>
           <FieldPicker
             id={this.props.item.id + "SEPARATE_GRAPH"}
             title='Separate Graph'
-            subtitle='Select one of nominal fields to separate'
+            subtitle='Select one of nominal fields to separate graph'
             fields={this.getNominalFieldNames()}
             schema={this.props.schema}
-            defaultField={this.getDefaultNominalFieldName()}
-            pickedFieldAction={this.pickedFieldAction}
+            defaultField={this.getDefaultSmallSizedNominalFieldName()}
+            pickedFieldAction={this.separateByFieldAction}
           />
         </div>
       </div>
@@ -232,8 +243,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     return true;
   }
   private isAggregateUsing() {
-    // TODO:
-    return true;
+    return this.isThereNominalField();
   }
   private isEncodingDensityUsing() {
     // TODO:
@@ -255,20 +265,39 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   private onRemoveFillColorClick() {
 
   }
+  private onAggregatePointsClick() {
+    this.aggregateByFieldAction(this.getDefaultSmallSizedNominalFieldName());
+    this.setState({triggeredAction: 'AGGREGATE_POINTS'});
+  }
   private onSeparateGraphClick() {
-    this.pickedFieldAction(this.getDefaultNominalFieldName());
+    this.separateByFieldAction(this.getDefaultSmallSizedNominalFieldName());
     this.setState({triggeredAction: 'SEPARATE_GRAPH'});
   }
-  pickedFieldAction = (picked: string) => {
+
+  separateByFieldAction = (picked: string) => {
     this.props.handleAction({
       type: SPEC_FIELD_ADD,
       payload: {
-        shelfId: {channel:COLUMN},
+        shelfId: {channel: COLUMN},
         fieldDef: {
           field: picked,
           type: NOMINAL
         },
-        replace: true}
+        replace: true
+      }
+    });
+  }
+  aggregateByFieldAction = (picked: string) => {
+    this.props.handleAction({
+      type: SPEC_AGGREGATE_POINTS_BY_COLOR,
+      payload: {
+        shelfId: {channel: COLOR},
+        fieldDef: {
+          field: picked,
+          type: NOMINAL
+        },
+        replace: true
+      }
     });
   }
 
@@ -336,7 +365,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       aggregate: "mean"
     };
 
-    let field = this.getDefaultNominalFieldName();
+    let field = this.getDefaultSmallSizedNominalFieldName();
     previewSpec.encoding.color = {
       field,
       type: NOMINAL
@@ -378,7 +407,16 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     // console.log(previewSpec);
 
     // Select nominal field by default
-    let field = this.getDefaultNominalFieldName();
+    let field = this.getDefaultSmallSizedNominalFieldName();
+
+    // If a nominal field used, use it for separation
+    // try {
+    //   if (previewSpec.encoding.color['type'] == NOMINAL)
+    //     field = previewSpec.encoding.color['field'];
+    //   else if(previewSpec.encoding.shape['type'] == NOMINAL)
+    //     field = previewSpec.encoding.shape['field'];
+    // } catch (e) {}
+
     previewSpec.encoding = {
       ...previewSpec.encoding,
       column: {
@@ -391,11 +429,22 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     );
   }
 
-  private getDefaultNominalFieldName() {
+  private getDefaultLargeSizedNominalFieldName() {
+    let maxSize = 0, field = '';
+    const {schema} = this.props;
+    for (let f of schema.fieldSchemas) {
+      if (f.vlType == NOMINAL && schema.domain({field: f.name}).length > maxSize) {
+        field = f.name;
+        maxSize = schema.domain({field: f.name}).length;
+      }
+    }
+    return field;
+  }
+  private getDefaultSmallSizedNominalFieldName() {
     let minSize = 100, field = '';
     const {schema} = this.props;
     for (let f of schema.fieldSchemas) {
-      if (f.vlType == NOMINAL && schema.domain({field: f.name}).length < minSize){
+      if (f.vlType == NOMINAL && schema.domain({field: f.name}).length < minSize) {
         field = f.name;
         minSize = schema.domain({field: f.name}).length;
       }
@@ -403,7 +452,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     return field;
   }
 
-  private getNominalFieldNames(){
+  private getNominalFieldNames() {
     let nFields: string[] = [];
     for (let f of this.props.schema.fieldSchemas) {
       if (f.vlType == NOMINAL)
@@ -416,6 +465,14 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     const {schema} = this.props;
     for (let f of schema.fieldSchemas) {
       if (f.vlType == NOMINAL && schema.domain({field: f.name}).length < 10)
+        return true;
+    }
+    return false;
+  }
+  private isThereNominalField() {
+    const {schema} = this.props;
+    for (let f of schema.fieldSchemas) {
+      if (f.vlType == NOMINAL)
         return true;
     }
     return false;

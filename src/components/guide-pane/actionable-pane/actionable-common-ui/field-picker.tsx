@@ -48,7 +48,7 @@ export class FieldPickerBase extends React.PureComponent<FieldPickerProps, Field
       );
     });
     return (
-      <div id={id}>
+      <div id={id} styleName='field-picker'>
         {title != '' ?
           <h2>{title}</h2> :
           null

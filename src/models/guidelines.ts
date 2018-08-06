@@ -101,7 +101,7 @@ export const GUIDELINE_TOO_MANY_SHAPE_CATEGORIES: GuidelineItemActionableCategor
 }
 
 //TODO: Later, this could be more systematic, including all kinds of actionables in all guidelines
-export type Actionables = "SEPARATE_GRAPH" |
+export type Actionables = "SEPARATE_GRAPH" | "AGGREGATE_POINTS" |
   "FILTER_CATEGORIES" | "SELECT_CATEGORIES" | "REMOVE_FIELD" | "NONE";
 
 export interface GuideActionItem {
