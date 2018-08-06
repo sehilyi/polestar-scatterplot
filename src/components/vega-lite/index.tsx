@@ -164,14 +164,90 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
         .initialize(this.refs[CHART_REF] as any)
         .renderer(this.props.renderer || 'svg')
         .hover();
-      if(!this.props.isPreview) vegaTooltip.vega(this.view);
+      if (!this.props.isPreview) {
+        vegaTooltip.vega(this.view);
+      }
       this.bindData();
+
+      // console.log(spec);
+      // console.log(vlSpec);
+      // console.log(this.props.data);
+      // console.log(this.props.schema);
+
+      if (this.props.isSpecifiedView) {
+        this.d3Chart(spec);
+      }
     } catch (err) {
       logger.error(err);
     }
   }
 
+  private d3Chart(spec: any) {
+    console.log('spec for d3:');
+    console.log(spec);
 
+    const width = (spec.signals as any[]).filter(item => item.name === 'width')[0].update,
+      height = (spec.signals as any[]).filter(item => item.name === 'height')[0].update;
+
+    // d3 implementation
+    let root = d3.select(this.refs[CHART_REF] as any)
+      .append('div')
+      .style('margin', 'auto')
+      .append('svg')
+      .attr('width', width)
+      .attr('height', height);
+
+    let data = this.props.data.values,
+      xField = (spec.scales as any[]).filter(item => item.name === 'x')[0].domain.field,
+      yField = (spec.scales as any[]).filter(item => item.name === 'y')[0].domain.field,
+      fill = spec.marks[0].encode.update.fill.value,
+      opacity = spec.marks[0].encode.update.opacity.value,
+      stroke = spec.marks[0].encode.update.stroke.value;
+
+    let x = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[xField]})]).range([0, width]);
+    let y = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[yField]})]).range([height, 0]);
+
+    let svg = root.append('svg')
+      .attr('width', width)
+      .attr('height', height);
+
+    let xAxis = d3.axisBottom(x);
+    let yAxis = d3.axisLeft(y);
+
+    svg.append("g")
+      .attr("class", "x-axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+      .append("text")
+      .attr("class", "label")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text(xField);
+
+    svg.append("g")
+      .attr("class", "y-axis")
+      .call(yAxis)
+      .append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text(yField)
+
+    svg.selectAll('.point')
+      .data(data)
+      .enter().append("circle")
+      .attr('class', 'point')
+      .attr('stroke-width', 2)
+      .attr('r', 2.5) //TODO:
+      .attr('cx', function (d) {return x(d[xField]);})
+      .attr('cy', function (d) {return y(d[yField]);})
+      .attr('fill', fill)
+      .attr('opacity', opacity)
+      .attr('stroke', stroke);
+  }
   private bindData() {
     const {data, spec} = this.props;
     const guidedSpec = this.getGuidedSpec();
@@ -237,12 +313,12 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
       }
     } catch (e) {}
 
-    console.log("newSpec:");
-    console.log(newSpec);
+    // console.log("newSpec:");
+    // console.log(newSpec);
     return newSpec;
   }
 
-  private separateGraph(newSpec: FacetedCompositeUnitSpec, field: string){
+  private separateGraph(newSpec: FacetedCompositeUnitSpec, field: string) {
     newSpec.encoding.column = {field, type: NOMINAL};
     return newSpec;
   }
