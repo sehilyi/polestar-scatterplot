@@ -13,6 +13,7 @@ import {Schema, ShelfFilter, filterHasField, filterIndexOf} from '../../models';
 import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 import {X} from '../../../node_modules/vega-lite/build/src/channel';
 import {NOMINAL} from '../../../node_modules/vega-lite/build/src/type';
+import * as d3 from 'd3';
 
 export interface VegaLiteProps {
   spec: TopLevelExtendedSpec;
