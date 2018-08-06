@@ -11,6 +11,7 @@ import {Themes, themeDict} from '../../models/theme/theme';
 import {Guidelines, GuidelineItemTypes, GuidelineItemActionableCategories, getRange} from '../../models/guidelines';
 import {Schema, ShelfFilter, filterHasField, filterIndexOf} from '../../models';
 import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
+import {X} from '../../../node_modules/vega-lite/build/src/channel';
 
 export interface VegaLiteProps {
   spec: TopLevelExtendedSpec;
@@ -218,10 +219,17 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
           break;
       }
     });
-    ///
+
+    // HACK to put maxbins if binned for better look and feel
+    if (newSpec.encoding.x['bin'] === true) {
+      newSpec.encoding.x['bin'] = {maxbins: 60};
+    }
+    if (newSpec.encoding.y['bin'] === true) {
+      newSpec.encoding.y['bin'] = {maxbins: 60};
+    }
+
     // console.log("newSpec:");
     // console.log(newSpec);
-    ///
     return newSpec;
   }
 

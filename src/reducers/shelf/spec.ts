@@ -12,16 +12,17 @@ import {
   SPEC_FUNCTION_ADD_WILDCARD, SPEC_FUNCTION_DISABLE_WILDCARD,
   SPEC_FUNCTION_REMOVE_WILDCARD
 } from '../../actions/shelf';
-import {SPEC_FIELD_NESTED_PROP_CHANGE, SPEC_FIELD_PROP_CHANGE, SpecFieldAutoAdd, SPEC_COLOR_SCALE_SPECIFIED, SPEC_COLOR_TRANSFORM_SPECIFIED} from '../../actions/shelf/spec';
+import {SPEC_FIELD_NESTED_PROP_CHANGE, SPEC_FIELD_PROP_CHANGE, SpecFieldAutoAdd, SPEC_COLOR_SCALE_SPECIFIED, SPEC_COLOR_TRANSFORM_SPECIFIED, SPEC_TO_DENSITY_PLOT} from '../../actions/shelf/spec';
 import {isWildcardChannelId} from '../../models';
 import {ShelfAnyEncodingDef, ShelfFieldDef, ShelfId, ShelfUnitSpec} from '../../models/shelf';
 import {sortFunctions} from '../../models/shelf';
 import {autoAddFieldQuery} from '../../models/shelf';
 import {DEFAULT_SHELF_UNIT_SPEC, fromSpecQuery} from '../../models/shelf/spec';
 import {insertItemToArray, modifyItemInArray, removeItemFromArray} from '../util';
-import {COLOR} from 'vega-lite/build/src/channel';
+import {COLOR, X, Y} from 'vega-lite/build/src/channel';
 import {Scale} from 'vega-lite/build/src/scale';
 import {Transform} from 'vega-lite/build/src/transform';
+import {QUANTITATIVE} from '../../../node_modules/vega-lite/build/src/type';
 
 export function shelfSpecFieldAutoAddReducer(
   shelfSpec: Readonly<ShelfUnitSpec>, action: SpecFieldAutoAdd, schema: Schema
@@ -67,6 +68,30 @@ export function shelfSpecReducer(
       return {
         ...shelfSpec,
         mark
+      };
+    }
+
+    case SPEC_TO_DENSITY_PLOT: {
+      return {
+        ...shelfSpec,
+        mark: 'rect',
+        encoding: {
+          ...shelfSpec.encoding,
+          [COLOR]: {
+            fn: 'count',
+            field: '*',
+            type: QUANTITATIVE,
+            scale: {scheme: 'greenblue'}
+          },
+          [X]: {
+            ...shelfSpec.encoding[X],
+            fn: 'bin'
+          },
+          [Y]: {
+            ...shelfSpec.encoding[Y],
+            fn: 'bin'
+          }
+        }
       };
     }
 

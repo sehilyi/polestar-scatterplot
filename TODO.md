@@ -18,6 +18,7 @@
 - [ ] Change border-radius for all guideline types in css
 - [ ] Zoom preview when it is too small
 - [ ] Performance issues when too many points in previews
+- [ ] Add scroll in guide-element
 
 # Bugs
 - [ ] Ignore => unIgnore, always state == WARN

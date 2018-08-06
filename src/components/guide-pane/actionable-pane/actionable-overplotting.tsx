@@ -3,7 +3,7 @@ import * as CSSModules from 'react-css-modules';
 
 import * as styles from './actionable-overplotting.scss';
 import {Actionables, GuidelineItem, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_CHANGE_SHAPE, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH} from '../../../models/guidelines';
-import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction} from '../../../actions';
+import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_MARK_CHANGE_TYPE, SPEC_FIELD_ADD, SPEC_FUNCTION_CHANGE, SpecAction, SPEC_TO_DENSITY_PLOT} from '../../../actions';
 import {Logger} from '../../util/util.logger';
 import {Themes} from '../../../models/theme/theme';
 import {FacetedCompositeUnitSpec} from '../../../../node_modules/vega-lite/build/src/spec';
@@ -13,8 +13,9 @@ import {VegaLite} from '../../vega-lite';
 import {QUANTITATIVE, NOMINAL} from '../../../../node_modules/vega-lite/build/src/type';
 import {Schema, FieldSchema} from '../../../models';
 import {forEach} from '../../../../node_modules/vega-lite/build/src/encoding';
+import {COLOR, X, Y} from '../../../../node_modules/vega-lite/build/src/channel';
 
-export interface ActionableOverplottingProps extends ActionHandler<GuidelineAction | LogAction> {
+export interface ActionableOverplottingProps extends ActionHandler<GuidelineAction | LogAction | SpecAction> {
   item: GuidelineItem;
   schema: Schema;
 
@@ -147,7 +148,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             null
           }
           {vegaReady && this.isEncodingDensityUsing() ?
-            <div styleName="guide-preview" className="preview-large" onClick={this.onRemoveFillColorClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+            <div styleName="guide-preview" className="preview-large" onClick={this.onEncodingDensityClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
               <p styleName="preview-title">
                 <i className={encodingDensity.faIcon} aria-hidden="true" />
                 {' ' + encodingDensity.title}
@@ -214,19 +215,19 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       return false;
     }
   }
-  private isChangeShapeUsing(){
+  private isChangeShapeUsing() {
     // TODO:
     return true;
   }
-  private isAggregateUsing(){
+  private isAggregateUsing() {
     // TODO:
     return true;
   }
-  private isEncodingDensityUsing(){
+  private isEncodingDensityUsing() {
     // TODO:
     return true;
   }
-  private isSeparateGraphUsing(){
+  private isSeparateGraphUsing() {
     // TOOD:
     return this.isThereNominalField();
   }
@@ -242,6 +243,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private onRemoveFillColorClick() {
 
+  }
+  private onEncodingDensityClick() {
+    this.props.handleAction({
+      type: SPEC_TO_DENSITY_PLOT
+    })
   }
 
   private renderFilterPreview() {
@@ -282,14 +288,14 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
     );
   }
-  private renderChangeShapePreview(){
+  private renderChangeShapePreview() {
     let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
 
     return (
       <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
     );
   }
-  private renderAggregatePreview(){
+  private renderAggregatePreview() {
     let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
 
     previewSpec.encoding.x = {
@@ -312,7 +318,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
     );
   }
-  private renderEncodingDensityPreview(){
+  private renderEncodingDensityPreview() {
     let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
 
     //TODO: What should we do when color have a field?
@@ -325,12 +331,12 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
 
     previewSpec.encoding.x = {
       ...previewSpec.encoding.x,
-      bin: {maxbins:60}
+      bin: {maxbins: 60}
     };
 
     previewSpec.encoding.y = {
       ...previewSpec.encoding.y,
-      bin: {maxbins:60}
+      bin: {maxbins: 60}
     };
 
     previewSpec.mark = RECT;
@@ -339,7 +345,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
     );
   }
-  private renderSeparateGraphPreview(){
+  private renderSeparateGraphPreview() {
     let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
     // console.log(previewSpec);
 
@@ -357,17 +363,17 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     );
   }
 
-  private getDefaultNominalFieldName(){
-    for(let f of this.props.schema.fieldSchemas){
-      if(f.vlType == NOMINAL)
+  private getDefaultNominalFieldName() {
+    for (let f of this.props.schema.fieldSchemas) {
+      if (f.vlType == NOMINAL)
         return f.name;
     }
     return null;
   }
 
-  private isThereNominalField(){
-    for(let f of this.props.schema.fieldSchemas){
-      if(f.vlType == NOMINAL)
+  private isThereNominalField() {
+    for (let f of this.props.schema.fieldSchemas) {
+      if (f.vlType == NOMINAL)
         return true;
     }
     return false;
