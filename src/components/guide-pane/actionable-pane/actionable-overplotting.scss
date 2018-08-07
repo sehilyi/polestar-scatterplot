@@ -15,19 +15,21 @@ $grid-margin-double: 4px;
   align-content: center;
   display: flex;
   flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 }
 
 .guide-previews-hidden {
   @extend .guide-previews;
-
   display: none;
 }
 
 .guide-preview {
   padding: 10px;
+  padding-top: 13px;
   margin: $grid-margin;
   background: #fcfcfc;
-  width: 125px;
+  // width: 125px;
   display: block;
   text-align: center;
   border: #dedede solid 1px;
@@ -104,7 +106,7 @@ $grid-margin-double: 4px;
   margin: $grid-margin;
   margin-bottom: $grid-margin-double;
   background: #fcfcfc;
-  width: 100%;
+  // width: 100%;
   display: block;
   text-align: center;
   border: #dedede solid 1px;

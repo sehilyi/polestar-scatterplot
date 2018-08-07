@@ -183,12 +183,12 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             </div> :
             null
           }
-          <div className="fa-gray" styleName="ignore-button">
-            <a onClick={this.onIgnore.bind(this)}>
-              <i className="fa fa-eye-slash" aria-hidden="true" />
-              {' '} Ignore This Guideline...
+        </div>
+        <div className="fa-gray" styleName="ignore-button">
+          <a onClick={this.onIgnore.bind(this)}>
+            <i className="fa fa-eye-slash" aria-hidden="true" />
+            {' '} Ignore This Guideline...
             </a>
-          </div>
         </div>
         <div styleName={triggeredAction == "NONE" ? 'back-button-hidden' : 'back-button'}
           onClick={this.onBackButton.bind(this)}>
