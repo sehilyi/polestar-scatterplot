@@ -124,7 +124,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
               </div>
-              <div styleName="guide-preview-inner" className="preview-large" onClick={this.onRemoveFillColorClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+              <div styleName="guide-preview-inner" className="preview-large" onClick={this.onRemoveFillColorClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
+              onMouseEnter={this.onRemoveFillColorMouseEnter.bind(this)}
+              onMouseLeave={this.onRemoveFillColorMouseLeave.bind(this)}
+              >
                 <p styleName="preview-title">
                   <i className={removeFill.faIcon} aria-hidden="true" />
                   {' ' + removeFill.title}
@@ -352,6 +355,38 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     })
   }
 
+  private onRemoveFillColorMouseEnter(){
+      // TODO: this should be decided
+    const margin = {top: 20, right: 20, bottom: 50, left: 50}, width = 200, height = 200;
+    let svg = d3.select('#d3-chart-specified').select('svg').select('svg');
+    let data = this.props.data.values,
+      xField = this.props.mainSpec.encoding.x['field'],
+      yField = this.props.mainSpec.encoding.y['field'];
+
+    let x = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[xField]})]).nice().range([0, width]);
+    let y = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[yField]})]).nice().range([height, 0]);
+
+    //
+    let transition = d3.transition()
+      .duration(1000)
+      .ease(d3.easeLinear);
+
+    svg.selectAll('.point')
+      .transition().duration(1000)
+      .attr('stroke-width', 2)
+      .attr('fill', 'transparent')
+      .attr('opacity', 0.7)
+      .attr('stroke', '#4c78a8')
+      .attr('width', 6)
+      .attr('height', 6)
+      .attr('rx', 6)
+      .attr('ry', 6)
+      .attr('x', function (d) {return (x(d[xField]) + (-3 + margin.left));})
+      .attr('y', function (d) {return (y(d[yField]) + (-3 + margin.top));});
+  }
+  private onRemoveFillColorMouseLeave(){
+    this.onAggregateMouseLeave();
+  }
   private onAggregateMouseEnter() {
     // TODO: this should be decided
     const margin = {top: 20, right: 20, bottom: 50, left: 50}, width = 200, height = 200;
