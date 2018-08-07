@@ -83,7 +83,6 @@
   "devDependencies": {
     "@types/classnames": "^0.0.32",
     "@types/d3": "^5.0.0",
-    "@types/d3-selection": "^1.1.0",
     "@types/enzyme": "^2.8.0",
     "@types/es6-promise": "^0.0.32",
     "@types/fetch-mock": "^5.8.2",

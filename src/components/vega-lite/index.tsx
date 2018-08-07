@@ -8,7 +8,7 @@ import * as vegaTooltip from 'vega-tooltip';
 import {SPINNER_COLOR} from '../../constants';
 import {Logger} from '../util/util.logger';
 import {Themes, themeDict} from '../../models/theme/theme';
-import {Guidelines, GuidelineItemTypes, GuidelineItemActionableCategories, getRange, GuidelineItemOverPlotting, isScatterPlot, isSimpleScatterPlot} from '../../models/guidelines';
+import {Guidelines, GuidelineItemTypes, GuidelineItemActionableCategories, getRange, GuidelineItemOverPlotting, isScatterPlot, isSimpleScatterPlot, getDefaultCategoryPicks} from '../../models/guidelines';
 import {Schema, ShelfFilter, filterHasField, filterIndexOf} from '../../models';
 import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 import {X} from '../../../node_modules/vega-lite/build/src/channel';
@@ -297,15 +297,23 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
       svg.selectAll('.point')
         .attr('r', 3) //TODO:
         .attr('cx', function (d) {return (x(d[xField]) + margin.left);})
-        .attr('cy', function (d) {return (y(d[yField]) + margin.top);})
+        .attr('cy', function (d) {return (y(d[yField]) + margin.top);});
     }
     else if (shape == 'rect') {
       svg.selectAll('.point')
         .attr('width', 5)
         .attr('height', 5)
         .attr('x', function (d) {return (x(d[xField]) + (-2.5 + margin.left));})
-        .attr('y', function (d) {return (y(d[yField]) + (-2.5 + margin.top));})
+        .attr('y', function (d) {return (y(d[yField]) + (-2.5 + margin.top));});
     }
+
+    let transition = d3.transition()
+      .duration(750)
+      .ease(d3.easeLinear);
+    let colors = d3.scaleOrdinal(d3.schemeCategory10).domain(data['species']);
+    svg.selectAll('.point')
+      .transition(transition)
+      .attr('fill', function (d) {return colors(d['species']);});
   }
 
   private bindData() {
