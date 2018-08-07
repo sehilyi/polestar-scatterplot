@@ -8,7 +8,7 @@ import * as vegaTooltip from 'vega-tooltip';
 import {SPINNER_COLOR} from '../../constants';
 import {Logger} from '../util/util.logger';
 import {Themes, themeDict} from '../../models/theme/theme';
-import {Guidelines, GuidelineItemTypes, GuidelineItemActionableCategories, getRange, GuidelineItemOverPlotting} from '../../models/guidelines';
+import {Guidelines, GuidelineItemTypes, GuidelineItemActionableCategories, getRange, GuidelineItemOverPlotting, isScatterPlot} from '../../models/guidelines';
 import {Schema, ShelfFilter, filterHasField, filterIndexOf} from '../../models';
 import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 import {X} from '../../../node_modules/vega-lite/build/src/channel';
@@ -174,7 +174,12 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
       // console.log(this.props.data);
       // console.log(this.props.schema);
 
-      if (this.props.isSpecifiedView) {
+      if (this.props.isSpecifiedView && isScatterPlot(this.props.spec)) {
+        console.log('vlSpec:');
+        console.log(vlSpec);
+        console.log('runtime:');
+        console.log(runtime);
+        //
         this.d3Chart(spec);
       }
     } catch (err) {
@@ -182,20 +187,22 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     }
   }
 
+  // Implement chart using D3.js for animated transition
   private d3Chart(spec: any) {
     console.log('spec for d3:');
     console.log(spec);
 
-    const width = (spec.signals as any[]).filter(item => item.name === 'width')[0].update,
-      height = (spec.signals as any[]).filter(item => item.name === 'height')[0].update;
+    const margin = {top: 20, right: 20, bottom: 50, left: 50},
+      width = Number((spec.signals as any[]).filter(item => item.name === 'width')[0].update),
+      height = Number((spec.signals as any[]).filter(item => item.name === 'height')[0].update);
 
-    // d3 implementation
     let root = d3.select(this.refs[CHART_REF] as any)
       .append('div')
+      .attr('class', 'd3-chart')
       .style('margin', 'auto')
       .append('svg')
-      .attr('width', width)
-      .attr('height', height);
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom);
 
     let data = this.props.data.values,
       xField = (spec.scales as any[]).filter(item => item.name === 'x')[0].domain.field,
@@ -204,50 +211,77 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
       opacity = spec.marks[0].encode.update.opacity.value,
       stroke = spec.marks[0].encode.update.stroke.value;
 
-    let x = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[xField]})]).range([0, width]);
-    let y = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[yField]})]).range([height, 0]);
+    let x = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[xField]})]).nice().range([0, width]);//.nice();
+    let y = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[yField]})]).nice().range([height, 0]);//.nice();
 
     let svg = root.append('svg')
-      .attr('width', width)
-      .attr('height', height);
+      .attr('width', width + margin.left + margin.right)
+      .attr('height', height + margin.top + margin.bottom);
 
-    let xAxis = d3.axisBottom(x);
-    let yAxis = d3.axisLeft(y);
+    let xAxis = d3.axisBottom(x).ticks(Math.ceil(width / 40));
+    let yAxis = d3.axisLeft(y).ticks(Math.ceil(height / 40));
+    let xGrid = d3.axisBottom(x).ticks(Math.ceil(width / 40)).tickFormat(null).tickSize(-width);
+    let yGrid = d3.axisLeft(y).ticks(Math.ceil(height / 40)).tickFormat(null).tickSize(-height);
+
+    svg.append('g')
+      .attr('class', 'grid')
+      .attr("transform", "translate(" + margin.left + ',' + (height + margin.top) + ")")
+      .call(xGrid);
+
+    svg.append('g')
+      .attr('class', 'grid')
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+      .call(yGrid);
 
     svg.append("g")
-      .attr("class", "x-axis")
-      .attr("transform", "translate(0," + height + ")")
+      .attr("class", "axis")
+      .attr("transform", "translate(" + margin.left + ',' + (height + margin.top) + ")")
+      .attr('stroke', '#888888')
+      .attr('stroke-width', 0.5)
       .call(xAxis)
       .append("text")
       .attr("class", "label")
-      .attr("x", width)
-      .attr("y", -6)
-      .style("text-anchor", "end")
+      .attr('x', width / 2)
+      .attr("y", margin.bottom - 10)
+      .style('fill', 'black')
+      .style('font-weight', 'bold')
+      .style('font-family', 'sans-serif')
+      .style('font-size', 11)
+      .style("text-anchor", "middle")
       .text(xField);
 
     svg.append("g")
-      .attr("class", "y-axis")
+      .attr("class", "axis")
+      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+      .attr('stroke', '#888888')
+      .attr('stroke-width', 0.5)
       .call(yAxis)
       .append("text")
       .attr("class", "label")
       .attr("transform", "rotate(-90)")
-      .attr("y", 6)
+      .attr("x", -width / 2)
+      .attr("y", -50)
       .attr("dy", ".71em")
-      .style("text-anchor", "end")
-      .text(yField)
+      .style('font-weight', 'bold')
+      .style('font-family', 'sans-serif')
+      .style('font-size', 11)
+      .style('fill', 'black')
+      .style("text-anchor", "middle")
+      .text(yField);
 
     svg.selectAll('.point')
       .data(data)
       .enter().append("circle")
       .attr('class', 'point')
       .attr('stroke-width', 2)
-      .attr('r', 2.5) //TODO:
-      .attr('cx', function (d) {return x(d[xField]);})
-      .attr('cy', function (d) {return y(d[yField]);})
+      .attr('r', 3) //TODO:
+      .attr('cx', function (d) {return (x(d[xField]) + margin.left);})
+      .attr('cy', function (d) {return (y(d[yField]) + margin.top);})
       .attr('fill', fill)
       .attr('opacity', opacity)
       .attr('stroke', stroke);
   }
+
   private bindData() {
     const {data, spec} = this.props;
     const guidedSpec = this.getGuidedSpec();
