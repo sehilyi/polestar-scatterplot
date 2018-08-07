@@ -24,9 +24,21 @@ $grid-margin-double: 4px;
   display: none;
 }
 
+.guide-preview:hover .transition-progress,
+.guide-preview:hover #specified-view .transition-progress{
+  width: 100%;
+}
+.transition-progress-bg {
+  height: 3px;
+  background: #dadada;
+}
+.transition-progress {
+  height: 100%;
+  width: 0%;
+  background: #3f88e6;
+  transition: width 1.0s linear;
+}
 .guide-preview {
-  padding: 10px;
-  padding-top: 13px;
   margin: $grid-margin;
   background: #fcfcfc;
   // width: 125px;
@@ -39,6 +51,10 @@ $grid-margin-double: 4px;
   &:hover{
     box-shadow: 0 0 3px 0px rgba(0, 0, 0, 0.3);
   }
+}
+.guide-preview-inner {
+  padding: 10px;
+  padding-top: 13px;
 }
 
 .preview-score {

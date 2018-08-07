@@ -33,30 +33,30 @@ class AppRootBase extends React.PureComponent<AppRootProps, {}> {
     let bottomPane, footer;
     if (!dataset.isLoading) {
       if (!dataset.data) {
-        bottomPane = <LoadData/>;
+        bottomPane = <LoadData />;
       } else {
         bottomPane = (
           <SplitPane split="vertical" defaultSize={200} minSize={175} maxSize={350}>
-            <DataPane/>
+            <DataPane />
             <SplitPane split="vertical" defaultSize={235} minSize={200} maxSize={350}>
-              <EncodingPane/>
-                <SplitPane split="vertical" defaultSize={483} minSize={300} maxSize={1000} primary="second">
-                <ViewPane/>
-                <GuidePane/>
+              <EncodingPane />
+              <SplitPane split="vertical" defaultSize={483} minSize={300} maxSize={1000} primary="second">
+                <ViewPane />
+                <GuidePane />
               </SplitPane>
             </SplitPane>
           </SplitPane>
         );
         if (!hideFooter) {
-          footer = <Footer/>;
+          footer = <Footer />;
         }
       }
     }
     return (
       <div className="voyager">
         {/* <LogPane/> */}
-        {!hideHeader && <Header/>}
-        <ClipLoader color={SPINNER_COLOR} loading={dataset.isLoading}/>
+        {!hideHeader && <Header />}
+        <ClipLoader color={SPINNER_COLOR} loading={dataset.isLoading} />
         {bottomPane}
         {footer}
       </div>

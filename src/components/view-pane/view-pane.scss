@@ -9,6 +9,17 @@
   right: 0;
 }
 
+.transition-progress-bg {
+  height: 3px;
+  // background: #dadada;
+}
+.transition-progress {
+  height: 100%;
+  width: 0%;
+  background: #adc8e6;
+  transition: width 1.0s linear;
+}
+
 .view-pane-related-views-collapse {
   margin-top: 15px;
   height: 5%;
