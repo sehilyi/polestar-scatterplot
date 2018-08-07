@@ -248,7 +248,7 @@
 
   // to differenciate with normal vl chart
   .d3-chart {
-    background: #f5f5f5;
+    border-left: dotted 1px lightgray;
   }
   .d3-chart .grid line, .d3-chart .grid path {
     stroke: rgb(221, 221, 221);

@@ -15,6 +15,7 @@ import {Schema, FieldSchema} from '../../../models';
 import {forEach} from '../../../../node_modules/vega-lite/build/src/encoding';
 import {COLOR, X, Y, COLUMN} from '../../../../node_modules/vega-lite/build/src/channel';
 import {FieldPicker} from './actionable-common-ui/field-picker';
+import * as d3 from 'd3';
 
 export interface ActionableOverplottingProps extends ActionHandler<GuidelineAction | LogAction | SpecAction> {
   item: GuidelineItemOverPlotting;
@@ -134,7 +135,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             null
           }
           {vegaReady && this.isAggregateUsing() ?
-            <div styleName="guide-preview" className="preview-large" onClick={this.onAggregatePointsClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+            <div styleName="guide-preview" className="preview-large" onClick={this.onAggregatePointsClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
+              onMouseEnter={this.onAggregateMouseEnter.bind(this)}
+              onMouseLeave={this.onAggregateMouseLeave.bind(this)}>
               <p styleName="preview-title">
                 <i className={aggregate.faIcon} aria-hidden="true" />
                 {' ' + aggregate.title}
@@ -149,7 +152,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             null
           }
           {vegaReady && this.isEncodingDensityUsing() ?
-            <div styleName="guide-preview" className="preview-large" onClick={this.onEncodingDensityClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+            <div styleName="guide-preview" className="preview-large" onClick={this.onEncodingDensityClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
+              onMouseEnter={this.onEncodingDensityMouseEnter.bind(this)}
+              onMouseLeave={this.onEncodingDensityMouseLeave.bind(this)}>
               <p styleName="preview-title">
                 <i className={encodingDensity.faIcon} aria-hidden="true" />
                 {' ' + encodingDensity.title}
@@ -305,6 +310,122 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     this.props.handleAction({
       type: SPEC_TO_DENSITY_PLOT
     })
+  }
+
+  private onAggregateMouseEnter() {
+    // TODO: this should be decided
+    const margin = {top: 20, right: 20, bottom: 50, left: 50}, width = 200, height = 200;
+    let svg = d3.select('#d3-chart-specified').select('svg').select('svg');
+    let data = this.props.data.values,
+      xField = this.props.mainSpec.encoding.x['field'],
+      yField = this.props.mainSpec.encoding.y['field'];
+
+    let x = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[xField]})]).nice().range([0, width]);
+    let y = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[yField]})]).nice().range([height, 0]);
+
+    let transition = d3.transition()
+      .duration(1000)
+      .ease(d3.easeLinear);
+    let category = this.getDefaultSmallSizedNominalFieldName();
+    let ordinalColor = d3.scaleOrdinal(["#4c78a8", "#f58518", "#e45756", "#72b7b2", "#54a24b", "#eeca3b", "#b279a2", "#ff9da6", "#9d755d", "#bab0ac"])
+      .domain(data.map(function (d) {return d[category]}));
+
+    svg.selectAll('.point')
+      .transition(transition)
+      .attr('stroke-width', 2)
+      .attr('fill', 'transparent')
+      .attr('opacity', 0.7)
+      .attr('width', 6)
+      .attr('height', 6)
+      .attr('rx', 6)
+      .attr('ry', 6)
+      .attr('stroke', function (d) {
+        return ordinalColor(d[category]);
+      })
+      .transition().delay(300)
+      .attr('x', function (d) {return (x(d3.mean(data.map(function (d1) {return d1[category] == d[category] ? d1[xField] : null;})))) + (-3 + margin.left);})
+      .attr('y', function (d) {return (y(d3.mean(data.map(function (d1) {return d1[category] == d[category] ? d1[yField] : null;})))) + (-3 + margin.top);})
+  }
+  private onAggregateMouseLeave() {
+    this.onEncodingDensityMouseLeave();
+  }
+  private onEncodingDensityMouseEnter() {
+    // TODO: this should be decided
+    const margin = {top: 20, right: 20, bottom: 50, left: 50}, width = 200, height = 200;
+    let svg = d3.select('#d3-chart-specified').select('svg').select('svg');
+    let data = this.props.data.values,
+      xField = this.props.mainSpec.encoding.x['field'],
+      yField = this.props.mainSpec.encoding.y['field'];
+
+    // density plot
+    let transition = d3.transition()
+      .duration(1000)
+      .ease(d3.easeLinear);
+
+    let xBinRange = [],
+      yBinRange = [],
+      numOfBin = 35,
+      binWidth = width / numOfBin,
+      binHeight = height / numOfBin;
+
+    for (let i = 0; i < numOfBin; i++) {
+      xBinRange.push(i * binWidth + binWidth / 2.0);
+    }
+    for (let i = 0; i < numOfBin; i++) {
+      yBinRange.push(i * binHeight + binHeight / 2.0);
+    }
+    let qsx = d3.scaleQuantize()
+      .domain([0, d3.max(data, function (d) {return d[xField]})]).nice()
+      .range(xBinRange);
+    // .range([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190]);
+    let qsy = d3.scaleQuantize()
+      .domain([0, d3.max(data, function (d) {return d[yField]})]).nice()
+      .range(yBinRange.reverse());
+    // .range([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190].reverse());
+
+    svg.selectAll('.point')
+      .transition(transition)
+      .attr('fill', '#08519c')
+      .attr('stroke-width', 0)
+      .attr('opacity', 0.2)
+      .transition().delay(300)
+      .attr('rx', 0)
+      .attr('ry', 0)
+      .attr('x', function (d) {return (qsx(d[xField]) + (-binWidth / 2.0 + margin.left));})
+      .attr('y', function (d) {return (qsy(d[yField]) + (-binHeight / 2.0 + margin.top));})
+      .attr('width', binWidth)
+      .attr('height', binHeight);
+  }
+
+  private onEncodingDensityMouseLeave() {
+    // TODO: this should be decided
+    const margin = {top: 20, right: 20, bottom: 50, left: 50}, width = 200, height = 200;
+    let svg = d3.select('#d3-chart-specified').select('svg').select('svg');
+    let data = this.props.data.values,
+      xField = this.props.mainSpec.encoding.x['field'],
+      yField = this.props.mainSpec.encoding.y['field'];
+
+    let x = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[xField]})]).nice().range([0, width]);
+    let y = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[yField]})]).nice().range([height, 0]);
+
+    //
+    let transition = d3.transition()
+      .duration(1000)
+      .ease(d3.easeLinear);
+
+    svg.selectAll('.point')
+      .transition(transition)
+      .attr('stroke-width', 2)
+      .attr('fill', 'transparent')
+      .attr('opacity', 0.7)
+      .attr('stroke', '#4c78a8')
+      .attr('width', 6)
+      .attr('height', 6)
+      .attr('rx', 6)
+      .attr('ry', 6)
+      .attr('x', function (d) {return (x(d[xField]) + (-3 + margin.left));})
+      .attr('y', function (d) {return (y(d[yField]) + (-3 + margin.top));});
+
   }
 
   private renderFilterPreview() {

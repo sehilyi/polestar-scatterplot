@@ -201,6 +201,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     let root = d3.select(this.refs[CHART_REF] as any)
       .append('div')
       .attr('class', 'd3-chart')
+      .attr('id', 'd3-chart-specified')
       .style('margin', 'auto')
       .append('svg')
       .attr('width', width + margin.left + margin.right)
@@ -229,8 +230,8 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     console.log(stroke);
     console.log(shape);
 
-    let x = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[xField]})]).nice().range([0, width]);//.nice();
-    let y = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[yField]})]).nice().range([height, 0]);//.nice();
+    let x = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[xField]})]).nice().range([0, width]);
+    let y = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[yField]})]).nice().range([height, 0]);
 
     let svg = root.append('svg')
       .attr('width', width + margin.left + margin.right)
@@ -298,15 +299,12 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
 
     if (shape == 'circle') {
       svg.selectAll('.point')
-        // .attr('r', 3) //TODO:
-        .attr('width', 5)
-        .attr('height', 5)
-        .attr('rx', 5)
-        .attr('ry', 5)
-        .attr('x', function (d) {return (x(d[xField]) + (-2.5 + margin.left));})
-        .attr('y', function (d) {return (y(d[yField]) + (-2.5 + margin.top));});
-      // .attr('cx', function (d) {return (x(d[xField]) + margin.left);})
-      // .attr('cy', function (d) {return (y(d[yField]) + margin.top);});
+        .attr('width', 6)
+        .attr('height', 6)
+        .attr('rx', 6)
+        .attr('ry', 6)
+        .attr('x', function (d) {return (x(d[xField]) + (-3 + margin.left));})
+        .attr('y', function (d) {return (y(d[yField]) + (-3 + margin.top));});
     }
     else if (shape == 'rect') {
       svg.selectAll('.point')
@@ -315,15 +313,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
         .attr('x', function (d) {return (x(d[xField]) + (-2.5 + margin.left));})
         .attr('y', function (d) {return (y(d[yField]) + (-2.5 + margin.top));});
     }
-
-    // density plot
-    let qsx = d3.scaleQuantize()
-      .domain([0, d3.max(data, function (d) {return d[xField]})]).nice()
-      .range([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190]);
-    let qsy = d3.scaleQuantize()
-      .domain([0, d3.max(data, function (d) {return d[yField]})]).nice()
-      .range([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190].reverse());
-
+    /*
     // aggregate points
     let transition = d3.transition()
       .duration(1000)
@@ -331,6 +321,28 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     let category = 'Origin';
     let ordinalColor = d3.scaleOrdinal(["#4c78a8", "#f58518", "#e45756", "#72b7b2", "#54a24b", "#eeca3b", "#b279a2", "#ff9da6", "#9d755d", "#bab0ac"])//d3.schemeSet1
       .domain(data.map(function (d) {return d[category]}));
+
+    // density plot
+    let xBinRange = [],
+      yBinRange = [],
+      numOfBin = 35,
+      binWidth = width / numOfBin,
+      binHeight = height / numOfBin;
+
+    for (let i = 0; i < numOfBin; i++) {
+      xBinRange.push(i * binWidth + binWidth / 2.0);
+    }
+    for (let i = 0; i < numOfBin; i++) {
+      yBinRange.push(i * binHeight + binHeight / 2.0);
+    }
+    let qsx = d3.scaleQuantize()
+      .domain([0, d3.max(data, function (d) {return d[xField]})]).nice()
+      .range(xBinRange);
+    // .range([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190]);
+    let qsy = d3.scaleQuantize()
+      .domain([0, d3.max(data, function (d) {return d[yField]})]).nice()
+      .range(yBinRange.reverse());
+    // .range([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190].reverse());
 
     svg.selectAll('.point')
       // .transition(transition)
@@ -343,16 +355,17 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
       .transition(transition).delay(1500)
       .attr('rx', 0)
       .attr('ry', 0)
-      .attr('x', function (d) {return (qsx(d[xField]) + (margin.left));})
-      .attr('y', function (d) {return (qsy(d[yField]) + (margin.top));})
-      .attr('width', 10)
-      .attr('height', 10)
-      .attr('fill', '#08306b')
+      .attr('x', function (d) {return (qsx(d[xField]) + (-binWidth / 2.0 + margin.left));})
+      .attr('y', function (d) {return (qsy(d[yField]) + (-binHeight / 2.0 + margin.top));})
+      .attr('width', binWidth)
+      .attr('height', binHeight)
+      .attr('fill', '#08519c')
       .attr('stroke-width', 0)
-      .attr('opacity', 0.1);
+      .attr('opacity', 0.2);
 
     // svg.selectAll('.point')
     //   ;
+    */
   }
 
   private bindData() {
