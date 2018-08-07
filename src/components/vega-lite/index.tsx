@@ -160,13 +160,13 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     try {
       let spec = vl.compile(vlSpec, logger).spec;
       const runtime = vega.parse(spec, vlSpec.config);// vlConfig);
-      console.log(this.props.filters);
+      // console.log(this.props.filters);
       if (this.props.isSpecifiedView && isSimpleScatterPlot(this.props.spec) &&
         (typeof this.props.filters == 'undefined' || this.props.filters.length == 0)) {
-        console.log('vlSpec:');
-        console.log(vlSpec);
-        console.log('runtime:');
-        console.log(runtime);
+        // console.log('vlSpec:');
+        // console.log(vlSpec);
+        // console.log('runtime:');
+        // console.log(runtime);
         //
         this.d3Chart(spec);
       }
@@ -177,7 +177,10 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
           .renderer(this.props.renderer || 'svg')
           .hover();
         if (!this.props.isPreview) {
-          vegaTooltip.vega(this.view);
+          // TODO: upgrade tooltip
+          // var handler = new vegaTooltip.Handler();
+          // vegaTooltip(this.view);
+          // this.view.tooltip(handler.call);
         }
         this.bindData();
       }
@@ -307,13 +310,20 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
         .attr('y', function (d) {return (y(d[yField]) + (-2.5 + margin.top));});
     }
 
+    // aggregate points
     let transition = d3.transition()
       .duration(750)
       .ease(d3.easeLinear);
-    let colors = d3.scaleOrdinal(d3.schemeCategory10).domain(data['species']);
+
+    let ordinalColor = d3.scaleOrdinal(d3.schemeSet1)
+      .domain(data.map(function (d) {return d['species']}));
+
     svg.selectAll('.point')
       .transition(transition)
-      .attr('fill', function (d) {return colors(d['species']);});
+      .delay(500)
+      .attr('stroke', function (d) {
+        return ordinalColor(d['species']);
+      });
   }
 
   private bindData() {
