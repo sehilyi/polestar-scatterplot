@@ -251,6 +251,22 @@ export function isScatterPlot(spec: any) {
   }
 }
 
+export function isSimpleScatterPlot(spec: any) {
+  if (!isScatterPlot(spec)) {
+    return;
+  }
+  const {encoding} = spec;
+  if (typeof encoding.color == 'undefined' && typeof encoding.shape == 'undefined' &&
+    typeof encoding.size == 'undefined' && typeof encoding.text == 'undefined' &&
+    typeof encoding.x.aggregate == 'undefined' && typeof encoding.y.aggregate == 'undefined'
+    ) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
 /**
  * USED BY)
  * GUIDELINE_TOO_MANY_COLOR_CATEGORIES

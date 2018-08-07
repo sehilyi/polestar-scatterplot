@@ -8,7 +8,7 @@ import * as vegaTooltip from 'vega-tooltip';
 import {SPINNER_COLOR} from '../../constants';
 import {Logger} from '../util/util.logger';
 import {Themes, themeDict} from '../../models/theme/theme';
-import {Guidelines, GuidelineItemTypes, GuidelineItemActionableCategories, getRange, GuidelineItemOverPlotting, isScatterPlot} from '../../models/guidelines';
+import {Guidelines, GuidelineItemTypes, GuidelineItemActionableCategories, getRange, GuidelineItemOverPlotting, isScatterPlot, isSimpleScatterPlot} from '../../models/guidelines';
 import {Schema, ShelfFilter, filterHasField, filterIndexOf} from '../../models';
 import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 import {X} from '../../../node_modules/vega-lite/build/src/channel';
@@ -104,6 +104,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
           chart.style.height = this.size.height + 'px';
           this.updateSpec();
         } else if (prevProps.data !== data) {
+          // TODO: should handle the filter!!!
           this.bindData();
         }
         this.runView();
@@ -159,28 +160,26 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     try {
       let spec = vl.compile(vlSpec, logger).spec;
       const runtime = vega.parse(spec, vlSpec.config);// vlConfig);
-      this.view = new vega.View(runtime)
-        .logLevel(vega.Warn)
-        .initialize(this.refs[CHART_REF] as any)
-        .renderer(this.props.renderer || 'svg')
-        .hover();
-      if (!this.props.isPreview) {
-        vegaTooltip.vega(this.view);
-      }
-      this.bindData();
-
-      // console.log(spec);
-      // console.log(vlSpec);
-      // console.log(this.props.data);
-      // console.log(this.props.schema);
-
-      if (this.props.isSpecifiedView && isScatterPlot(this.props.spec)) {
+      console.log(this.props.filters);
+      if (this.props.isSpecifiedView && isSimpleScatterPlot(this.props.spec) &&
+        (typeof this.props.filters == 'undefined' || this.props.filters.length == 0)) {
         console.log('vlSpec:');
         console.log(vlSpec);
         console.log('runtime:');
         console.log(runtime);
         //
         this.d3Chart(spec);
+      }
+      else {
+        this.view = new vega.View(runtime)
+          .logLevel(vega.Warn)
+          .initialize(this.refs[CHART_REF] as any)
+          .renderer(this.props.renderer || 'svg')
+          .hover();
+        if (!this.props.isPreview) {
+          vegaTooltip.vega(this.view);
+        }
+        this.bindData();
       }
     } catch (err) {
       logger.error(err);
@@ -206,10 +205,26 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
 
     let data = this.props.data.values,
       xField = (spec.scales as any[]).filter(item => item.name === 'x')[0].domain.field,
-      yField = (spec.scales as any[]).filter(item => item.name === 'y')[0].domain.field,
-      fill = spec.marks[0].encode.update.fill.value,
-      opacity = spec.marks[0].encode.update.opacity.value,
-      stroke = spec.marks[0].encode.update.stroke.value;
+      yField = (spec.scales as any[]).filter(item => item.name === 'y')[0].domain.field;
+
+    let fill = null,
+      opacity = null,
+      stroke = null,
+      shape = 'circle';
+
+    try {fill = spec.marks[0].encode.update.fill.value;} catch (e) {}
+    try {opacity = spec.marks[0].encode.update.opacity.value;} catch (e) {}
+    try {stroke = spec.marks[0].encode.update.stroke.value;} catch (e) {}
+    try {shape = spec.marks[0].encode.update.shape.value;} catch (e) {}
+
+    shape = shape == 'square' ? 'rect' : shape;
+
+    console.log(xField);
+    console.log(yField);
+    console.log(fill);
+    console.log(opacity);
+    console.log(stroke);
+    console.log(shape);
 
     let x = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[xField]})]).nice().range([0, width]);//.nice();
     let y = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[yField]})]).nice().range([height, 0]);//.nice();
@@ -271,15 +286,26 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
 
     svg.selectAll('.point')
       .data(data)
-      .enter().append("circle")
+      .enter().append(shape)
       .attr('class', 'point')
       .attr('stroke-width', 2)
-      .attr('r', 3) //TODO:
-      .attr('cx', function (d) {return (x(d[xField]) + margin.left);})
-      .attr('cy', function (d) {return (y(d[yField]) + margin.top);})
       .attr('fill', fill)
       .attr('opacity', opacity)
       .attr('stroke', stroke);
+
+    if (shape == 'circle') {
+      svg.selectAll('.point')
+        .attr('r', 3) //TODO:
+        .attr('cx', function (d) {return (x(d[xField]) + margin.left);})
+        .attr('cy', function (d) {return (y(d[yField]) + margin.top);})
+    }
+    else if (shape == 'rect') {
+      svg.selectAll('.point')
+        .attr('width', 5)
+        .attr('height', 5)
+        .attr('x', function (d) {return (x(d[xField]) + (-2.5 + margin.left));})
+        .attr('y', function (d) {return (y(d[yField]) + (-2.5 + margin.top));})
+    }
   }
 
   private bindData() {
