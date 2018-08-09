@@ -361,39 +361,24 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     })
   }
 
+  private selectD3Chart() {
+    return d3.select('#d3-chart-specified').select('svg').select('svg');
+  }
   private onRemoveFillColorMouseEnter() {
-    let svg = d3.select('#d3-chart-specified').select('svg').select('svg');
-    let data = this.props.data.values,
-      xField = this.props.mainSpec.encoding.x['field'],
-      yField = this.props.mainSpec.encoding.y['field'];
-
-    let x = d3.scaleLinear()
-      .domain([0, d3.max(data, function (d) {return d[xField]})]).nice()
-      .range([0, width]);
-    let y = d3.scaleLinear()
-      .domain([0, d3.max(data, function (d) {return d[yField]})]).nice()
-      .range([height, 0]);
-
+    this.onPreviewReset();
+    let svg = this.selectD3Chart();
     svg.selectAll('.point')
       .transition().duration(tDuration)
-      .attr('stroke-width', 2)
-      .attr('fill', 'transparent')
-      .attr('opacity', 0.7)
-      .attr('stroke', '#4c78a8')
-      .attr('width', 6)
-      .attr('height', 6)
-      .attr('rx', 6)
-      .attr('ry', 6)
-      .attr('x', function (d) {return (x(d[xField]) + (-3 + margin.left));})
-      .attr('y', function (d) {return (y(d[yField]) + (-3 + margin.top));});
+      .attr('fill', 'transparent');
   }
 
   private onAggregateMouseEnter() {
-
+    this.onPreviewReset();
     let data = this.props.data.values,
       xField = this.props.mainSpec.encoding.x['field'],
-      yField = this.props.mainSpec.encoding.y['field'];
-    let svg = d3.select('#d3-chart-specified').select('svg').select('svg');
+      yField = this.props.mainSpec.encoding.y['field'],
+      shape = this.props.mainSpec.mark;
+    let svg = this.selectD3Chart();
 
     let x = d3.scaleLinear()
       .domain([0, d3.max(data, function (d) {return d[xField]})]).nice()
@@ -408,22 +393,14 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
 
     svg.selectAll('.point')
       .transition().duration(tDuration / 2.0)
-      .attr('stroke-width', 2)
-      .attr('fill', 'transparent')
-      .attr('opacity', 0.7)
-      .attr('width', 6)
-      .attr('height', 6)
-      .attr('rx', 6)
-      .attr('ry', 6)
-      .attr('stroke', function (d) {
-        return ordinalColor(d[category]);
-      })
+      .attr('fill', function (d) {return shape == 'point' ? 'transparent' : ordinalColor(d[category]);})
+      .attr('stroke', function (d) {return shape != 'point' ? 'transparent' : ordinalColor(d[category]);})
       .transition().duration(tDuration / 2.0)
       .attr('x', function (d) {return (x(d3.mean(data.map(function (d1) {return d1[category] == d[category] ? d1[xField] : null;})))) + (-3 + margin.left);})
       .attr('y', function (d) {return (y(d3.mean(data.map(function (d1) {return d1[category] == d[category] ? d1[yField] : null;})))) + (-3 + margin.top);})
   }
   private onEncodingDensityMouseEnter() {
-
+    this.onPreviewReset();
     let svg = d3.select('#d3-chart-specified').select('svg').select('svg');
     let data = this.props.data.values,
       xField = this.props.mainSpec.encoding.x['field'],
@@ -463,17 +440,17 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
 
   private onRemoveFillColorMouseLeave() {
-    this.onPreviewReset();
+    this.onPreviewReset(1000);
   }
   private onAggregateMouseLeave() {
-    this.onPreviewReset();
+    this.onPreviewReset(1000);
   }
   private onEncodingDensityMouseLeave() {
-    this.onPreviewReset();
+    this.onPreviewReset(1000);
   }
 
-  private onPreviewReset() {
-    resetD3ChartEncoding(this.props.mainSpec, this.props.data.values, 0);
+  private onPreviewReset(duration?: number) {
+    resetD3ChartEncoding(this.props.mainSpec, this.props.data.values, duration);
   }
   private saveD3Attrs() {
     // Save current attr of d3 chart

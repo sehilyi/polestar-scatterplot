@@ -353,7 +353,7 @@ export function resetD3ChartEncoding(spec: FacetedCompositeUnitSpec, data: any[]
 
   let fill = spec.mark == 'point' ? 'transparent' : '#4c78a8',
     opacity = 0.7,
-    stroke = '#4c78a8',
+    stroke = '#4c78a8', //TODO: consider when color is used
     shape = spec.mark == 'square' ? 'rect' : 'circle';
 
   let x = d3.scaleLinear()
@@ -365,7 +365,7 @@ export function resetD3ChartEncoding(spec: FacetedCompositeUnitSpec, data: any[]
 
   svg.selectAll('.point')
     .transition().duration(duration)
-    .attr('stroke-width', 2)
+    .attr('stroke-width', spec.mark == 'point' ? 2 : 0)
     .attr('fill', fill)
     .attr('opacity', opacity)
     .attr('stroke', stroke)
