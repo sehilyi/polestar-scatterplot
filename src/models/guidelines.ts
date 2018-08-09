@@ -365,7 +365,7 @@ export function resetD3ChartEncoding(spec: FacetedCompositeUnitSpec, data: any[]
 
   svg.selectAll('.point')
     .transition().duration(duration)
-    .attr('stroke-width', spec.mark == 'point' ? 2 : 0)
+    .attr('stroke-width', spec.mark == 'point' ? 2 : 2) //TODO: do we have to handle this?
     .attr('fill', fill)
     .attr('opacity', opacity)
     .attr('stroke', stroke)

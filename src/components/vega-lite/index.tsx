@@ -295,7 +295,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
       .attr('stroke-width', 2)
       .attr('fill', fill)
       .attr('opacity', opacity)
-      .attr('stroke', stroke);
+      .attr('stroke', '#4c78a8'); // was ...'stroke');
 
     if (shape == 'circle') {
       svg.selectAll('.point')

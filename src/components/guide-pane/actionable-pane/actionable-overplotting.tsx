@@ -31,7 +31,7 @@ export interface ActionableOverplottingState {
   triggeredAction: Actionables;
 }
 
-const tDuration: number = 2000;
+const tDuration: number = 1000;
 const margin = {top: 20, right: 20, bottom: 50, left: 50},
   width = 200,
   height = 200;
@@ -90,7 +90,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
               </div>
-              <div styleName="guide-preview-inner" className="preview-large" onClick={this.onChangePointSizeClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+              <div styleName="guide-preview-inner" className="preview-large" onClick={this.onChangePointSizeClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
+                onMouseEnter={this.onChangePointSizeMouseEnter.bind(this)}
+                onMouseLeave={this.onChangePointSizeMouseLeave.bind(this)}>
                 <p styleName="preview-title">
                   <i className={pointSize.faIcon} aria-hidden="true" />
                   {' ' + pointSize.title}
@@ -110,7 +112,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
               </div>
-              <div styleName="guide-preview-inner" className="preview-large" onClick={this.onChangeOpacityClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+              <div styleName="guide-preview-inner" className="preview-large" onClick={this.onChangeOpacityClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
+                onMouseEnter={this.onChangeOpacityMouseEnter.bind(this)}
+                onMouseLeave={this.onChangeOpacityMouseLeave.bind(this)}>
                 <p styleName="preview-title">
                   <i className={pointOpacity.faIcon} aria-hidden="true" />
                   {' ' + pointOpacity.title}
@@ -371,7 +375,27 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       .transition().duration(tDuration)
       .attr('fill', 'transparent');
   }
-
+  private onChangeOpacityMouseEnter() {
+    this.onPreviewReset();
+    let svg = this.selectD3Chart();
+    svg.selectAll('.point')
+      .transition().duration(tDuration)
+      .attr('opacity', 0.3);
+  }
+  private onChangePointSizeMouseEnter() {
+    this.onPreviewReset();
+    let svg = this.selectD3Chart();
+    svg.selectAll('.point')
+      .transition().duration(tDuration)
+      .attr('width', function (d) {return parseFloat(d3.select(this).attr('width')) / 2.0;})
+      .attr('height', function (d) {return parseFloat(d3.select(this).attr('height')) / 2.0;})
+      .attr('x', function (d) {
+        return parseFloat(d3.select(this).attr('x')) + parseFloat(d3.select(this).attr('width')) / 4.0;
+      })
+      .attr('y', function (d) {
+        return parseFloat(d3.select(this).attr('y')) + parseFloat(d3.select(this).attr('height')) / 4.0;
+      });
+  }
   private onAggregateMouseEnter() {
     this.onPreviewReset();
     let data = this.props.data.values,
@@ -392,10 +416,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       .domain(data.map(function (d) {return d[category]}));
 
     svg.selectAll('.point')
-      .transition().duration(tDuration / 2.0)
+      .transition().duration(tDuration)
       .attr('fill', function (d) {return shape == 'point' ? 'transparent' : ordinalColor(d[category]);})
       .attr('stroke', function (d) {return shape != 'point' ? 'transparent' : ordinalColor(d[category]);})
-      .transition().duration(tDuration / 2.0)
+      .transition().duration(tDuration)
       .attr('x', function (d) {return (x(d3.mean(data.map(function (d1) {return d1[category] == d[category] ? d1[xField] : null;})))) + (-3 + margin.left);})
       .attr('y', function (d) {return (y(d3.mean(data.map(function (d1) {return d1[category] == d[category] ? d1[yField] : null;})))) + (-3 + margin.top);})
   }
@@ -426,11 +450,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       .range(yBinRange.reverse());
 
     svg.selectAll('.point')
-      .transition().duration(tDuration / 2.0)
+      .transition().duration(tDuration)
       .attr('fill', '#08519c')
       .attr('stroke-width', 0)
       .attr('opacity', 0.2)
-      .transition().duration(tDuration / 2.0)
+      .transition().duration(tDuration)
       .attr('rx', 0)
       .attr('ry', 0)
       .attr('x', function (d) {return (qsx(d[xField]) + (-binWidth / 2.0 + margin.left));})
@@ -439,6 +463,12 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       .attr('height', binHeight);
   }
 
+  private onChangePointSizeMouseLeave() {
+    this.onPreviewReset(1000);
+  }
+  private onChangeOpacityMouseLeave() {
+    this.onPreviewReset(1000);
+  }
   private onRemoveFillColorMouseLeave() {
     this.onPreviewReset(1000);
   }
