@@ -345,7 +345,7 @@ export function removeGuidelineItem(item: GuidelineItemTypes, handleAction?: (ac
 
 export function resetD3ChartEncoding(spec: FacetedCompositeUnitSpec, data: any[], duration?: number) {
 
-  const margin = {top: 20, right: 20, bottom: 50, left: 50}, width = 200, height = 200;
+  const margin = {top: 20, right: 50, bottom: 50, left: 50}, width = 200, height = 200;
   let svg = d3.select('#d3-chart-specified').select('svg');
 
   let xField = spec.encoding.x['field'],
@@ -354,7 +354,8 @@ export function resetD3ChartEncoding(spec: FacetedCompositeUnitSpec, data: any[]
   let fill = spec.mark == 'point' ? 'transparent' : '#4c78a8',
     opacity = 0.7,
     stroke = '#4c78a8', //TODO: consider when color is used
-    shape = spec.mark == 'square' ? 'rect' : 'circle';
+    shape = spec.mark == 'square' ? 'rect' : 'circle',
+    stroke_width = spec.mark == 'point' ? 2 : 2;  //TODO: do we have to handle this?
 
   let x = d3.scaleLinear()
     .domain([0, d3.max(data, function (d) {return d[xField]})] as number[]).nice()
@@ -365,7 +366,7 @@ export function resetD3ChartEncoding(spec: FacetedCompositeUnitSpec, data: any[]
 
   svg.selectAll('.point')
     .transition().duration(duration)
-    .attr('stroke-width', spec.mark == 'point' ? 2 : 2) //TODO: do we have to handle this?
+    .attr('stroke-width', stroke_width)
     .attr('fill', fill)
     .attr('opacity', opacity)
     .attr('stroke', stroke)

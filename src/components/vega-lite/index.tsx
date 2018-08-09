@@ -194,7 +194,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     console.log('spec for d3:');
     console.log(spec);
 
-    const margin = {top: 20, right: 20, bottom: 50, left: 50},
+    const margin = {top: 20, right: 50, bottom: 50, left: 50},
       width = Number((spec.signals as any[]).filter(item => item.name === 'width')[0].update),
       height = Number((spec.signals as any[]).filter(item => item.name === 'height')[0].update);
 

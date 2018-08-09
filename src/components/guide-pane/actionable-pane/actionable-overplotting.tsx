@@ -34,7 +34,7 @@ export interface ActionableOverplottingState {
 }
 
 const tDuration: number = 1000;
-const margin = {top: 20, right: 20, bottom: 50, left: 50},
+export const margin = {top: 20, right: 50, bottom: 50, left: 50},
   width = 200,
   height = 200;
 
@@ -415,18 +415,60 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       .domain([0, d3.max(data, function (d) {return d[yField]})]).nice()
       .range([height, 0]);
 
-    let category = this.getDefaultSmallSizedNominalFieldName();
+    let categoryField = this.getDefaultSmallSizedNominalFieldName();
+    let categoryDomain = this.props.schema.domain({field: categoryField});
     let colorScheme = ["#4c78a8", "#f58518", "#e45756", "#72b7b2", "#54a24b", "#eeca3b", "#b279a2", "#ff9da6", "#9d755d", "#bab0ac"];
     let ordinalColor = d3.scaleOrdinal(colorScheme)
-      .domain(data.map(function (d) {return d[category]}));
+      .domain(data.map(function (d) {return d[categoryField]}));
 
     svg.selectAll('.point')
       .transition().duration(tDuration)
-      .attr('fill', function (d) {return shape == 'point' ? 'transparent' : ordinalColor(d[category]);})
-      .attr('stroke', function (d) {return shape != 'point' ? 'transparent' : ordinalColor(d[category]);})
+      .attr('fill', function (d) {return shape == 'point' ? 'transparent' : ordinalColor(d[categoryField]);})
+      .attr('stroke', function (d) {return shape != 'point' ? 'transparent' : ordinalColor(d[categoryField]);})
       .transition().duration(tDuration)
-      .attr('x', function (d) {return (x(d3.mean(data.map(function (d1) {return d1[category] == d[category] ? d1[xField] : null;})))) + (-3 + margin.left);})
-      .attr('y', function (d) {return (y(d3.mean(data.map(function (d1) {return d1[category] == d[category] ? d1[yField] : null;})))) + (-3 + margin.top);})
+      .attr('x', function (d) {return (x(d3.mean(data.map(function (d1) {return d1[categoryField] == d[categoryField] ? d1[xField] : null;})))) + (-3 + margin.left);})
+      .attr('y', function (d) {return (y(d3.mean(data.map(function (d1) {return d1[categoryField] == d[categoryField] ? d1[yField] : null;})))) + (-3 + margin.top);})
+
+    //legend
+    let fill = this.props.mainSpec.mark == 'point' ? 'transparent' : '#4c78a8',
+      opacity = 0.7,
+      stroke = '#4c78a8', //TODO: consider when color is used
+      svg_shape = this.props.mainSpec.mark == 'square' ? 'rect' : 'circle',
+      stroke_width = this.props.mainSpec.mark == 'point' ? 2 : 2;  //TODO: do we have to handle this?
+
+    let legend = svg.selectAll('.legend')
+      .data(categoryDomain)
+      .enter().append('g')
+      .attr("class", "legend remove-when-reset")
+      .attr("transform", function (d, i) {
+        return "translate(" + (width + margin.left) + "," + (margin.top + i * 20) + ")";
+      })
+
+    legend.append('rect')
+      .attr("x", 0)
+      .attr("y", 0)
+      .attr('stroke-width', stroke_width)
+      .attr('opacity', opacity)
+      .attr('stroke', stroke)
+      //circle vs rect
+      .attr('width', svg_shape == 'circle' ? 6 : 5)
+      .attr('height', svg_shape == 'circle' ? 6 : 5)
+      .attr('rx', svg_shape == 'circle' ? 6 : 0)
+      .attr('ry', svg_shape == 'circle' ? 6 : 0)
+      .attr("fill", function (d) {return ordinalColor(d);})
+
+    legend.append('text')
+      .attr("x", 10)
+      .attr("y", 10)
+      .text(function (d) {return d;})
+      .attr("class", "textselected")
+      .style("text-anchor", "start")
+      .style("font-size", 15)
+
+    legend
+      .attr('opacity', 0)
+      .transition().duration(tDuration)
+      .attr('opacity', 1);
   }
   private onEncodingDensityMouseEnter() {
     this.onPreviewReset();
@@ -476,8 +518,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
 
     let categoryField = this.getDefaultSmallSizedNominalFieldName();
     let numOfCategory = this.props.schema.domain({field: categoryField}).length;
-    const margin = {top: 20, right: 20, bottom: 50, left: 50},
-      width = 200;
+    const width = 200;
     let widthPlusMargin = width + margin.left + margin.right;
     svg.transition().duration(tDuration).attr('width', function (d) {
       return widthPlusMargin * numOfCategory;
@@ -549,7 +590,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     }
     svg.selectAll('.point').raise();
     svg.selectAll('.remove-when-reset').attr('opacity', 0).transition().duration(tDuration).attr('opacity', 1);
-
   }
 
   private onChangePointSizeMouseLeave() {
@@ -571,51 +611,15 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     this.selectD3Chart()
       .transition().duration(1000)
       .attr('width', 200 + 50 + 20);
-    this.selectD3Chart()
-      .selectAll('.remove-when-reset').transition().duration(1000).attr('opacity', 0).remove();
     this.onPreviewReset(1000);
   }
 
   private onPreviewReset(duration?: number) {
+    this.selectD3Chart()
+      .selectAll('.remove-when-reset')
+      .transition().duration(duration)
+      .attr('opacity', 0).remove();
     resetD3ChartEncoding(this.props.mainSpec, this.props.data.values, duration);
-  }
-  private saveD3Attrs() {
-    // Save current attr of d3 chart
-    let pa: Object = new Object();
-    let svg = d3.select('#d3-chart-specified').select('svg').select('svg');
-    svg.selectAll('.point').each(function (d, i) {
-      let a = ({
-        d,
-        'stroke-width': d3.select(this).attr('stroke-width'),
-        fill: d3.select(this).attr('fill'),
-        opacity: d3.select(this).attr('opacity'),
-        stroke: d3.select(this).attr('stroke'),
-        width: d3.select(this).attr('width'),
-        height: d3.select(this).attr('height'),
-        rx: d3.select(this).attr('rx'),
-        ry: d3.select(this).attr('ry'),
-        x: d3.select(this).attr('x'),
-        y: d3.select(this).attr('y')
-      });
-      pa[i] = a;
-    });
-    this.prevAttr = pa;
-  }
-  private onPreviewResetBySavedAttr() {
-    let pa = this.prevAttr;
-    let svg = d3.select('#d3-chart-specified').select('svg').select('svg');
-    svg.selectAll('.point')
-      .transition().duration(tDuration)
-      .attr('stroke-width', function (d, i) {return pa[i]['stroke-width'];})
-      .attr('fill', function (d, i) {return pa[i].fill;})
-      .attr('opacity', function (d, i) {return pa[i].opacity;})
-      .attr('stroke', function (d, i) {return pa[i].stroke;})
-      .attr('width', function (d, i) {return pa[i].width;})
-      .attr('height', function (d, i) {return pa[i].height;})
-      .attr('rx', function (d, i) {return pa[i].rx;})
-      .attr('ry', function (d, i) {return pa[i].ry;})
-      .attr('x', function (d, i) {return pa[i].x;})
-      .attr('y', function (d, i) {return pa[i].y;});
   }
 
   private renderFilterPreview() {
