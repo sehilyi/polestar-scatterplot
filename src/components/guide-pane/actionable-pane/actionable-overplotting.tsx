@@ -16,6 +16,8 @@ import {forEach} from '../../../../node_modules/vega-lite/build/src/encoding';
 import {COLOR, X, Y, COLUMN} from '../../../../node_modules/vega-lite/build/src/channel';
 import {FieldPicker} from './actionable-common-ui/field-picker';
 import * as d3 from 'd3';
+import {select} from 'd3';
+import {duration} from '../../../../node_modules/moment';
 
 export interface ActionableOverplottingProps extends ActionHandler<GuidelineAction | LogAction | SpecAction> {
   item: GuidelineItemOverPlotting;
@@ -221,7 +223,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
               </div>
-              <div styleName="guide-preview-inner" className="preview-large" onClick={this.onSeparateGraphClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+              <div styleName="guide-preview-inner" className="preview-large" onClick={this.onSeparateGraphClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
+                onMouseEnter={this.onSeparateGraphMouseEnter.bind(this)}
+                onMouseLeave={this.onSeparateGraphMouseLeave.bind(this)}>
                 <p styleName="preview-title">
                   <i className={separateGraph.faIcon} aria-hidden="true" />
                   {' ' + separateGraph.title}
@@ -298,7 +302,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private isChangeShapeUsing() {
     // TODO:
-    return true;
+    return false;
   }
   private isAggregateUsing() {
     return this.isThereNominalField();
@@ -366,7 +370,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
 
   private selectD3Chart() {
-    return d3.select('#d3-chart-specified').select('svg').select('svg');
+    return d3.select('#d3-chart-specified').select('svg');
   }
   private onRemoveFillColorMouseEnter() {
     this.onPreviewReset();
@@ -398,11 +402,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private onAggregateMouseEnter() {
     this.onPreviewReset();
+    let svg = this.selectD3Chart();
     let data = this.props.data.values,
       xField = this.props.mainSpec.encoding.x['field'],
       yField = this.props.mainSpec.encoding.y['field'],
       shape = this.props.mainSpec.mark;
-    let svg = this.selectD3Chart();
 
     let x = d3.scaleLinear()
       .domain([0, d3.max(data, function (d) {return d[xField]})]).nice()
@@ -412,7 +416,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       .range([height, 0]);
 
     let category = this.getDefaultSmallSizedNominalFieldName();
-    let ordinalColor = d3.scaleOrdinal(["#4c78a8", "#f58518", "#e45756", "#72b7b2", "#54a24b", "#eeca3b", "#b279a2", "#ff9da6", "#9d755d", "#bab0ac"])
+    let colorScheme = ["#4c78a8", "#f58518", "#e45756", "#72b7b2", "#54a24b", "#eeca3b", "#b279a2", "#ff9da6", "#9d755d", "#bab0ac"];
+    let ordinalColor = d3.scaleOrdinal(colorScheme)
       .domain(data.map(function (d) {return d[category]}));
 
     svg.selectAll('.point')
@@ -425,7 +430,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private onEncodingDensityMouseEnter() {
     this.onPreviewReset();
-    let svg = d3.select('#d3-chart-specified').select('svg').select('svg');
+    let svg = this.selectD3Chart();
     let data = this.props.data.values,
       xField = this.props.mainSpec.encoding.x['field'],
       yField = this.props.mainSpec.encoding.y['field'];
@@ -462,6 +467,90 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       .attr('width', binWidth)
       .attr('height', binHeight);
   }
+  private onSeparateGraphMouseEnter() {
+    this.onPreviewReset();
+    let svg = this.selectD3Chart();
+    const {values} = this.props.data,
+      xField = this.props.mainSpec.encoding.x['field'],
+      yField = this.props.mainSpec.encoding.y['field'];
+
+    let categoryField = this.getDefaultSmallSizedNominalFieldName();
+    let numOfCategory = this.props.schema.domain({field: categoryField}).length;
+    const margin = {top: 20, right: 20, bottom: 50, left: 50},
+      width = 200;
+    let widthPlusMargin = width + margin.left + margin.right;
+    svg.transition().duration(tDuration).attr('width', function (d) {
+      return widthPlusMargin * numOfCategory;
+    });
+    for (let i = 0; i < numOfCategory; i++) {
+      if (i == 0) continue;
+
+      let x = d3.scaleLinear().domain([0, d3.max(values, function (d) {return d[xField]})]).nice().range([0, width]);
+      let y = d3.scaleLinear().domain([0, d3.max(values, function (d) {return d[yField]})]).nice().range([height, 0]);
+
+      let xAxis = d3.axisBottom(x).ticks(Math.ceil(width / 40));
+      let yAxis = d3.axisLeft(y).ticks(Math.ceil(height / 40));
+      let xGrid = d3.axisBottom(x).ticks(Math.ceil(width / 40)).tickFormat(null).tickSize(-width);
+      let yGrid = d3.axisLeft(y).ticks(Math.ceil(height / 40)).tickFormat(null).tickSize(-height);
+
+      svg.append('g')
+        .attr('class', 'grid remove-when-reset')
+        .attr("transform", "translate(" + (margin.left + widthPlusMargin * i) + ',' + (height + margin.top) + ")")
+        .call(xGrid);
+
+      svg.append('g')
+        .attr('class', 'grid remove-when-reset')
+        .attr('transform', 'translate(' + (margin.left + widthPlusMargin * i) + ',' + margin.top + ')')
+        .call(yGrid);
+
+      svg.append("g")
+        .attr("class", "axis remove-when-reset")
+        .attr("transform", "translate(" + (margin.left + widthPlusMargin * i) + ',' + (height + margin.top) + ")")
+        .attr('stroke', '#888888')
+        .attr('stroke-width', 0.5)
+        .call(xAxis)
+        .append("text")
+        .attr("class", "label")
+        .attr('x', width / 2)
+        .attr("y", margin.bottom - 10)
+        .style('fill', 'black')
+        .style('font-weight', 'bold')
+        .style('font-family', 'sans-serif')
+        .style('font-size', 11)
+        .style("text-anchor", "middle")
+        .text(xField);
+
+      svg.append("g")
+        .attr("class", "axis remove-when-reset")
+        .attr('transform', 'translate(' + (margin.left + widthPlusMargin * i) + ',' + margin.top + ')')
+        .attr('stroke', '#888888')
+        .attr('stroke-width', 0.5)
+        .call(yAxis)
+        .append("text")
+        .attr("class", "label")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -width / 2)
+        .attr("y", -50)
+        .attr("dy", ".71em")
+        .style('font-weight', 'bold')
+        .style('font-family', 'sans-serif')
+        .style('font-size', 11)
+        .style('fill', 'black')
+        .style("text-anchor", "middle")
+        .text(yField);
+
+      let category = this.props.schema.domain({field: categoryField})[i];
+      svg.selectAll('.point')
+        .filter(function (d) {return d[categoryField] == category;})
+        .transition().duration(tDuration)
+        .attr('x', function (d) {
+          return parseFloat(d3.select(this).attr('x')) + widthPlusMargin * i;
+        });
+    }
+    svg.selectAll('.point').raise();
+    svg.selectAll('.remove-when-reset').attr('opacity', 0).transition().duration(tDuration).attr('opacity', 1);
+
+  }
 
   private onChangePointSizeMouseLeave() {
     this.onPreviewReset(1000);
@@ -476,6 +565,14 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     this.onPreviewReset(1000);
   }
   private onEncodingDensityMouseLeave() {
+    this.onPreviewReset(1000);
+  }
+  private onSeparateGraphMouseLeave() {
+    this.selectD3Chart()
+      .transition().duration(1000)
+      .attr('width', 200 + 50 + 20);
+    this.selectD3Chart()
+      .selectAll('.remove-when-reset').transition().duration(1000).attr('opacity', 0).remove();
     this.onPreviewReset(1000);
   }
 

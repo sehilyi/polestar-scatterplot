@@ -233,9 +233,10 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     let x = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[xField]})]).nice().range([0, width]);
     let y = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[yField]})]).nice().range([height, 0]);
 
-    let svg = root.append('svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom);
+    let svg = root;
+    // let svg = root.append('svg')
+    //   .attr('width', width + margin.left + margin.right)
+    //   .attr('height', height + margin.top + margin.bottom);
 
     let xAxis = d3.axisBottom(x).ticks(Math.ceil(width / 40));
     let yAxis = d3.axisLeft(y).ticks(Math.ceil(height / 40));

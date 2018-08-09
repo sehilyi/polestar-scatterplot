@@ -346,7 +346,7 @@ export function removeGuidelineItem(item: GuidelineItemTypes, handleAction?: (ac
 export function resetD3ChartEncoding(spec: FacetedCompositeUnitSpec, data: any[], duration?: number) {
 
   const margin = {top: 20, right: 20, bottom: 50, left: 50}, width = 200, height = 200;
-  let svg = d3.select('#d3-chart-specified').select('svg').select('svg');
+  let svg = d3.select('#d3-chart-specified').select('svg');
 
   let xField = spec.encoding.x['field'],
     yField = spec.encoding.y['field'];
