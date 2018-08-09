@@ -9,6 +9,8 @@ import {OneOfFilterShelfProps} from "../components/filter-pane/one-of-filter-she
 import {NOMINAL, QUANTITATIVE} from "../../node_modules/vega-lite/build/src/type";
 import {POINT, CIRCLE, SQUARE} from "vega-lite/build/src/mark";
 import {FacetedCompositeUnitSpec} from "../../node_modules/vega-lite/build/src/spec";
+import * as d3 from 'd3';
+import {InlineData} from "../../node_modules/vega-lite/build/src/data";
 
 export type GuideState = "WARN" | "TIP" | "DONE" | "IGNORE";
 export type guidelineIds = "NEW_CHART_BINNED_SCATTERPLOT" | "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" | "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES" |
@@ -259,7 +261,7 @@ export function isSimpleScatterPlot(spec: any) {
   if (typeof encoding.color == 'undefined' && typeof encoding.shape == 'undefined' &&
     typeof encoding.size == 'undefined' && typeof encoding.text == 'undefined' &&
     typeof encoding.x.aggregate == 'undefined' && typeof encoding.y.aggregate == 'undefined'
-    ) {
+  ) {
     return true;
   }
   else {
@@ -339,5 +341,40 @@ export function removeGuidelineItem(item: GuidelineItemTypes, handleAction?: (ac
     type: GUIDELINE_REMOVE_ITEM,
     payload: {item}
   });
+}
+
+export function resetD3ChartEncoding(spec: FacetedCompositeUnitSpec, data: any[], duration?: number) {
+
+  const margin = {top: 20, right: 20, bottom: 50, left: 50}, width = 200, height = 200;
+  let svg = d3.select('#d3-chart-specified').select('svg').select('svg');
+
+  let xField = spec.encoding.x['field'],
+    yField = spec.encoding.y['field'];
+
+  let fill = spec.mark == 'point' ? 'transparent' : '#4c78a8',
+    opacity = 0.7,
+    stroke = '#4c78a8',
+    shape = spec.mark == 'square' ? 'rect' : 'circle';
+
+  let x = d3.scaleLinear()
+    .domain([0, d3.max(data, function (d) {return d[xField]})] as number[]).nice()
+    .range([0, width]),
+    y = d3.scaleLinear()
+      .domain([0, d3.max(data, function (d) {return d[yField]})] as number[]).nice()
+      .range([height, 0]);
+
+  svg.selectAll('.point')
+    .transition().duration(duration)
+    .attr('stroke-width', 2)
+    .attr('fill', fill)
+    .attr('opacity', opacity)
+    .attr('stroke', stroke)
+    //circle vs rect
+    .attr('width', shape == 'circle' ? 6 : 5)
+    .attr('height', shape == 'circle' ? 6 : 5)
+    .attr('x', function (d) {return (x(d[xField]) + ((shape == 'circle' ? -3 : -2.5) + margin.left));})
+    .attr('y', function (d) {return (y(d[yField]) + ((shape == 'circle' ? -3 : -2.5) + margin.top));})
+    .attr('rx', shape == 'circle' ? 6 : 0)
+    .attr('ry', shape == 'circle' ? 6 : 0);
 }
 
