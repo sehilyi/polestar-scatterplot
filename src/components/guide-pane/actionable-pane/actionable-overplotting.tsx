@@ -15,7 +15,7 @@ import {QUANTITATIVE, NOMINAL} from '../../../../node_modules/vega-lite/build/sr
 import {Schema, FieldSchema} from '../../../models';
 import {COLOR, X, Y, COLUMN} from '../../../../node_modules/vega-lite/build/src/channel';
 import {FieldPicker} from './actionable-common-ui/field-picker';
-import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN} from '../../../models/d3-chart';
+import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN, pointsAsDensityPlot, pointsAsMeanScatterplot, NOMINAL_COLOR_SCHEME} from '../../../models/d3-chart';
 
 export interface ActionableOverplottingProps extends ActionHandler<GuidelineAction | LogAction | SpecAction> {
   item: GuidelineItemOverPlotting;
@@ -377,8 +377,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private onChangePointSizeMouseEnter() {
     onPreviewReset(this.props.mainSpec, this.props.data.values);
-    let svg = selectRootSVG();
-    svg.selectAll('.point')
+    selectRootSVG().selectAll('.point')
       .transition().duration(COMMON_DURATION)
       .attr('width', function (d) {return parseFloat(d3.select(this).attr('width')) / 2.0;})
       .attr('height', function (d) {return parseFloat(d3.select(this).attr('height')) / 2.0;})
@@ -391,113 +390,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private onAggregateMouseEnter() {
     onPreviewReset(this.props.mainSpec, this.props.data.values);
-
-    let svg = selectRootSVG();
-    let data = this.props.data.values,
-      xField = this.props.mainSpec.encoding.x['field'],
-      yField = this.props.mainSpec.encoding.y['field'],
-      shape = this.props.mainSpec.mark;
-
-    let x = d3.scaleLinear()
-      .domain([0, d3.max(data, function (d) {return d[xField]})]).nice()
-      .range([0, CHART_SIZE.width]);
-    let y = d3.scaleLinear()
-      .domain([0, d3.max(data, function (d) {return d[yField]})]).nice()
-      .range([CHART_SIZE.height, 0]);
-
-    let categoryField = this.getDefaultSmallSizedNominalFieldName();
-    let categoryDomain = this.props.schema.domain({field: categoryField});
-    let colorScheme = ["#4c78a8", "#f58518", "#e45756", "#72b7b2", "#54a24b", "#eeca3b", "#b279a2", "#ff9da6", "#9d755d", "#bab0ac"];
-    let ordinalColor = d3.scaleOrdinal(colorScheme)
-      .domain(data.map(function (d) {return d[categoryField]}));
-
-    svg.selectAll('.point')
-      .transition().duration(COMMON_DURATION)
-      .attr('fill', function (d) {return shape == 'point' ? 'transparent' : ordinalColor(d[categoryField]);})
-      .attr('stroke', function (d) {return shape != 'point' ? 'transparent' : ordinalColor(d[categoryField]);})
-      .transition().duration(COMMON_DURATION)
-      .attr('x', function (d) {return (x(d3.mean(data.map(function (d1) {return d1[categoryField] == d[categoryField] ? d1[xField] : null;})))) + (-3 + CHART_MARGIN.left);})
-      .attr('y', function (d) {return (y(d3.mean(data.map(function (d1) {return d1[categoryField] == d[categoryField] ? d1[yField] : null;})))) + (-3 + CHART_MARGIN.top);})
-
-    //legend
-    let fill = this.props.mainSpec.mark == 'point' ? 'transparent' : '#4c78a8',
-      opacity = 0.7,
-      stroke = '#4c78a8', //TODO: consider when color is used
-      svg_shape = this.props.mainSpec.mark == 'square' ? 'rect' : 'circle',
-      stroke_width = this.props.mainSpec.mark == 'point' ? 2 : 2;  //TODO: do we have to handle this?
-
-    let legend = svg.selectAll('.legend')
-      .data(categoryDomain)
-      .enter().append('g')
-      .attr("class", "legend remove-when-reset")
-      .attr("transform", function (d, i) {
-        return "translate(" + (CHART_SIZE.width + CHART_MARGIN.left) + "," + (CHART_MARGIN.top + i * 20) + ")";
-      })
-
-    legend.append('rect')
-      .attr("x", 0)
-      .attr("y", 0)
-      .attr('stroke-width', stroke_width)
-      .attr('opacity', opacity)
-      .attr('stroke', stroke)
-      //circle vs rect
-      .attr('width', svg_shape == 'circle' ? 6 : 5)
-      .attr('height', svg_shape == 'circle' ? 6 : 5)
-      .attr('rx', svg_shape == 'circle' ? 6 : 0)
-      .attr('ry', svg_shape == 'circle' ? 6 : 0)
-      .attr("fill", function (d) {return ordinalColor(d);})
-
-    legend.append('text')
-      .attr("x", 10)
-      .attr("y", 10)
-      .text(function (d) {return d;})
-      .attr("class", "textselected")
-      .style("text-anchor", "start")
-      .style("font-size", 15)
-
-    legend
-      .attr('opacity', 0)
-      .transition().duration(COMMON_DURATION)
-      .attr('opacity', 1);
+    pointsAsMeanScatterplot(this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), COMMON_DURATION);
   }
   private onEncodingDensityMouseEnter() {
     onPreviewReset(this.props.mainSpec, this.props.data.values);
-    let svg = selectRootSVG();
-    let data = this.props.data.values,
-      xField = this.props.mainSpec.encoding.x['field'],
-      yField = this.props.mainSpec.encoding.y['field'];
-
-    let xBinRange = [],
-      yBinRange = [],
-      numOfBin = 35,
-      binWidth = CHART_SIZE.width / numOfBin,
-      binHeight = CHART_SIZE.height / numOfBin;
-
-    for (let i = 0; i < numOfBin; i++) {
-      xBinRange.push(i * binWidth + binWidth / 2.0);
-    }
-    for (let i = 0; i < numOfBin; i++) {
-      yBinRange.push(i * binHeight + binHeight / 2.0);
-    }
-    let qsx = d3.scaleQuantize()
-      .domain([0, d3.max(data, function (d) {return d[xField]})]).nice()
-      .range(xBinRange);
-    let qsy = d3.scaleQuantize()
-      .domain([0, d3.max(data, function (d) {return d[yField]})]).nice()
-      .range(yBinRange.reverse());
-
-    svg.selectAll('.point')
-      .transition().duration(COMMON_DURATION)
-      .attr('fill', '#08519c')
-      .attr('stroke-width', 0)
-      .attr('opacity', 0.2)
-      .transition().duration(COMMON_DURATION)
-      .attr('rx', 0)
-      .attr('ry', 0)
-      .attr('x', function (d) {return (qsx(d[xField]) + (-binWidth / 2.0 + CHART_MARGIN.left));})
-      .attr('y', function (d) {return (qsy(d[yField]) + (-binHeight / 2.0 + CHART_MARGIN.top));})
-      .attr('width', binWidth)
-      .attr('height', binHeight);
+    pointsAsDensityPlot(this.props.mainSpec, this.props.data.values, COMMON_DURATION);
   }
   private onSeparateGraphMouseEnter() {
     onPreviewReset(this.props.mainSpec, this.props.data.values);
