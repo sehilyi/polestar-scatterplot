@@ -40,7 +40,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   constructor(props: ActionableOverplottingProps) {
     super(props);
     this.state = ({
-      triggeredAction: "NONE"
+      triggeredAction: 'NONE'
     });
     this.plotLogger = new Logger(props.handleAction);
   }
@@ -59,24 +59,24 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
 
     return (
       // TODO: this should be more general
-      <div styleName="ac-root">
-        <div styleName={triggeredAction == "NONE" ? "guide-previews" : "guide-previews-hidden"}>
+      <div styleName='ac-root'>
+        <div styleName={triggeredAction == 'NONE' ? 'guide-previews' : 'guide-previews-hidden'}>
           {/* TODO: show action filter */}
           <div styleName='guide-preview'>
             <div styleName='transition-progress-bg'>
               <div styleName='transition-progress'></div>
             </div>
-            <div styleName="guide-preview-inner" className="preview-large" onClick={this.onFilterClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+            <div styleName='guide-preview-inner' className='preview-large' onClick={this.onFilterClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
               {/* TODO: how to best decide the default of the filtering target? */}
-              <p styleName="preview-title">
-                <i className={filter.faIcon} aria-hidden="true" />
+              <p styleName='preview-title'>
+                <i className={filter.faIcon} aria-hidden='true' />
                 {' ' + filter.title}
               </p>
               <p styleName='preview-score'>77% experts</p>
               {vegaReady ? this.renderFilterPreview() : null}
               <ul styleName='preview-desc' className='fa-ul'>
-                <li><i className="fa-li fa fa-thumbs-o-up" styleName='pros' aria-hidden="true" />{filter.pros}</li>
-                <li><i className="fa-li fa fa-thumbs-o-down" styleName='cons' aria-hidden="true" />{filter.cons}</li>
+                <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{filter.pros}</li>
+                <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' />{filter.cons}</li>
               </ul>
             </div>
           </div>
@@ -85,18 +85,18 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
               </div>
-              <div styleName="guide-preview-inner" className="preview-large" onClick={this.onChangePointSizeClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
+              <div styleName='guide-preview-inner' className='preview-large' onClick={this.onChangePointSizeClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
                 onMouseEnter={this.onChangePointSizeMouseEnter.bind(this)}
                 onMouseLeave={this.onChangePointSizeMouseLeave.bind(this)}>
-                <p styleName="preview-title">
-                  <i className={pointSize.faIcon} aria-hidden="true" />
+                <p styleName='preview-title'>
+                  <i className={pointSize.faIcon} aria-hidden='true' />
                   {' ' + pointSize.title}
                 </p>
                 <p styleName='preview-score'>75% experts</p>
                 {vegaReady ? this.renderChangePointSizePreview() : null}
                 <ul styleName='preview-desc' className='fa-ul'>
-                  <li><i className="fa-li fa fa-thumbs-o-up" styleName='pros' aria-hidden="true" />{pointSize.pros}</li>
-                  <li><i className="fa-li fa fa-thumbs-o-down" styleName='cons' aria-hidden="true" />{pointSize.cons}</li>
+                  <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{pointSize.pros}</li>
+                  <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' />{pointSize.cons}</li>
                 </ul>
               </div>
             </div> :
@@ -107,18 +107,18 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
               </div>
-              <div styleName="guide-preview-inner" className="preview-large" onClick={this.onChangeOpacityClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
+              <div styleName='guide-preview-inner' className='preview-large' onClick={this.onChangeOpacityClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
                 onMouseEnter={this.onChangeOpacityMouseEnter.bind(this)}
                 onMouseLeave={this.onChangeOpacityMouseLeave.bind(this)}>
-                <p styleName="preview-title">
-                  <i className={pointOpacity.faIcon} aria-hidden="true" />
+                <p styleName='preview-title'>
+                  <i className={pointOpacity.faIcon} aria-hidden='true' />
                   {' ' + pointOpacity.title}
                 </p>
                 <p styleName='preview-score'>72% experts</p>
                 {vegaReady ? this.renderChangeOpacityPreview() : null}
                 <ul styleName='preview-desc' className='fa-ul'>
-                  <li><i className="fa-li fa fa-thumbs-o-up" styleName='pros' aria-hidden="true" />{pointOpacity.pros}</li>
-                  <li><i className="fa-li fa fa-thumbs-o-down" styleName='cons' aria-hidden="true" />{pointOpacity.cons}</li>
+                  <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{pointOpacity.pros}</li>
+                  <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' />{pointOpacity.cons}</li>
                 </ul>
               </div>
             </div> :
@@ -129,19 +129,19 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
               </div>
-              <div styleName="guide-preview-inner" className="preview-large" onClick={this.onRemoveFillColorClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
+              <div styleName='guide-preview-inner' className='preview-large' onClick={this.onRemoveFillColorClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
                 onMouseEnter={this.onRemoveFillColorMouseEnter.bind(this)}
                 onMouseLeave={this.onRemoveFillColorMouseLeave.bind(this)}
               >
-                <p styleName="preview-title">
-                  <i className={removeFill.faIcon} aria-hidden="true" />
+                <p styleName='preview-title'>
+                  <i className={removeFill.faIcon} aria-hidden='true' />
                   {' ' + removeFill.title}
                 </p>
                 <p styleName='preview-score'>45% experts</p>
                 {vegaReady ? this.renderRemoveFillColorPreview() : null}
                 <ul styleName='preview-desc' className='fa-ul'>
-                  <li><i className="fa-li fa fa-thumbs-o-up" styleName='pros' aria-hidden="true" />{removeFill.pros}</li>
-                  <li><i className="fa-li fa fa-thumbs-o-down" styleName='cons' aria-hidden="true" />{removeFill.cons}</li>
+                  <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{removeFill.pros}</li>
+                  <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' />{removeFill.cons}</li>
                 </ul>
               </div>
             </div> :
@@ -152,16 +152,16 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
               </div>
-              <div styleName="guide-preview-inner" className="preview-large" onClick={this.onRemoveFillColorClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
-                <p styleName="preview-title">
-                  <i className={changeShape.faIcon} aria-hidden="true" />
+              <div styleName='guide-preview-inner' className='preview-large' onClick={this.onRemoveFillColorClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+                <p styleName='preview-title'>
+                  <i className={changeShape.faIcon} aria-hidden='true' />
                   {' ' + changeShape.title}
                 </p>
                 <p styleName='preview-score'>42% experts</p>
                 {vegaReady ? this.renderChangeShapePreview() : null}
                 <ul styleName='preview-desc' className='fa-ul'>
-                  <li><i className="fa-li fa fa-thumbs-o-up" styleName='pros' aria-hidden="true" />{changeShape.pros}</li>
-                  <li><i className="fa-li fa fa-thumbs-o-down" styleName='cons' aria-hidden="true" />{changeShape.cons}</li>
+                  <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{changeShape.pros}</li>
+                  <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' />{changeShape.cons}</li>
                 </ul>
               </div>
             </div> :
@@ -172,18 +172,18 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
               </div>
-              <div styleName="guide-preview-inner" className="preview-large" onClick={this.onAggregatePointsClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
+              <div styleName='guide-preview-inner' className='preview-large' onClick={this.onAggregatePointsClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
                 onMouseEnter={this.onAggregateMouseEnter.bind(this)}
                 onMouseLeave={this.onAggregateMouseLeave.bind(this)}>
-                <p styleName="preview-title">
-                  <i className={aggregate.faIcon} aria-hidden="true" />
+                <p styleName='preview-title'>
+                  <i className={aggregate.faIcon} aria-hidden='true' />
                   {' ' + aggregate.title}
                 </p>
                 <p styleName='preview-score'>38% experts</p>
                 {vegaReady ? this.renderAggregatePreview() : null}
                 <ul styleName='preview-desc' className='fa-ul'>
-                  <li><i className="fa-li fa fa-thumbs-o-up" styleName='pros' aria-hidden="true" />{aggregate.pros}</li>
-                  <li><i className="fa-li fa fa-thumbs-o-down" styleName='cons' aria-hidden="true" />{aggregate.cons}</li>
+                  <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{aggregate.pros}</li>
+                  <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' />{aggregate.cons}</li>
                 </ul>
               </div>
             </div> :
@@ -194,18 +194,18 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
               </div>
-              <div styleName="guide-preview-inner" className="preview-large" onClick={this.onEncodingDensityClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
+              <div styleName='guide-preview-inner' className='preview-large' onClick={this.onEncodingDensityClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
                 onMouseEnter={this.onEncodingDensityMouseEnter.bind(this)}
                 onMouseLeave={this.onEncodingDensityMouseLeave.bind(this)}>
-                <p styleName="preview-title">
-                  <i className={encodingDensity.faIcon} aria-hidden="true" />
+                <p styleName='preview-title'>
+                  <i className={encodingDensity.faIcon} aria-hidden='true' />
                   {' ' + encodingDensity.title}
                 </p>
                 <p styleName='preview-score'>18% experts</p>
                 {vegaReady ? this.renderEncodingDensityPreview() : null}
                 <ul styleName='preview-desc' className='fa-ul'>
-                  <li><i className="fa-li fa fa-thumbs-o-up" styleName='pros' aria-hidden="true" />{encodingDensity.pros}</li>
-                  <li><i className="fa-li fa fa-thumbs-o-down" styleName='cons' aria-hidden="true" />{encodingDensity.cons}</li>
+                  <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{encodingDensity.pros}</li>
+                  <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' />{encodingDensity.cons}</li>
                 </ul>
               </div>
             </div> :
@@ -216,38 +216,38 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
               </div>
-              <div styleName="guide-preview-inner" className="preview-large" onClick={this.onSeparateGraphClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
+              <div styleName='guide-preview-inner' className='preview-large' onClick={this.onSeparateGraphClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
                 onMouseEnter={this.onSeparateGraphMouseEnter.bind(this)}
                 onMouseLeave={this.onSeparateGraphMouseLeave.bind(this)}>
-                <p styleName="preview-title">
-                  <i className={separateGraph.faIcon} aria-hidden="true" />
+                <p styleName='preview-title'>
+                  <i className={separateGraph.faIcon} aria-hidden='true' />
                   {' ' + separateGraph.title}
                 </p>
                 <p styleName='preview-score'>11% experts</p>
                 {vegaReady ? this.renderSeparateGraphPreview() : null}
                 <ul styleName='preview-desc' className='fa-ul'>
-                  <li><i className="fa-li fa fa-thumbs-o-up" styleName='pros' aria-hidden="true" />{separateGraph.pros}</li>
-                  <li><i className="fa-li fa fa-thumbs-o-down" styleName='cons' aria-hidden="true" />{separateGraph.cons}</li>
+                  <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{separateGraph.pros}</li>
+                  <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' />{separateGraph.cons}</li>
                 </ul>
               </div>
             </div> :
             null
           }
         </div>
-        <div className="fa-gray" styleName="ignore-button">
+        <div className='fa-gray' styleName='ignore-button'>
           <a onClick={this.onIgnore.bind(this)}>
-            <i className="fa fa-eye-slash" aria-hidden="true" />
+            <i className='fa fa-eye-slash' aria-hidden='true' />
             {' '} Ignore This Guideline...
             </a>
         </div>
-        <div styleName={triggeredAction == "NONE" ? 'back-button-hidden' : 'back-button'}
+        <div styleName={triggeredAction == 'NONE' ? 'back-button-hidden' : 'back-button'}
           onClick={this.onBackButton.bind(this)}>
-          <i className="fa fa-chevron-circle-left" aria-hidden="true" />
+          <i className='fa fa-chevron-circle-left' aria-hidden='true' />
           {' '} Back
         </div>
-        <div styleName={triggeredAction == "AGGREGATE_POINTS" ? '' : 'hidden'}>
+        <div styleName={triggeredAction == 'AGGREGATE_POINTS' ? '' : 'hidden'}>
           <FieldPicker
-            id={this.props.item.id + "AGGREGATE_POINTS"}
+            id={this.props.item.id + 'AGGREGATE_POINTS'}
             title='Aggregate Points'
             subtitle='Select one of nominal fields to aggregate points'
             fields={this.getNominalFieldNames()}
@@ -256,9 +256,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             pickedFieldAction={this.aggregateByFieldAction}
           />
         </div>
-        <div styleName={triggeredAction == "SEPARATE_GRAPH" ? '' : 'hidden'}>
+        <div styleName={triggeredAction == 'SEPARATE_GRAPH' ? '' : 'hidden'}>
           <FieldPicker
-            id={this.props.item.id + "SEPARATE_GRAPH"}
+            id={this.props.item.id + 'SEPARATE_GRAPH'}
             title='Separate Graph'
             subtitle='Select one of nominal fields to separate graph'
             fields={this.getNominalFieldNames()}
@@ -422,49 +422,49 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       let yGrid = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40)).tickFormat(null).tickSize(-CHART_SIZE.height);
 
       svg.append('g')
-        .attr('class', 'grid remove-when-reset')
-        .attr("transform", "translate(" + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ")")
+        .classed('grid remove-when-reset', true)
+        .attr('transform', 'translate(' + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
         .call(xGrid);
 
       svg.append('g')
-        .attr('class', 'grid remove-when-reset')
+        .classed('grid remove-when-reset', true)
         .attr('transform', 'translate(' + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + CHART_MARGIN.top + ')')
         .call(yGrid);
 
-      svg.append("g")
-        .attr("class", "axis remove-when-reset")
-        .attr("transform", "translate(" + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ")")
+      svg.append('g')
+        .classed('axis remove-when-reset', true)
+        .attr('transform', 'translate(' + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
         .attr('stroke', '#888888')
         .attr('stroke-width', 0.5)
         .call(xAxis)
-        .append("text")
-        .attr("class", "label")
+        .append('text')
+        .classed('label', true)
         .attr('x', width / 2)
-        .attr("y", CHART_MARGIN.bottom - 10)
+        .attr('y', CHART_MARGIN.bottom - 10)
         .style('fill', 'black')
         .style('font-weight', 'bold')
         .style('font-family', 'sans-serif')
         .style('font-size', 11)
-        .style("text-anchor", "middle")
+        .style('text-anchor', 'middle')
         .text(xField);
 
-      svg.append("g")
-        .attr("class", "axis remove-when-reset")
+      svg.append('g')
+        .classed('axis remove-when-reset', true)
         .attr('transform', 'translate(' + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + CHART_MARGIN.top + ')')
         .attr('stroke', '#888888')
         .attr('stroke-width', 0.5)
         .call(yAxis)
-        .append("text")
-        .attr("class", "label")
-        .attr("transform", "rotate(-90)")
-        .attr("x", -width / 2)
-        .attr("y", -50)
-        .attr("dy", ".71em")
+        .append('text')
+        .classed('label', true)
+        .attr('transform', 'rotate(-90)')
+        .attr('x', -width / 2)
+        .attr('y', -50)
+        .attr('dy', '.71em')
         .style('font-weight', 'bold')
         .style('font-family', 'sans-serif')
         .style('font-size', 11)
         .style('fill', 'black')
-        .style("text-anchor", "middle")
+        .style('text-anchor', 'middle')
         .text(yField);
 
       let category = this.props.schema.domain({field: categoryField})[i];
@@ -498,7 +498,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   private onSeparateGraphMouseLeave() {
     selectRootSVG()
       .transition().duration(1000)
-      .attr('width', 200 + 50 + 20);
+      .attr('width', CHART_SIZE.width + CHART_MARGIN.left + CHART_MARGIN.right);
     onPreviewReset(this.props.mainSpec, this.props.data.values, 1000);
   }
 
@@ -552,12 +552,12 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
 
     previewSpec.encoding.x = {
       ...previewSpec.encoding.x,
-      aggregate: "mean"
+      aggregate: 'mean'
     };
 
     previewSpec.encoding.y = {
       ...previewSpec.encoding.y,
-      aggregate: "mean"
+      aggregate: 'mean'
     };
 
     let field = this.getDefaultSmallSizedNominalFieldName();
@@ -575,10 +575,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
 
     //TODO: What should we do when color have a field?
     previewSpec.encoding.color = {
-      aggregate: "count",
-      field: "*",
+      aggregate: 'count',
+      field: '*',
       type: QUANTITATIVE,
-      scale: {scheme: "greenblue"}
+      scale: {scheme: 'greenblue'}
     };
 
     previewSpec.encoding.x = {
@@ -682,7 +682,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
 
   private onBackButton() {
-    this.setState({triggeredAction: "NONE"});
+    this.setState({triggeredAction: 'NONE'});
   }
 
   private vegaLiteWrapperRefHandler = (ref: any) => {

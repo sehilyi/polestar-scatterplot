@@ -8,7 +8,7 @@ export const COMMON_DURATION: number = 1000;
 export const CHART_SIZE = {width: 200, height: 200};
 export const CHART_MARGIN = {top: 20, right: 20, bottom: 50, left: 50};
 export const LEGEND_WIDTH = 100;
-export const NOMINAL_COLOR_SCHEME = ["#4c78a8", "#f58518", "#e45756", "#72b7b2", "#54a24b", "#eeca3b", "#b279a2", "#ff9da6", "#9d755d", "#bab0ac"];
+export const NOMINAL_COLOR_SCHEME = ['#4c78a8', '#f58518', '#e45756', '#72b7b2', '#54a24b', '#eeca3b', '#b279a2', '#ff9da6', '#9d755d', '#bab0ac'];
 
 export function renderD3Chart(CHART_REF: any, spec: FacetedCompositeUnitSpec, data: any[]) {
   //
@@ -28,7 +28,7 @@ export function selectRootSVG(): d3.Selection<BaseType, {}, HTMLElement, any> {
 export function appendRootSVG(CHART_REF: any) {
   d3.select(CHART_REF)
     .append('div')
-    .attr('class', 'd3-chart')
+    .classed('d3-chart', true)
     .attr('id', 'd3-chart-specified')
     .style('margin', 'auto')
     .append('svg')
@@ -52,49 +52,49 @@ export function appendAxes(spec: FacetedCompositeUnitSpec, data: any[]) {
   let yGrid = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40)).tickFormat(null).tickSize(-CHART_SIZE.height);
 
   svg.append('g')
-    .attr('class', 'grid')
-    .attr("transform", "translate(" + CHART_MARGIN.left + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ")")
+    .classed('grid', true)
+    .attr('transform', 'translate(' + CHART_MARGIN.left + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
     .call(xGrid);
 
   svg.append('g')
-    .attr('class', 'grid')
+    .classed('grid', true)
     .attr('transform', 'translate(' + CHART_MARGIN.left + ',' + CHART_MARGIN.top + ')')
     .call(yGrid);
 
-  svg.append("g")
-    .attr("class", "axis")
-    .attr("transform", "translate(" + CHART_MARGIN.left + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ")")
+  svg.append('g')
+    .classed('axis', true)
+    .attr('transform', 'translate(' + CHART_MARGIN.left + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
     .attr('stroke', '#888888')
     .attr('stroke-width', 0.5)
     .call(xAxis)
-    .append("text")
-    .attr("class", "label")
+    .append('text')
+    .classed('label', true)
     .attr('x', CHART_SIZE.width / 2)
-    .attr("y", CHART_MARGIN.bottom - 10)
+    .attr('y', CHART_MARGIN.bottom - 10)
     .style('fill', 'black')
     .style('font-weight', 'bold')
     .style('font-family', 'sans-serif')
     .style('font-size', 11)
-    .style("text-anchor", "middle")
+    .style('text-anchor', 'middle')
     .text(xField);
 
-  svg.append("g")
-    .attr("class", "axis")
+  svg.append('g')
+    .classed('axis', true)
     .attr('transform', 'translate(' + CHART_MARGIN.left + ',' + CHART_MARGIN.top + ')')
     .attr('stroke', '#888888')
     .attr('stroke-width', 0.5)
     .call(yAxis)
-    .append("text")
-    .attr("class", "label")
-    .attr("transform", "rotate(-90)")
-    .attr("x", -CHART_SIZE.width / 2)
-    .attr("y", -50)
-    .attr("dy", ".71em")
+    .append('text')
+    .classed('label', true)
+    .attr('transform', 'rotate(-90)')
+    .attr('x', -CHART_SIZE.width / 2)
+    .attr('y', -50)
+    .attr('dy', '.71em')
     .style('font-weight', 'bold')
     .style('font-family', 'sans-serif')
     .style('font-size', 11)
     .style('fill', 'black')
-    .style("text-anchor", "middle")
+    .style('text-anchor', 'middle')
     .text(yField);
 }
 
@@ -102,7 +102,7 @@ export function appendPoints(data: any[]) {
   selectRootSVG().selectAll('.point')
     .data(data)
     .enter().append('rect')
-    .attr('class', 'point');
+    .classed('point');
 }
 
 export function pointsAsScatterplot(spec: FacetedCompositeUnitSpec, data: any[], duration?: number) {
@@ -186,14 +186,14 @@ export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: an
   let legend = svg.selectAll('.legend')
     .data(categoryDomain)
     .enter().append('g')
-    .attr("class", "legend remove-when-reset")
-    .attr("transform", function (d, i) {
-      return "translate(" + (CHART_MARGIN.left + CHART_SIZE.width) + "," + (CHART_MARGIN.top + i * 20) + ")";
+    .classed('legend remove-when-reset', true)
+    .attr('transform', function (d, i) {
+      return 'translate(' + (CHART_MARGIN.left + CHART_SIZE.width) + ',' + (CHART_MARGIN.top + i * 20) + ')';
     });
 
   legend.append('rect')
-    .attr("x", 0)
-    .attr("y", 0)
+    .attr('x', 0)
+    .attr('y', 0)
     .attr('stroke-width', attr.stroke_width)
     .attr('opacity', attr.opacity)
     .attr('stroke', function (d) {return shape != 'point' ? 'transparent' : ordinalColor(d);})
@@ -202,15 +202,15 @@ export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: an
     .attr('height', attr.svg_shape == 'circle' ? 6 : 5)
     .attr('rx', attr.svg_shape == 'circle' ? 6 : 0)
     .attr('ry', attr.svg_shape == 'circle' ? 6 : 0)
-    .attr("fill", function (d) {return shape == 'point' ? 'transparent' : ordinalColor(d);});
+    .attr('fill', function (d) {return shape == 'point' ? 'transparent' : ordinalColor(d);});
 
   legend.append('text')
-    .attr("x", 10)
-    .attr("y", 10)
+    .attr('x', 10)
+    .attr('y', 10)
     .text(function (d) {return d as string;})
-    .attr("class", "textselected")
-    .style("text-anchor", "start")
-    .style("font-size", 15);
+    .classed('textselected', true)
+    .style('text-anchor', 'start')
+    .style('font-size', 15);
 
   legend
     .attr('opacity', 0)
@@ -255,6 +255,9 @@ export function pointsAsDensityPlot(spec: FacetedCompositeUnitSpec, data: any[],
     .attr('height', binHeight);
 }
 export function onPreviewReset(spec: FacetedCompositeUnitSpec, values: any[], duration?: number) {
+  // TODO:
+  selectRootSVG()
+    .attr('width', CHART_SIZE.width + CHART_MARGIN.left + CHART_MARGIN.right);
   selectRootSVG()
     .selectAll('.remove-when-reset')
     .transition().duration(duration)
