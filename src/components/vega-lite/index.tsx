@@ -14,6 +14,7 @@ import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 import {X} from '../../../node_modules/vega-lite/build/src/channel';
 import {NOMINAL} from '../../../node_modules/vega-lite/build/src/type';
 import * as d3 from 'd3';
+import {renderD3Chart} from '../../models/d3-chart';
 
 export interface VegaLiteProps {
   spec: TopLevelExtendedSpec;
@@ -168,7 +169,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
         // console.log('runtime:');
         // console.log(runtime);
         //
-        this.d3Chart(spec);
+        renderD3Chart(this.refs[CHART_REF], vlSpec as FacetedCompositeUnitSpec, this.props.data.values);
       }
       else {
         this.view = new vega.View(runtime)
@@ -187,186 +188,6 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     } catch (err) {
       logger.error(err);
     }
-  }
-
-  // Implement chart using D3.js for animated transition
-  private d3Chart(spec: any) {
-    console.log('spec for d3:');
-    console.log(spec);
-
-    const margin = {top: 20, right: 50, bottom: 50, left: 50},
-      width = Number((spec.signals as any[]).filter(item => item.name === 'width')[0].update),
-      height = Number((spec.signals as any[]).filter(item => item.name === 'height')[0].update);
-
-    let root = d3.select(this.refs[CHART_REF] as any)
-      .append('div')
-      .attr('class', 'd3-chart')
-      .attr('id', 'd3-chart-specified')
-      .style('margin', 'auto')
-      .append('svg')
-      .attr('width', width + margin.left + margin.right)
-      .attr('height', height + margin.top + margin.bottom);
-
-    let data = this.props.data.values,
-      xField = (spec.scales as any[]).filter(item => item.name === 'x')[0].domain.field,
-      yField = (spec.scales as any[]).filter(item => item.name === 'y')[0].domain.field;
-
-    let fill = null,
-      opacity = null,
-      stroke = null,
-      shape = 'circle';
-
-    try {fill = spec.marks[0].encode.update.fill.value;} catch (e) {}
-    try {opacity = spec.marks[0].encode.update.opacity.value;} catch (e) {}
-    try {stroke = spec.marks[0].encode.update.stroke.value;} catch (e) {}
-    try {shape = spec.marks[0].encode.update.shape.value;} catch (e) {}
-
-    shape = shape == 'square' ? 'rect' : shape;
-
-    console.log(xField);
-    console.log(yField);
-    console.log(fill);
-    console.log(opacity);
-    console.log(stroke);
-    console.log(shape);
-
-    let x = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[xField]})]).nice().range([0, width]);
-    let y = d3.scaleLinear().domain([0, d3.max(data, function (d) {return d[yField]})]).nice().range([height, 0]);
-
-    let svg = root;
-    // let svg = root.append('svg')
-    //   .attr('width', width + margin.left + margin.right)
-    //   .attr('height', height + margin.top + margin.bottom);
-
-    let xAxis = d3.axisBottom(x).ticks(Math.ceil(width / 40));
-    let yAxis = d3.axisLeft(y).ticks(Math.ceil(height / 40));
-    let xGrid = d3.axisBottom(x).ticks(Math.ceil(width / 40)).tickFormat(null).tickSize(-width);
-    let yGrid = d3.axisLeft(y).ticks(Math.ceil(height / 40)).tickFormat(null).tickSize(-height);
-
-    svg.append('g')
-      .attr('class', 'grid')
-      .attr("transform", "translate(" + margin.left + ',' + (height + margin.top) + ")")
-      .call(xGrid);
-
-    svg.append('g')
-      .attr('class', 'grid')
-      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-      .call(yGrid);
-
-    svg.append("g")
-      .attr("class", "axis")
-      .attr("transform", "translate(" + margin.left + ',' + (height + margin.top) + ")")
-      .attr('stroke', '#888888')
-      .attr('stroke-width', 0.5)
-      .call(xAxis)
-      .append("text")
-      .attr("class", "label")
-      .attr('x', width / 2)
-      .attr("y", margin.bottom - 10)
-      .style('fill', 'black')
-      .style('font-weight', 'bold')
-      .style('font-family', 'sans-serif')
-      .style('font-size', 11)
-      .style("text-anchor", "middle")
-      .text(xField);
-
-    svg.append("g")
-      .attr("class", "axis")
-      .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
-      .attr('stroke', '#888888')
-      .attr('stroke-width', 0.5)
-      .call(yAxis)
-      .append("text")
-      .attr("class", "label")
-      .attr("transform", "rotate(-90)")
-      .attr("x", -width / 2)
-      .attr("y", -50)
-      .attr("dy", ".71em")
-      .style('font-weight', 'bold')
-      .style('font-family', 'sans-serif')
-      .style('font-size', 11)
-      .style('fill', 'black')
-      .style("text-anchor", "middle")
-      .text(yField);
-
-    svg.selectAll('.point')
-      .data(data)
-      .enter().append('rect') //shape
-      .attr('class', 'point')
-      .attr('stroke-width', 2)
-      .attr('fill', fill)
-      .attr('opacity', opacity)
-      .attr('stroke', '#4c78a8'); // was ...'stroke');
-
-    if (shape == 'circle') {
-      svg.selectAll('.point')
-        .attr('width', 6)
-        .attr('height', 6)
-        .attr('rx', 6)
-        .attr('ry', 6)
-        .attr('x', function (d) {return (x(d[xField]) + (-3 + margin.left));})
-        .attr('y', function (d) {return (y(d[yField]) + (-3 + margin.top));});
-    }
-    else if (shape == 'rect') {
-      svg.selectAll('.point')
-        .attr('width', 5)
-        .attr('height', 5)
-        .attr('x', function (d) {return (x(d[xField]) + (-2.5 + margin.left));})
-        .attr('y', function (d) {return (y(d[yField]) + (-2.5 + margin.top));});
-    }
-    /*
-    // aggregate points
-    let transition = d3.transition()
-      .duration(1000)
-      .ease(d3.easeLinear);
-    let category = 'Origin';
-    let ordinalColor = d3.scaleOrdinal(["#4c78a8", "#f58518", "#e45756", "#72b7b2", "#54a24b", "#eeca3b", "#b279a2", "#ff9da6", "#9d755d", "#bab0ac"])//d3.schemeSet1
-      .domain(data.map(function (d) {return d[category]}));
-
-    // density plot
-    let xBinRange = [],
-      yBinRange = [],
-      numOfBin = 35,
-      binWidth = width / numOfBin,
-      binHeight = height / numOfBin;
-
-    for (let i = 0; i < numOfBin; i++) {
-      xBinRange.push(i * binWidth + binWidth / 2.0);
-    }
-    for (let i = 0; i < numOfBin; i++) {
-      yBinRange.push(i * binHeight + binHeight / 2.0);
-    }
-    let qsx = d3.scaleQuantize()
-      .domain([0, d3.max(data, function (d) {return d[xField]})]).nice()
-      .range(xBinRange);
-    // .range([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190]);
-    let qsy = d3.scaleQuantize()
-      .domain([0, d3.max(data, function (d) {return d[yField]})]).nice()
-      .range(yBinRange.reverse());
-    // .range([0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190].reverse());
-
-    svg.selectAll('.point')
-      // .transition(transition)
-      // .delay(500)
-      // .attr('stroke', function (d) {
-      //   return ordinalColor(d[category]);
-      // })
-      // .attr('cx', function (d) {return (x(d3.mean(data.map(function (d1) {return d1[category] == d[category] ? d1[xField] : null;})))) + (-2.5 + margin.left);})
-      // .attr('cy', function (d) {return (y(d3.mean(data.map(function (d1) {return d1[category] == d[category] ? d1[yField] : null;})))) + (-2.5 + margin.top);})
-      .transition(transition).delay(1500)
-      .attr('rx', 0)
-      .attr('ry', 0)
-      .attr('x', function (d) {return (qsx(d[xField]) + (-binWidth / 2.0 + margin.left));})
-      .attr('y', function (d) {return (qsy(d[yField]) + (-binHeight / 2.0 + margin.top));})
-      .attr('width', binWidth)
-      .attr('height', binHeight)
-      .attr('fill', '#08519c')
-      .attr('stroke-width', 0)
-      .attr('opacity', 0.2);
-
-    // svg.selectAll('.point')
-    //   ;
-    */
   }
 
   private bindData() {
