@@ -30,7 +30,7 @@ $grid-margin-double: 4px;
 // }
 .transition-progress-bg {
   height: 3px;
-  background: #dadada;
+  background: #e8e8e8;
 }
 .transition-progress {
   height: 100%;
@@ -46,11 +46,12 @@ $grid-margin-double: 4px;
   text-align: center;
   border: #dedede solid 1px;
   flex-grow: 1;
-  cursor: pointer;
+  position: relative;
+  // cursor: pointer;
 
-  &:hover{
-    box-shadow: 0 0 3px 0px rgba(0, 0, 0, 0.3);
-  }
+  // &:hover{
+  //   box-shadow: 0 0 3px 0px rgba(0, 0, 0, 0.3);
+  // }
 }
 .guide-preview-inner {
   padding: 10px;
@@ -62,6 +63,34 @@ $grid-margin-double: 4px;
   padding: 0px;
   margin: 6px;
   font-weight: normal;
+}
+
+.right-buttons {
+  margin: 0px;
+  width: 70px;
+  background: linear-gradient(45deg, transparent 0%, transparent 45%, #e8e8e8 45%);
+  text-align: right;
+  position: absolute;
+  right: 0;
+}
+
+.right-button {
+  color: #a5a2a2;
+  margin-right: 4px;
+  font-size: 10px;
+  padding-bottom: 4px;
+}
+.right-button-play {
+  @extend .right-button;
+  &:hover{
+    color: green;
+  }
+}
+.right-button-check {
+  @extend .right-button;
+  &:hover{
+    color: green;
+  }
 }
 
 .pros {

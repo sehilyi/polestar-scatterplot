@@ -11,6 +11,18 @@ export const LEGEND_WIDTH = 100;
 export const LEGEND_LT_MARGIN = 20;
 export const NOMINAL_COLOR_SCHEME = ['#4c78a8', '#f58518', '#e45756', '#72b7b2', '#54a24b', '#eeca3b', '#b279a2', '#ff9da6', '#9d755d', '#bab0ac'];
 
+export interface PointAttr {
+  fill: string;
+  opacity: number;
+  stroke: string;
+  svg_shape: string;
+  stroke_width: number;
+  width: number;
+  height: number;
+  rx: number;
+  ry: number;
+}
+
 export function renderD3Chart(CHART_REF: any, spec: FacetedCompositeUnitSpec, data: any[]) {
   //
   console.log('spec for d3:');
@@ -162,20 +174,17 @@ export function pointsAsScatterplot(spec: FacetedCompositeUnitSpec, data: any[],
     .attr('ry', shape == 'circle' ? 6 : 0);
 }
 
-export interface PointAttr {
-  fill: string;
-  opacity: number;
-  stroke: string;
-  svg_shape: string;
-  stroke_width: number;
-}
 export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
   return {
     fill: spec.mark == 'point' ? 'transparent' : '#4c78a8',
     opacity: 0.7,
-    stroke: '#4c78a8', //TODO: consider when color is used
+    stroke: spec.mark != 'point' ? 'transparent' : '#4c78a8',
     svg_shape: spec.mark == 'square' ? 'rect' : 'circle',
-    stroke_width: spec.mark == 'point' ? 2 : 2  //TODO: do we have to handle this?
+    stroke_width: spec.mark == 'point' ? 2 : 2,  //TODO: do we have to handle this?
+    width: spec.mark == 'square' ? 5 : 6,
+    height: spec.mark == 'square' ? 5 : 6,
+    rx: spec.mark == 'square' ? 0 : 6,
+    ry: spec.mark == 'square' ? 0 : 6
   };
 }
 export function resizeRootSVG(count: number, isLegend: boolean, duration?: number) {
@@ -203,19 +212,17 @@ export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: an
   let categoryDomain = schema.domain({field});
   let ordinalColor = d3.scaleOrdinal(NOMINAL_COLOR_SCHEME)
     .domain(categoryDomain);
+  let attr = getPointAttrs(spec);
 
   svg.selectAll('.point')
     .transition().duration(duration)
-    .attr('fill', function (d) {return shape == 'point' ? 'transparent' : ordinalColor(d[field]);})
-    .attr('stroke', function (d) {return shape != 'point' ? 'transparent' : ordinalColor(d[field]);})
+    .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : ordinalColor(d[field]);})
+    .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : ordinalColor(d[field]);})
     .transition().duration(duration)
     .attr('x', function (d) {return (x(d3.mean(data.map(function (d1) {return d1[field] == d[field] ? d1[xField] : null;})))) + (-3 + CHART_MARGIN.left);})
     .attr('y', function (d) {return (y(d3.mean(data.map(function (d1) {return d1[field] == d[field] ? d1[yField] : null;})))) + (-3 + CHART_MARGIN.top);})
 
   // legend
-  // TODO:
-  let attr = getPointAttrs(spec);
-
   let legend = svg.selectAll('.legend')
     .data(categoryDomain)
     .enter().append('g')
@@ -231,13 +238,13 @@ export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: an
     .attr('y', 0)
     .attr('stroke-width', attr.stroke_width)
     .attr('opacity', attr.opacity)
-    .attr('stroke', function (d) {return shape != 'point' ? 'transparent' : ordinalColor(d);})
+    .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : ordinalColor(d);})
     //circle vs rect
-    .attr('width', attr.svg_shape == 'circle' ? 6 : 5)
-    .attr('height', attr.svg_shape == 'circle' ? 6 : 5)
-    .attr('rx', attr.svg_shape == 'circle' ? 6 : 0)
-    .attr('ry', attr.svg_shape == 'circle' ? 6 : 0)
-    .attr('fill', function (d) {return shape == 'point' ? 'transparent' : ordinalColor(d);});
+    .attr('width', attr.width)
+    .attr('height', attr.height)
+    .attr('rx', attr.rx)
+    .attr('ry', attr.ry)
+    .attr('fill', function (d) {return attr.stroke == 'transparent' ? 'transparent' : ordinalColor(d);});
 
   legend.append('text')
     .attr('x', 10)

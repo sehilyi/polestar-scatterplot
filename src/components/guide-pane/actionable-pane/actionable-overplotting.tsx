@@ -65,6 +65,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           <div styleName='guide-preview'>
             <div styleName='transition-progress-bg'>
               <div styleName='transition-progress'></div>
+              <p styleName='right-buttons'>
+                  <i className='fa fa-play' styleName='right-button-play' aria-hidden='true' />
+                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"></i>
+                </p>
             </div>
             <div styleName='guide-preview-inner' className='preview-large' onClick={this.onFilterClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
               {/* TODO: how to best decide the default of the filtering target? */}
@@ -84,6 +88,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             <div styleName='guide-preview'>
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
+                <p styleName='right-buttons'>
+                  <i className='fa fa-play' styleName='right-button-play' aria-hidden='true' />
+                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"></i>
+                </p>
               </div>
               <div styleName='guide-preview-inner' className='preview-large' onClick={this.onChangePointSizeClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
                 onMouseEnter={this.onChangePointSizeMouseEnter.bind(this)}
@@ -106,6 +114,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             <div styleName='guide-preview'>
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
+                <p styleName='right-buttons'>
+                  <i className='fa fa-play' styleName='right-button-play' aria-hidden='true' />
+                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"></i>
+                </p>
               </div>
               <div styleName='guide-preview-inner' className='preview-large' onClick={this.onChangeOpacityClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
                 onMouseEnter={this.onChangeOpacityMouseEnter.bind(this)}
@@ -128,6 +140,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             <div styleName='guide-preview'>
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
+                <p styleName='right-buttons'>
+                  <i className='fa fa-play' styleName='right-button-play' aria-hidden='true' />
+                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"></i>
+                </p>
               </div>
               <div styleName='guide-preview-inner' className='preview-large' onClick={this.onRemoveFillColorClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
                 onMouseEnter={this.onRemoveFillColorMouseEnter.bind(this)}
@@ -151,6 +167,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             <div styleName='guide-preview'>
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
+                <p styleName='right-buttons'>
+                  <i className='fa fa-play' styleName='right-button-play' aria-hidden='true' />
+                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"></i>
+                </p>
               </div>
               <div styleName='guide-preview-inner' className='preview-large' onClick={this.onRemoveFillColorClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
                 <p styleName='preview-title'>
@@ -171,6 +191,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             <div styleName='guide-preview'>
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
+                <p styleName='right-buttons'>
+                  <i className='fa fa-play' styleName='right-button-play' aria-hidden='true' />
+                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"></i>
+                </p>
               </div>
               <div styleName='guide-preview-inner' className='preview-large' onClick={this.onAggregatePointsClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
                 onMouseEnter={this.onAggregateMouseEnter.bind(this)}
@@ -193,6 +217,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             <div styleName='guide-preview'>
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
+                <p styleName='right-buttons'>
+                  <i className='fa fa-play' styleName='right-button-play' aria-hidden='true' />
+                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"></i>
+                </p>
               </div>
               <div styleName='guide-preview-inner' className='preview-large' onClick={this.onEncodingDensityClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
                 onMouseEnter={this.onEncodingDensityMouseEnter.bind(this)}
@@ -215,6 +243,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             <div styleName='guide-preview'>
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
+                <p styleName='right-buttons'>
+                  <i className='fa fa-play' styleName='right-button-play' aria-hidden='true' />
+                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"></i>
+                </p>
               </div>
               <div styleName='guide-preview-inner' className='preview-large' onClick={this.onSeparateGraphClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}
                 onMouseEnter={this.onSeparateGraphMouseEnter.bind(this)}
@@ -237,6 +269,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         <div className='fa-gray' styleName='ignore-button'>
           <a onClick={this.onIgnore.bind(this)}>
             <i className='fa fa-eye-slash' aria-hidden='true' />
+            {/* TODO: d3-chart not working with this feature */}
             {' '} Ignore This Guideline...
             </a>
         </div>
