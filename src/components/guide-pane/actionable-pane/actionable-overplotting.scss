@@ -7,7 +7,7 @@ $grid-margin-double: 4px;
   position: relative;
   background: #f0efef;
   padding: $grid-margin;
-  padding-bottom: 0px;
+  // padding-bottom: 0px;
   border-top: 1px solid #D4D4D4;
 }
 
@@ -149,7 +149,7 @@ $grid-margin-double: 4px;
 .ignore-button {
   padding: 10px;
   margin: $grid-margin;
-  margin-bottom: $grid-margin-double;
+  // margin-bottom: $grid-margin-double;
   background: #fcfcfc;
   // width: 100%;
   display: block;
