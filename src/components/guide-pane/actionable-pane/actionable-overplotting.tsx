@@ -15,7 +15,7 @@ import {QUANTITATIVE, NOMINAL} from '../../../../node_modules/vega-lite/build/sr
 import {Schema, FieldSchema} from '../../../models';
 import {COLOR, X, Y, COLUMN} from '../../../../node_modules/vega-lite/build/src/channel';
 import {FieldPicker} from './actionable-common-ui/field-picker';
-import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN, pointsAsDensityPlot, pointsAsMeanScatterplot, NOMINAL_COLOR_SCHEME} from '../../../models/d3-chart';
+import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN, pointsAsDensityPlot, pointsAsMeanScatterplot, NOMINAL_COLOR_SCHEME, reducePointSize, reducePointOpacity, removeFillColor} from '../../../models/d3-chart';
 
 export interface ActionableOverplottingProps extends ActionHandler<GuidelineAction | LogAction | SpecAction> {
   item: GuidelineItemOverPlotting;
@@ -58,7 +58,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       separateGraph = ACTIONABLE_SEPARATE_GRAPH;
 
     return (
-      // TODO: this should be more general
+      // TODO: this should be more general!
       <div styleName='ac-root'>
         <div styleName={triggeredAction == 'NONE' ? 'guide-previews' : 'guide-previews-hidden'}>
           {/* TODO: show action filter */}
@@ -363,30 +363,15 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private onRemoveFillColorMouseEnter() {
     onPreviewReset(this.props.mainSpec, this.props.data.values);
-    let svg = selectRootSVG();
-    svg.selectAll('.point')
-      .transition().duration(COMMON_DURATION)
-      .attr('fill', 'transparent');
+    removeFillColor(COMMON_DURATION);
   }
   private onChangeOpacityMouseEnter() {
     onPreviewReset(this.props.mainSpec, this.props.data.values);
-    let svg = selectRootSVG();
-    svg.selectAll('.point')
-      .transition().duration(COMMON_DURATION)
-      .attr('opacity', 0.3);
+    reducePointOpacity(0.3, COMMON_DURATION);
   }
   private onChangePointSizeMouseEnter() {
     onPreviewReset(this.props.mainSpec, this.props.data.values);
-    selectRootSVG().selectAll('.point')
-      .transition().duration(COMMON_DURATION)
-      .attr('width', function (d) {return parseFloat(d3.select(this).attr('width')) / 2.0;})
-      .attr('height', function (d) {return parseFloat(d3.select(this).attr('height')) / 2.0;})
-      .attr('x', function (d) {
-        return parseFloat(d3.select(this).attr('x')) + parseFloat(d3.select(this).attr('width')) / 4.0;
-      })
-      .attr('y', function (d) {
-        return parseFloat(d3.select(this).attr('y')) + parseFloat(d3.select(this).attr('height')) / 4.0;
-      });
+    reducePointSize(COMMON_DURATION);
   }
   private onAggregateMouseEnter() {
     onPreviewReset(this.props.mainSpec, this.props.data.values);
@@ -480,26 +465,26 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
 
   private onChangePointSizeMouseLeave() {
-    // TODO: do we have consider exact reversing animation?
+    // TODO: do we have to consider exact reversing animation?
     onPreviewReset(this.props.mainSpec, this.props.data.values, 1000);
   }
   private onChangeOpacityMouseLeave() {
-    onPreviewReset(this.props.mainSpec, this.props.data.values, 1000);
+    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION);
   }
   private onRemoveFillColorMouseLeave() {
-    onPreviewReset(this.props.mainSpec, this.props.data.values, 1000);
+    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION);
   }
   private onAggregateMouseLeave() {
-    onPreviewReset(this.props.mainSpec, this.props.data.values, 1000);
+    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION);
   }
   private onEncodingDensityMouseLeave() {
-    onPreviewReset(this.props.mainSpec, this.props.data.values, 1000);
+    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION);
   }
   private onSeparateGraphMouseLeave() {
     selectRootSVG()
-      .transition().duration(1000)
+      .transition().duration(COMMON_DURATION)
       .attr('width', CHART_SIZE.width + CHART_MARGIN.left + CHART_MARGIN.right);
-    onPreviewReset(this.props.mainSpec, this.props.data.values, 1000);
+    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION);
   }
 
   private renderFilterPreview() {

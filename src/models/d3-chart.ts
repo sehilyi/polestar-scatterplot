@@ -102,9 +102,32 @@ export function appendPoints(data: any[]) {
   selectRootSVG().selectAll('.point')
     .data(data)
     .enter().append('rect')
-    .classed('point');
+    .classed('point', true);
 }
 
+export function removeFillColor(duration?: number) {
+  selectRootSVG().selectAll('.point')
+    .transition().duration(duration)
+    .attr('fill', 'transparent');
+}
+export function reducePointOpacity(opacity: number, duration?: number) {
+  selectRootSVG().selectAll('.point')
+    .transition().duration(duration)
+    .attr('opacity', opacity);
+}
+
+export function reducePointSize(duration?: number) {
+  selectRootSVG().selectAll('.point')
+    .transition().duration(duration)
+    .attr('width', function (d) {return parseFloat(d3.select(this).attr('width')) / 2.0;})
+    .attr('height', function (d) {return parseFloat(d3.select(this).attr('height')) / 2.0;})
+    .attr('x', function (d) {
+      return parseFloat(d3.select(this).attr('x')) + parseFloat(d3.select(this).attr('width')) / 4.0;
+    })
+    .attr('y', function (d) {
+      return parseFloat(d3.select(this).attr('y')) + parseFloat(d3.select(this).attr('height')) / 4.0;
+    });
+}
 export function pointsAsScatterplot(spec: FacetedCompositeUnitSpec, data: any[], duration?: number) {
   let xField = spec.encoding.x['field'];
   let yField = spec.encoding.y['field'];
