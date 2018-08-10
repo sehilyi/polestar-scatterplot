@@ -5,6 +5,7 @@ import {Schema} from '.';
 
 // Basic property for d3-chart
 export const COMMON_DURATION: number = 1000;
+export const COMMON_DELAY: number = 2000;
 export const CHART_SIZE = {width: 200, height: 200};
 export const CHART_MARGIN = {top: 20, right: 20, bottom: 50, left: 50};
 export const LEGEND_WIDTH = 100;
@@ -141,7 +142,7 @@ export function reducePointSize(duration?: number) {
       return parseFloat(d3.select(this).attr('y')) + parseFloat(d3.select(this).attr('height')) / 4.0;
     });
 }
-export function pointsAsScatterplot(spec: FacetedCompositeUnitSpec, data: any[], duration?: number) {
+export function pointsAsScatterplot(spec: FacetedCompositeUnitSpec, data: any[], duration?: number, delay?: number) {
   let xField = spec.encoding.x['field'];
   let yField = spec.encoding.y['field'];
 
@@ -160,7 +161,8 @@ export function pointsAsScatterplot(spec: FacetedCompositeUnitSpec, data: any[],
 
   selectRootSVG()
     .selectAll('.point')
-    .transition().duration(duration)
+    // TODO: any better idea for type check?
+    .transition().delay(typeof delay == 'undefined' ? 0 : delay).duration(duration)
     .attr('stroke-width', stroke_width)
     .attr('fill', fill)
     .attr('opacity', opacity)
@@ -187,11 +189,11 @@ export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
     ry: spec.mark == 'square' ? 0 : 6
   };
 }
-export function resizeRootSVG(count: number, isLegend: boolean, duration?: number) {
+export function resizeRootSVG(count: number, isLegend: boolean, duration?: number, delay?: number) {
   let width = (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right) * count + (isLegend ? LEGEND_WIDTH : 0);
   let height = CHART_MARGIN.top + CHART_SIZE.height + CHART_MARGIN.bottom;
   selectRootSVG()
-    .transition().duration(duration)
+    .transition().delay(typeof delay == 'undefined' ? 0 : delay).duration(duration)
     .attr('width', width)
     .attr('height', height);
 }
@@ -296,11 +298,11 @@ export function pointsAsDensityPlot(spec: FacetedCompositeUnitSpec, data: any[],
     .attr('width', binWidth)
     .attr('height', binHeight);
 }
-export function onPreviewReset(spec: FacetedCompositeUnitSpec, values: any[], duration?: number) {
-  resizeRootSVG(1, false, duration);
+export function onPreviewReset(spec: FacetedCompositeUnitSpec, values: any[], duration?: number, delay?: number) {
+  resizeRootSVG(1, false, duration, delay);
   selectRootSVG()
     .selectAll('.remove-when-reset')
-    .transition().duration(duration)
+    .transition().delay(typeof delay == 'undefined' ? 0 : delay).duration(duration)
     .attr('opacity', 0).remove();
-  pointsAsScatterplot(spec, values, duration);
+  pointsAsScatterplot(spec, values, duration, delay);
 }
