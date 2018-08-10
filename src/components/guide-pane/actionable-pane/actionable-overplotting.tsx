@@ -67,10 +67,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               <div styleName='transition-progress'></div>
               <p styleName='right-buttons'>
                 <i className='fa fa-play' styleName='right-button-play' aria-hidden='true' />
-                <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"></i>
+                <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"
+                  onClick={this.onFilterClick.bind(this)} />
               </p>
             </div>
-            <div styleName='guide-preview-inner' className='preview-large' onClick={this.onFilterClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+            <div styleName='guide-preview-inner' className='preview-large' ref={this.vegaLiteWrapperRefHandler} >
               {/* TODO: how to best decide the default of the filtering target? */}
               <p styleName='preview-title'>
                 <i className={filter.faIcon} aria-hidden='true' />
@@ -91,11 +92,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
                 <p styleName='right-buttons'>
                   <i className='fa fa-play' styleName='right-button-play' aria-hidden='true'
                     onClick={this.onChangePointSizeTransition.bind(this)} />
-                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"></i>
+                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"
+                    onClick={this.onChangePointSizeClick.bind(this)} />
                 </p>
               </div>
-              <div styleName='guide-preview-inner' className='preview-large'
-                onClick={this.onChangePointSizeClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}>
+              <div styleName='guide-preview-inner' className='preview-large' ref={this.vegaLiteWrapperRefHandler}>
                 <p styleName='preview-title'>
                   <i className={pointSize.faIcon} aria-hidden='true' />
                   {' ' + pointSize.title}
@@ -117,11 +118,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
                 <p styleName='right-buttons'>
                   <i className='fa fa-play' styleName='right-button-play' aria-hidden='true'
                     onClick={this.onChangeOpacityTransition.bind(this)} />
-                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"></i>
+                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"
+                    onClick={this.onChangeOpacityClick.bind(this)} />
                 </p>
               </div>
-              <div styleName='guide-preview-inner' className='preview-large'
-                onClick={this.onChangeOpacityClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}>
+              <div styleName='guide-preview-inner' className='preview-large' ref={this.vegaLiteWrapperRefHandler}>
                 <p styleName='preview-title'>
                   <i className={pointOpacity.faIcon} aria-hidden='true' />
                   {' ' + pointOpacity.title}
@@ -143,11 +144,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
                 <p styleName='right-buttons'>
                   <i className='fa fa-play' styleName='right-button-play' aria-hidden='true'
                     onClick={this.onRemoveFillColorTransition.bind(this)} />
-                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"></i>
+                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"
+                    onClick={this.onRemoveFillColorClick.bind(this)} />
                 </p>
               </div>
-              <div styleName='guide-preview-inner' className='preview-large'
-                onClick={this.onRemoveFillColorClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}>
+              <div styleName='guide-preview-inner' className='preview-large' ref={this.vegaLiteWrapperRefHandler}>
                 <p styleName='preview-title'>
                   <i className={removeFill.faIcon} aria-hidden='true' />
                   {' ' + removeFill.title}
@@ -167,12 +168,13 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
                 <p styleName='right-buttons'>
-                  <i className='fa fa-play' styleName='right-button-play' aria-hidden='true' />
-                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"></i>
+                  <i className='fa fa-play' styleName='right-button-play' aria-hidden='true'
+                    onClick={this.onRemoveFillColorTransition.bind(this)} />
+                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"
+                    onClick={this.onRemoveFillColorClick.bind(this)} />
                 </p>
               </div>
-              <div styleName='guide-preview-inner' className='preview-large'
-                onClick={this.onRemoveFillColorClick.bind(this)} ref={this.vegaLiteWrapperRefHandler} >
+              <div styleName='guide-preview-inner' className='preview-large' ref={this.vegaLiteWrapperRefHandler} >
                 <p styleName='preview-title'>
                   <i className={changeShape.faIcon} aria-hidden='true' />
                   {' ' + changeShape.title}
@@ -194,11 +196,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
                 <p styleName='right-buttons'>
                   <i className='fa fa-play' styleName='right-button-play' aria-hidden='true'
                     onClick={this.onAggregateTransition.bind(this)} />
-                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"></i>
+                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"
+                    onClick={this.onAggregatePointsClick.bind(this)} />
                 </p>
               </div>
-              <div styleName='guide-preview-inner' className='preview-large'
-                onClick={this.onAggregatePointsClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}>
+              <div styleName='guide-preview-inner' className='preview-large' ref={this.vegaLiteWrapperRefHandler}>
                 <p styleName='preview-title'>
                   <i className={aggregate.faIcon} aria-hidden='true' />
                   {' ' + aggregate.title}
@@ -220,11 +222,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
                 <p styleName='right-buttons'>
                   <i className='fa fa-play' styleName='right-button-play' aria-hidden='true'
                     onClick={this.onEncodingDensityTransition.bind(this)} />
-                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"></i>
+                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"
+                    onClick={this.onEncodingDensityClick.bind(this)} />
                 </p>
               </div>
-              <div styleName='guide-preview-inner' className='preview-large'
-                onClick={this.onEncodingDensityClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}>
+              <div styleName='guide-preview-inner' className='preview-large' ref={this.vegaLiteWrapperRefHandler}>
                 <p styleName='preview-title'>
                   <i className={encodingDensity.faIcon} aria-hidden='true' />
                   {' ' + encodingDensity.title}
@@ -246,11 +248,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
                 <p styleName='right-buttons'>
                   <i className='fa fa-play' styleName='right-button-play' aria-hidden='true'
                     onClick={this.onSeparateGraphTransition.bind(this)} />
-                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"></i>
+                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"
+                    onClick={this.onSeparateGraphClick.bind(this)} />
                 </p>
               </div>
-              <div styleName='guide-preview-inner' className='preview-large'
-                onClick={this.onSeparateGraphClick.bind(this)} ref={this.vegaLiteWrapperRefHandler}>
+              <div styleName='guide-preview-inner' className='preview-large' ref={this.vegaLiteWrapperRefHandler}>
                 <p styleName='preview-title'>
                   <i className={separateGraph.faIcon} aria-hidden='true' />
                   {' ' + separateGraph.title}

@@ -76,9 +76,9 @@ $grid-margin-double: 4px;
 
 .right-button {
   color: #a5a2a2;
-  margin-right: 4px;
-  font-size: 10px;
-  padding-bottom: 4px;
+  padding: 4px;
+  padding-top: 0px;
+  font-size: 10px !important;
 }
 .right-button-play {
   @extend .right-button;
