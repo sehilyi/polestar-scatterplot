@@ -1,6 +1,6 @@
 import * as d3 from 'd3';
 import {FacetedCompositeUnitSpec} from '../../node_modules/vega-lite/build/src/spec';
-import {BaseType} from 'd3';
+import {BaseType, select} from 'd3';
 import {Schema} from '.';
 
 // Basic property for d3-chart
@@ -8,6 +8,7 @@ export const COMMON_DURATION: number = 1000;
 export const CHART_SIZE = {width: 200, height: 200};
 export const CHART_MARGIN = {top: 20, right: 20, bottom: 50, left: 50};
 export const LEGEND_WIDTH = 100;
+export const LEGEND_LT_MARGIN = 20;
 export const NOMINAL_COLOR_SCHEME = ['#4c78a8', '#f58518', '#e45756', '#72b7b2', '#54a24b', '#eeca3b', '#b279a2', '#ff9da6', '#9d755d', '#bab0ac'];
 
 export function renderD3Chart(CHART_REF: any, spec: FacetedCompositeUnitSpec, data: any[]) {
@@ -177,7 +178,16 @@ export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
     stroke_width: spec.mark == 'point' ? 2 : 2  //TODO: do we have to handle this?
   };
 }
+export function resizeRootSVG(count: number, isLegend: boolean, duration?: number) {
+  let width = (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right) * count + (isLegend ? LEGEND_WIDTH : 0);
+  let height = CHART_MARGIN.top + CHART_SIZE.height + CHART_MARGIN.bottom;
+  selectRootSVG()
+    .transition().duration(duration)
+    .attr('width', width)
+    .attr('height', height);
+}
 export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, field: string, duration?: number) {
+  resizeRootSVG(1, true, COMMON_DURATION);
   let svg = selectRootSVG();
   let xField = spec.encoding.x['field'];
   let yField = spec.encoding.y['field'];
@@ -211,7 +221,9 @@ export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: an
     .enter().append('g')
     .classed('legend remove-when-reset', true)
     .attr('transform', function (d, i) {
-      return 'translate(' + (CHART_MARGIN.left + CHART_SIZE.width) + ',' + (CHART_MARGIN.top + i * 20) + ')';
+      return 'translate(' +
+        (CHART_MARGIN.left + CHART_SIZE.width + LEGEND_LT_MARGIN) + ',' +
+        (CHART_MARGIN.top + LEGEND_LT_MARGIN + i * 20) + ')';
     });
 
   legend.append('rect')
@@ -278,9 +290,7 @@ export function pointsAsDensityPlot(spec: FacetedCompositeUnitSpec, data: any[],
     .attr('height', binHeight);
 }
 export function onPreviewReset(spec: FacetedCompositeUnitSpec, values: any[], duration?: number) {
-  // TODO:
-  selectRootSVG()
-    .attr('width', CHART_SIZE.width + CHART_MARGIN.left + CHART_MARGIN.right);
+  resizeRootSVG(1, false, duration);
   selectRootSVG()
     .selectAll('.remove-when-reset')
     .transition().duration(duration)
