@@ -181,8 +181,8 @@ export function pointsAsScatterplot(spec: FacetedCompositeUnitSpec, data: any[],
     //circle vs rect
     .attr('width', attr.width)
     .attr('height', attr.height)
-    .attr('x', function (d) {return (x(d[xField]) + (attr.width / 2.0 + CHART_MARGIN.left));})
-    .attr('y', function (d) {return (y(d[yField]) + (attr.width / 2.0 + CHART_MARGIN.top));})
+    .attr('x', function (d) {return (x(d[xField]) + (-attr.width / 2.0 + CHART_MARGIN.left));})
+    .attr('y', function (d) {return (y(d[yField]) + (-attr.height / 2.0 + CHART_MARGIN.top));})
     .attr('rx', attr.rx)
     .attr('ry', attr.ry);
 }
@@ -230,8 +230,8 @@ export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: an
     .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : ordinalColor(d[field]);})
     .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : ordinalColor(d[field]);})
     .transition().duration(duration)
-    .attr('x', function (d) {return (x(d3.mean(data.map(function (d1) {return d1[field] == d[field] ? d1[xField] : null;})))) + (-3 + CHART_MARGIN.left);})
-    .attr('y', function (d) {return (y(d3.mean(data.map(function (d1) {return d1[field] == d[field] ? d1[yField] : null;})))) + (-3 + CHART_MARGIN.top);})
+    .attr('x', function (d) {return (x(d3.mean(data.map(function (d1) {return d1[field] == d[field] ? d1[xField] : null;})))) + (-attr.width/2.0 + CHART_MARGIN.left);})
+    .attr('y', function (d) {return (y(d3.mean(data.map(function (d1) {return d1[field] == d[field] ? d1[yField] : null;})))) + (-attr.height/2.0 + CHART_MARGIN.top);})
 
   // legend
   let legend = svg.selectAll('.legend')
@@ -277,7 +277,7 @@ export function pointsAsDensityPlot(spec: FacetedCompositeUnitSpec, data: any[],
 
   let xBinRange = [],
     yBinRange = [],
-    numOfBin = 35,
+    numOfBin = 30,
     binWidth = CHART_SIZE.width / numOfBin,
     binHeight = CHART_SIZE.height / numOfBin;
 
