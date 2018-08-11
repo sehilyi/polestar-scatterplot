@@ -260,8 +260,7 @@ export function isSimpleScatterPlot(spec: any) {
   const {encoding} = spec;
   if (typeof encoding.color == 'undefined' && typeof encoding.shape == 'undefined' &&
     typeof encoding.size == 'undefined' && typeof encoding.text == 'undefined' &&
-    typeof encoding.x.aggregate == 'undefined' && typeof encoding.y.aggregate == 'undefined'
-  ) {
+    typeof encoding.x.aggregate == 'undefined' && typeof encoding.y.aggregate == 'undefined') {
     return true;
   }
   else {

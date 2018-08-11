@@ -29,14 +29,24 @@ export function renderD3Chart(CHART_REF: any, spec: FacetedCompositeUnitSpec, da
   console.log('spec for d3:');
   console.log(spec);
   //
+  removePrevChart(CHART_REF);
   appendRootSVG(CHART_REF);
   appendAxes(spec, data);
   appendPoints(data);
   pointsAsScatterplot(spec, data);
 }
 
+export function isThereD3Chart() {
+  return selectRootSVG() != null;
+}
 export function selectRootSVG(): d3.Selection<BaseType, {}, HTMLElement, any> {
   return d3.select('#d3-chart-specified').select('svg');
+}
+
+export function removePrevChart(CHART_REF: any) {
+  d3.select(CHART_REF)
+    .selectAll('div')
+    .remove();
 }
 
 export function appendRootSVG(CHART_REF: any) {
@@ -119,6 +129,11 @@ export function appendPoints(data: any[]) {
     .classed('point', true);
 }
 
+export function updatePoints(data: any[]) {
+  selectRootSVG().selectAll('.point')
+    .data(data)
+    .exit().remove();
+}
 export function removeFillColor(duration?: number) {
   selectRootSVG().selectAll('.point')
     .transition().duration(duration)

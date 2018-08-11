@@ -106,7 +106,11 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
           this.updateSpec();
         } else if (prevProps.data !== data) {
           // TODO: should handle the filter!!!
-          this.bindData();
+          if (this.isRenderD3Chart()) {
+            renderD3Chart(this.refs[CHART_REF], spec as FacetedCompositeUnitSpec, this.props.data.values);
+          } else {
+            this.bindData();
+          }
         }
         this.runView();
         this.setState({
@@ -131,6 +135,10 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     }
   }
 
+  private isRenderD3Chart(): boolean {
+    return this.props.isSpecifiedView && isSimpleScatterPlot(this.props.spec); // &&
+      // (typeof this.props.filters == 'undefined' || this.props.filters.length == 0)
+  }
   protected updateSpec() {
     // NOTE: spec used to test warning logger
     // vlSpec = {
@@ -162,8 +170,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
       let spec = vl.compile(vlSpec, logger).spec;
       const runtime = vega.parse(spec, vlSpec.config);// vlConfig);
       // console.log(this.props.filters);
-      if (this.props.isSpecifiedView && isSimpleScatterPlot(this.props.spec) &&
-        (typeof this.props.filters == 'undefined' || this.props.filters.length == 0)) {
+      if (this.isRenderD3Chart()) {
         // console.log('vlSpec:');
         // console.log(vlSpec);
         // console.log('runtime:');
