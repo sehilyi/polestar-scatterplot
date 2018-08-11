@@ -16,7 +16,6 @@ export interface PointAttr {
   fill: string;
   opacity: number;
   stroke: string;
-  svg_shape: string;
   stroke_width: number;
   width: number;
   height: number;
@@ -137,6 +136,7 @@ export function updatePoints(data: any[]) {
 export function removeFillColor(duration?: number) {
   selectRootSVG().selectAll('.point')
     .transition().duration(duration)
+    .attr('stroke', function () {return d3.select(this).attr('fill');})
     .attr('fill', 'transparent');
 }
 export function reducePointOpacity(opacity: number, duration?: number) {
@@ -161,11 +161,7 @@ export function pointsAsScatterplot(spec: FacetedCompositeUnitSpec, data: any[],
   let xField = spec.encoding.x['field'];
   let yField = spec.encoding.y['field'];
 
-  let fill = spec.mark == 'point' ? 'transparent' : '#4c78a8',
-    opacity = 0.7,
-    stroke = '#4c78a8', //TODO: consider when color is used
-    shape = spec.mark == 'square' ? 'rect' : 'circle',
-    stroke_width = spec.mark == 'point' ? 2 : 2;  //TODO: do we have to handle this?
+  let attr = getPointAttrs(spec);
 
   let x = d3.scaleLinear()
     .domain([0, d3.max(data, function (d) {return d[xField]})] as number[]).nice()
@@ -178,17 +174,17 @@ export function pointsAsScatterplot(spec: FacetedCompositeUnitSpec, data: any[],
     .selectAll('.point')
     // TODO: any better idea for type check?
     .transition().delay(typeof delay == 'undefined' ? 0 : delay).duration(duration)
-    .attr('stroke-width', stroke_width)
-    .attr('fill', fill)
-    .attr('opacity', opacity)
-    .attr('stroke', stroke)
+    .attr('stroke-width', attr.stroke_width)
+    .attr('fill', attr.fill)
+    .attr('opacity', attr.opacity)
+    .attr('stroke', attr.stroke)
     //circle vs rect
-    .attr('width', shape == 'circle' ? 6 : 5)
-    .attr('height', shape == 'circle' ? 6 : 5)
-    .attr('x', function (d) {return (x(d[xField]) + ((shape == 'circle' ? -3 : -2.5) + CHART_MARGIN.left));})
-    .attr('y', function (d) {return (y(d[yField]) + ((shape == 'circle' ? -3 : -2.5) + CHART_MARGIN.top));})
-    .attr('rx', shape == 'circle' ? 6 : 0)
-    .attr('ry', shape == 'circle' ? 6 : 0);
+    .attr('width', attr.width)
+    .attr('height', attr.height)
+    .attr('x', function (d) {return (x(d[xField]) + (attr.width / 2.0 + CHART_MARGIN.left));})
+    .attr('y', function (d) {return (y(d[yField]) + (attr.width / 2.0 + CHART_MARGIN.top));})
+    .attr('rx', attr.rx)
+    .attr('ry', attr.ry);
 }
 
 export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
@@ -196,7 +192,6 @@ export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
     fill: spec.mark == 'point' ? 'transparent' : '#4c78a8',
     opacity: 0.7,
     stroke: spec.mark != 'point' ? 'transparent' : '#4c78a8',
-    svg_shape: spec.mark == 'square' ? 'rect' : 'circle',
     stroke_width: spec.mark == 'point' ? 2 : 2,  //TODO: do we have to handle this?
     width: spec.mark == 'square' ? 5 : 6,
     height: spec.mark == 'square' ? 5 : 6,
@@ -217,7 +212,6 @@ export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: an
   let svg = selectRootSVG();
   let xField = spec.encoding.x['field'];
   let yField = spec.encoding.y['field'];
-  let shape = spec.mark;
 
   let x = d3.scaleLinear()
     .domain([0, d3.max(data, function (d) {return d[xField]})]).nice()
@@ -261,7 +255,7 @@ export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: an
     .attr('height', attr.height)
     .attr('rx', attr.rx)
     .attr('ry', attr.ry)
-    .attr('fill', function (d) {return attr.stroke == 'transparent' ? 'transparent' : ordinalColor(d);});
+    .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : ordinalColor(d);});
 
   legend.append('text')
     .attr('x', 10)

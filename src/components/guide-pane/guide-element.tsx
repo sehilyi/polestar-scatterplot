@@ -41,7 +41,7 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
   constructor(props: GuideElementProps) {
     super(props);
     this.state = ({
-      isExpanded: false
+      isExpanded: true
     })
 
     this.onShowIndicator = this.onShowIndicator.bind(this);
