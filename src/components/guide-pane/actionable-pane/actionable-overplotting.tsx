@@ -15,7 +15,7 @@ import {QUANTITATIVE, NOMINAL} from '../../../../node_modules/vega-lite/build/sr
 import {Schema, FieldSchema} from '../../../models';
 import {COLOR, X, Y, COLUMN} from '../../../../node_modules/vega-lite/build/src/channel';
 import {FieldPicker} from './actionable-common-ui/field-picker';
-import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN, pointsAsDensityPlot, pointsAsMeanScatterplot, NOMINAL_COLOR_SCHEME, reducePointSize, reducePointOpacity, removeFillColor, resizeRootSVG, COMMON_DELAY} from '../../../models/d3-chart';
+import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN, pointsAsDensityPlot, pointsAsMeanScatterplot, NOMINAL_COLOR_SCHEME, reducePointSize, reducePointOpacity, removeFillColor, resizeRootSVG, COMMON_DELAY, renderTransitionTimeline, removeTransitionTimeline} from '../../../models/d3-chart';
 
 export interface ActionableOverplottingProps extends ActionHandler<GuidelineAction | LogAction | SpecAction> {
   item: GuidelineItemOverPlotting;
@@ -91,7 +91,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
                 <div styleName='transition-progress'></div>
                 <p styleName='right-buttons'>
                   <i className='fa fa-play' styleName='right-button-play' aria-hidden='true'
-                    onClick={this.onChangePointSizeTransition.bind(this)} />
+                    onClick={this.onChangePointSizeTransition.bind(this)}
+                    onMouseEnter={this.onChangePointSizeTransitionMouseEnter.bind(this)}
+                    onMouseLeave={this.onChangePointSizeTransitionMouseLeave.bind(this)}/>
                   <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"
                     onClick={this.onChangePointSizeClick.bind(this)} />
                 </p>
@@ -410,6 +412,12 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     onPreviewReset(this.props.mainSpec, this.props.data.values);
     reducePointSize(COMMON_DURATION);
     this.onChangePointSizeMouseLeave();
+  }
+  private onChangePointSizeTransitionMouseEnter() {
+    renderTransitionTimeline('Animated Transition for Change Point', ['MORPH', 'DELAY', 'REPOSITION', 'DELAY' ,'COLOR']);
+  }
+  private onChangePointSizeTransitionMouseLeave() {
+    removeTransitionTimeline();
   }
   private onAggregateTransition() {
     onPreviewReset(this.props.mainSpec, this.props.data.values);

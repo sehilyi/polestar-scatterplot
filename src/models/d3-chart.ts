@@ -12,6 +12,12 @@ export const LEGEND_WIDTH = 100;
 export const LEGEND_LT_MARGIN = 20;
 export const NOMINAL_COLOR_SCHEME = ['#4c78a8', '#f58518', '#e45756', '#72b7b2', '#54a24b', '#eeca3b', '#b279a2', '#ff9da6', '#9d755d', '#bab0ac'];
 
+export const TIMELINE_SIZE = {width: 400, height: 8};
+export const TIMELINE_MARGIN = {top: 20, right: 10, bottom: 20, left: 10};
+export const TIMELINE_COLOR_SCHEME = ['#6dccda', '#cdcc5d', '#ed97ca', '#a2a2a2', '#a8786e', '#ad8bc9', '#ed665d', '#67bf5c', '#ff9e4a', '#729ece'];
+export const TIMELINE_CATEGORIES = ['MORPH', 'REPOSITION', 'COLOR', 'DELAY'];
+export type TIMELINE_CATEGORY = 'MORPH' | 'REPOSITION' | 'COLOR' | 'DELAY';
+
 export interface PointAttr {
   fill: string;
   opacity: number;
@@ -35,6 +41,74 @@ export function renderD3Chart(CHART_REF: any, spec: FacetedCompositeUnitSpec, da
   pointsAsScatterplot(spec, data);
 }
 
+export function removeTransitionTimeline() {
+  d3.select('#d3-timeline').select('svg').selectAll('*')
+    .transition().duration(COMMON_DURATION)
+    .attr('opacity', 0).remove();
+}
+export function renderTransitionTimeline(title: string, stages: TIMELINE_CATEGORY[]) {
+  let svg = d3.select('#d3-timeline').select('svg');
+
+  // append title
+  svg.append('text')
+    .text(title)
+    .attr('x', TIMELINE_MARGIN.left + TIMELINE_SIZE.width / 2.0)
+    .attr('y', TIMELINE_MARGIN.top - 10)
+    .style('font-weight', 'bold')
+    .style('font-family', 'Roboto')
+    .style('font-size', 12)
+    .style('text-anchor', 'middle')
+    .style('fill', '#2e2e2e');
+
+  // append each category of timeline
+  let timelineColor = d3.scaleOrdinal(TIMELINE_COLOR_SCHEME).domain(TIMELINE_CATEGORIES);
+  let commonStageWidth = TIMELINE_SIZE.width / stages.length;
+  svg.selectAll('.timeline-stage')
+    .data(stages)
+    .enter().append('rect')
+    .classed('timeline-stage', true)
+    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + commonStageWidth * i;})
+    .attr('y', TIMELINE_MARGIN.top)
+    .attr('width', commonStageWidth)
+    .attr('height', TIMELINE_SIZE.height)
+    .attr('stroke-width', 1)
+    .attr('stroke', 'black')
+    .attr('fill', function (d) {return timelineColor(d);});
+
+  // append stage title
+  svg.selectAll('.stage-label')
+    .data(stages)
+    .enter().append('text')
+    .classed('stage-label', true)
+    .text(function (d) {return d.toLowerCase();})
+    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + commonStageWidth * i + commonStageWidth / 2.0;})
+    .attr('y', TIMELINE_MARGIN.top + TIMELINE_SIZE.height + 15)
+    .style('font-style', 'italic')
+    .style('font-family', 'Roboto')
+    .style('font-size', 10)
+    .style('text-anchor', 'middle')
+    .style('fill', '#2e2e2e');
+
+  // append tick
+  // svg.selectAll('.stage-label')
+  //   .data(stages)
+  //   .enter().append('text')
+  //   .classed('stage-label', true)
+  //   .text(function (d) {return d.toLowerCase();})
+  //   .attr('x', function (d, i) {return TIMELINE_MARGIN.left + commonStageWidth * i + commonStageWidth / 2.0;})
+  //   .attr('y', TIMELINE_MARGIN.top + TIMELINE_SIZE.height + 15)
+  //   .style('font-style', 'italic')
+  //   .style('font-family', 'Roboto')
+  //   .style('font-size', 10)
+  //   .style('text-anchor', 'middle')
+  //   .style('fill', '#2e2e2e');
+
+  svg.selectAll('*')
+    .attr('opacity', 0)
+    .transition().duration(COMMON_DURATION)
+    .attr('opacity', 1);
+}
+
 export function isThereD3Chart() {
   return selectRootSVG() != null;
 }
@@ -49,6 +123,17 @@ export function removePrevChart(CHART_REF: any) {
 }
 
 export function appendRootSVG(CHART_REF: any) {
+
+  // timeline
+  d3.select(CHART_REF)
+    .append('div')
+    .attr('id', 'd3-timeline')
+    .style('margin', 'auto')
+    .append('svg')
+    .attr('width', TIMELINE_SIZE.width + TIMELINE_MARGIN.left + TIMELINE_MARGIN.right)
+    .attr('height', TIMELINE_SIZE.height + TIMELINE_MARGIN.top + TIMELINE_MARGIN.bottom);
+
+  // main chart
   d3.select(CHART_REF)
     .append('div')
     .classed('d3-chart', true)
@@ -230,8 +315,8 @@ export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: an
     .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : ordinalColor(d[field]);})
     .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : ordinalColor(d[field]);})
     .transition().duration(duration)
-    .attr('x', function (d) {return (x(d3.mean(data.map(function (d1) {return d1[field] == d[field] ? d1[xField] : null;})))) + (-attr.width/2.0 + CHART_MARGIN.left);})
-    .attr('y', function (d) {return (y(d3.mean(data.map(function (d1) {return d1[field] == d[field] ? d1[yField] : null;})))) + (-attr.height/2.0 + CHART_MARGIN.top);})
+    .attr('x', function (d) {return (x(d3.mean(data.map(function (d1) {return d1[field] == d[field] ? d1[xField] : null;})))) + (-attr.width / 2.0 + CHART_MARGIN.left);})
+    .attr('y', function (d) {return (y(d3.mean(data.map(function (d1) {return d1[field] == d[field] ? d1[yField] : null;})))) + (-attr.height / 2.0 + CHART_MARGIN.top);})
 
   // legend
   let legend = svg.selectAll('.legend')
