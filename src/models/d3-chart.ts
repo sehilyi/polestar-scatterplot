@@ -17,6 +17,11 @@ export const TIMELINE_MARGIN = {top: 20, right: 10, bottom: 20, left: 10};
 export const TIMELINE_COLOR_SCHEME = ['#6dccda', '#cdcc5d', '#ed97ca', '#a2a2a2', '#a8786e', '#ad8bc9', '#ed665d', '#67bf5c', '#ff9e4a', '#729ece'];
 export const TIMELINE_CATEGORIES = ['MORPH', 'REPOSITION', 'COLOR', 'DELAY'];
 export type TIMELINE_CATEGORY = 'MORPH' | 'REPOSITION' | 'COLOR' | 'DELAY';
+export interface TransitionAttr {
+  id: TIMELINE_CATEGORY;
+  title: string;
+  duration: number;
+}
 
 export interface PointAttr {
   fill: string;
@@ -46,7 +51,7 @@ export function removeTransitionTimeline() {
     .transition().duration(COMMON_DURATION)
     .attr('opacity', 0).remove();
 }
-export function renderTransitionTimeline(title: string, stages: TIMELINE_CATEGORY[]) {
+export function renderTransitionTimeline(title: string, stages: TransitionAttr[]) {
   let svg = d3.select('#d3-timeline').select('svg');
 
   // append title
@@ -61,27 +66,35 @@ export function renderTransitionTimeline(title: string, stages: TIMELINE_CATEGOR
     .style('fill', '#2e2e2e');
 
   // append each category of timeline
+  let accumDuration = stages.map(x => x.duration).reduce(function (r, a) {
+    if (r.length > 0) {
+      a += r[r.length - 1];
+    }
+    r.push(a);
+    return r;
+  }, []);
+  let totalDuration = d3.sum(stages.map(x => x.duration));
   let timelineColor = d3.scaleOrdinal(TIMELINE_COLOR_SCHEME).domain(TIMELINE_CATEGORIES);
-  let commonStageWidth = TIMELINE_SIZE.width / stages.length;
+
   svg.selectAll('.timeline-stage')
     .data(stages)
     .enter().append('rect')
     .classed('timeline-stage', true)
-    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + commonStageWidth * i;})
+    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + (accumDuration[i] - d.duration) / totalDuration * TIMELINE_SIZE.width;})
     .attr('y', TIMELINE_MARGIN.top)
-    .attr('width', commonStageWidth)
+    .attr('width', function (d, i) {return d.duration / totalDuration * TIMELINE_SIZE.width;})
     .attr('height', TIMELINE_SIZE.height)
     .attr('stroke-width', 1)
-    .attr('stroke', 'black')
-    .attr('fill', function (d) {return timelineColor(d);});
+    .attr('stroke', 'white')
+    .attr('fill', function (d) {return timelineColor(d.id);});
 
   // append stage title
   svg.selectAll('.stage-label')
     .data(stages)
     .enter().append('text')
     .classed('stage-label', true)
-    .text(function (d) {return d.toLowerCase();})
-    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + commonStageWidth * i + commonStageWidth / 2.0;})
+    .text(function (d) {return d.title;})
+    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + (accumDuration[i] - d.duration) / totalDuration * TIMELINE_SIZE.width + d.duration / totalDuration * TIMELINE_SIZE.width / 2;})
     .attr('y', TIMELINE_MARGIN.top + TIMELINE_SIZE.height + 15)
     .style('font-style', 'italic')
     .style('font-family', 'Roboto')

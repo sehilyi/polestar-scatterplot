@@ -15,7 +15,7 @@ import {QUANTITATIVE, NOMINAL} from '../../../../node_modules/vega-lite/build/sr
 import {Schema, FieldSchema} from '../../../models';
 import {COLOR, X, Y, COLUMN} from '../../../../node_modules/vega-lite/build/src/channel';
 import {FieldPicker} from './actionable-common-ui/field-picker';
-import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN, pointsAsDensityPlot, pointsAsMeanScatterplot, NOMINAL_COLOR_SCHEME, reducePointSize, reducePointOpacity, removeFillColor, resizeRootSVG, COMMON_DELAY, renderTransitionTimeline, removeTransitionTimeline} from '../../../models/d3-chart';
+import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN, pointsAsDensityPlot, pointsAsMeanScatterplot, NOMINAL_COLOR_SCHEME, reducePointSize, reducePointOpacity, removeFillColor, resizeRootSVG, COMMON_DELAY, renderTransitionTimeline, removeTransitionTimeline, TransitionAttr} from '../../../models/d3-chart';
 
 export interface ActionableOverplottingProps extends ActionHandler<GuidelineAction | LogAction | SpecAction> {
   item: GuidelineItemOverPlotting;
@@ -414,7 +414,12 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     this.onChangePointSizeMouseLeave();
   }
   private onChangePointSizeTransitionMouseEnter() {
-    renderTransitionTimeline('Animated Transition for Change Point', ['MORPH', 'DELAY', 'REPOSITION', 'DELAY' ,'COLOR']);
+    let stages: TransitionAttr[] = [
+      {id: 'COLOR', title: 'Color by \'' +  this.getDefaultSmallSizedNominalFieldName() + '\' field', duration: COMMON_DURATION},
+      {id: 'REPOSITION', title: 'aggregate to mean position', duration: COMMON_DURATION}
+    ];
+
+    renderTransitionTimeline('Animated Transition for Change Point', stages);
   }
   private onChangePointSizeTransitionMouseLeave() {
     removeTransitionTimeline();
