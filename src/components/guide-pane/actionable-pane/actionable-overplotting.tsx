@@ -409,7 +409,13 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     this.onChangeOpacityMouseLeave();
   }
   private onChangePointSizeTransition() {
+    let stages: TransitionAttr[] = [
+      {id: 'COLOR', title: 'Color by \'' +  this.getDefaultSmallSizedNominalFieldName() + '\' field', duration: COMMON_DURATION},
+      {id: 'REPOSITION', title: 'aggregate to mean position', duration: COMMON_DURATION}
+    ];
+
     onPreviewReset(this.props.mainSpec, this.props.data.values);
+    renderTransitionTimeline('Animated Transition for Change Point', stages);
     reducePointSize(COMMON_DURATION);
     this.onChangePointSizeMouseLeave();
   }
@@ -422,9 +428,15 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     renderTransitionTimeline('Animated Transition for Change Point', stages);
   }
   private onChangePointSizeTransitionMouseLeave() {
-    removeTransitionTimeline();
+    // removeTransitionTimeline();
   }
   private onAggregateTransition() {
+    let stages: TransitionAttr[] = [
+      {id: 'COLOR', title: 'Color by \'' +  this.getDefaultSmallSizedNominalFieldName() + '\' field', duration: COMMON_DURATION},
+      {id: 'REPOSITION', title: 'aggregate to mean position', duration: COMMON_DURATION}
+    ];
+
+    renderTransitionTimeline('Animated Transition for Change Point', stages);
     onPreviewReset(this.props.mainSpec, this.props.data.values);
     pointsAsMeanScatterplot(this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), COMMON_DURATION);
     this.onAggregateMouseLeave();

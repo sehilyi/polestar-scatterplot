@@ -12,7 +12,7 @@ export const LEGEND_WIDTH = 100;
 export const LEGEND_LT_MARGIN = 20;
 export const NOMINAL_COLOR_SCHEME = ['#4c78a8', '#f58518', '#e45756', '#72b7b2', '#54a24b', '#eeca3b', '#b279a2', '#ff9da6', '#9d755d', '#bab0ac'];
 
-export const TIMELINE_SIZE = {width: 400, height: 8};
+export const TIMELINE_SIZE = {width: 400, height: 10};
 export const TIMELINE_MARGIN = {top: 20, right: 10, bottom: 20, left: 10};
 export const TIMELINE_COLOR_SCHEME = ['#6dccda', '#cdcc5d', '#ed97ca', '#a2a2a2', '#a8786e', '#ad8bc9', '#ed665d', '#67bf5c', '#ff9e4a', '#729ece'];
 export const TIMELINE_CATEGORIES = ['MORPH', 'REPOSITION', 'COLOR', 'DELAY'];
@@ -46,9 +46,9 @@ export function renderD3Chart(CHART_REF: any, spec: FacetedCompositeUnitSpec, da
   pointsAsScatterplot(spec, data);
 }
 
-export function removeTransitionTimeline() {
+export function removeTransitionTimeline(duration: number) {
   d3.select('#d3-timeline').select('svg').selectAll('*')
-    .transition().duration(COMMON_DURATION)
+    .transition().delay(duration).duration(COMMON_DURATION)
     .attr('opacity', 0).remove();
 }
 export function renderTransitionTimeline(title: string, stages: TransitionAttr[]) {
@@ -66,6 +66,7 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
     .style('fill', '#2e2e2e');
 
   // append each category of timeline
+  // accumulated duration starts with zero: [0, d[0], d[0]+d[1], ...]
   let accumDuration = stages.map(x => x.duration).reduce(function (r, a) {
     if (r.length > 0) {
       a += r[r.length - 1];
@@ -73,6 +74,8 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
     r.push(a);
     return r;
   }, []);
+  accumDuration.unshift(0);
+
   let totalDuration = d3.sum(stages.map(x => x.duration));
   let timelineColor = d3.scaleOrdinal(TIMELINE_COLOR_SCHEME).domain(TIMELINE_CATEGORIES);
 
@@ -80,11 +83,11 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
     .data(stages)
     .enter().append('rect')
     .classed('timeline-stage', true)
-    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + (accumDuration[i] - d.duration) / totalDuration * TIMELINE_SIZE.width;})
+    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + accumDuration[i] / totalDuration * TIMELINE_SIZE.width;})
     .attr('y', TIMELINE_MARGIN.top)
-    .attr('width', function (d, i) {return d.duration / totalDuration * TIMELINE_SIZE.width;})
+    .attr('width', function (d) {return d.duration / totalDuration * TIMELINE_SIZE.width;})
     .attr('height', TIMELINE_SIZE.height)
-    .attr('stroke-width', 1)
+    .attr('stroke-width', 2)
     .attr('stroke', 'white')
     .attr('fill', function (d) {return timelineColor(d.id);});
 
@@ -94,7 +97,7 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
     .enter().append('text')
     .classed('stage-label', true)
     .text(function (d) {return d.title;})
-    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + (accumDuration[i] - d.duration) / totalDuration * TIMELINE_SIZE.width + d.duration / totalDuration * TIMELINE_SIZE.width / 2;})
+    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + accumDuration[i] / totalDuration * TIMELINE_SIZE.width + d.duration / totalDuration * TIMELINE_SIZE.width / 2;})
     .attr('y', TIMELINE_MARGIN.top + TIMELINE_SIZE.height + 15)
     .style('font-style', 'italic')
     .style('font-family', 'Roboto')
@@ -103,23 +106,33 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
     .style('fill', '#2e2e2e');
 
   // append tick
-  // svg.selectAll('.stage-label')
-  //   .data(stages)
-  //   .enter().append('text')
-  //   .classed('stage-label', true)
-  //   .text(function (d) {return d.toLowerCase();})
-  //   .attr('x', function (d, i) {return TIMELINE_MARGIN.left + commonStageWidth * i + commonStageWidth / 2.0;})
-  //   .attr('y', TIMELINE_MARGIN.top + TIMELINE_SIZE.height + 15)
-  //   .style('font-style', 'italic')
-  //   .style('font-family', 'Roboto')
-  //   .style('font-size', 10)
-  //   .style('text-anchor', 'middle')
-  //   .style('fill', '#2e2e2e');
+  var arc = d3.symbol().type(d3.symbolTriangle).size(24);
+  svg.selectAll('.timeline-tick')
+    .data(['tick'])
+    .enter().append('path')
+    .attr('d', arc)
+    .attr('fill', '#2e2e2e')
+    .attr('transform', 'translate(' + (TIMELINE_MARGIN.left) + ',' + (TIMELINE_MARGIN.top - 6) + ') rotate(180)')
+    .transition().duration(totalDuration).ease(d3.easeLinear)
+    .attr('transform', 'translate(' + (TIMELINE_MARGIN.left + TIMELINE_SIZE.width) + ',' + (TIMELINE_MARGIN.top - 6) + ') rotate(180)')
 
-  svg.selectAll('*')
-    .attr('opacity', 0)
-    .transition().duration(COMMON_DURATION)
-    .attr('opacity', 1);
+  // append stage between circles
+  svg.selectAll('.stage-between')
+    .data(accumDuration)
+    .enter().append('circle')
+    .classed('stage-between', true)
+    .attr('cx', function (d, i) {return TIMELINE_MARGIN.left + accumDuration[i] / totalDuration * TIMELINE_SIZE.width;})
+    .attr('cy', TIMELINE_MARGIN.top + TIMELINE_SIZE.height / 2.0)
+    .attr('r', 6)
+    .attr('stroke', '#2e2e2e')
+    .attr('stroke-width', 2)
+    .attr('fill', 'white');
+
+  removeTransitionTimeline(totalDuration + COMMON_DELAY);
+  // svg.selectAll('*')
+  //   .attr('opacity', 0)
+  //   .transition().duration(COMMON_DURATION)
+  //   .attr('opacity', 1);
 }
 
 export function isThereD3Chart() {
