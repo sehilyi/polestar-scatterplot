@@ -176,9 +176,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     return this.isThereSmallSizedNominalField();
   }
 
-  private onFilterTransition() {
-
-  }
   private onFilterClick() {
 
   }
@@ -232,42 +229,38 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       type: SPEC_TO_DENSITY_PLOT
     })
   }
-  private onRemoveFillColorTransition() {
-    onPreviewReset(this.props.mainSpec, this.props.data.values);
-    removeFillColor(COMMON_DURATION);
-    this.onRemoveFillColorMouseLeave();
+  private onFilterTransition() {
+
   }
   private onChangeOpacityTransition() {
     onPreviewReset(this.props.mainSpec, this.props.data.values);
-    reducePointOpacity(0.3, COMMON_DURATION);
-    this.onChangeOpacityMouseLeave();
+    renderTransitionTimeline('', this.PointOpacityStages, true);
+    reducePointOpacity(0.3, this.PointOpacityStages);
+    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.PointOpacityStages.map(x => x.duration + x.delay)));
   }
   private onChangePointSizeTransition() {
     onPreviewReset(this.props.mainSpec, this.props.data.values);
-    renderTransitionTimeline('Animated Transition for Change Point', this.AggregateStages, true);
-    reducePointSize(COMMON_DURATION);
-    this.onChangePointSizeMouseLeave();
+    renderTransitionTimeline('', this.PointResizeStages, true);
+    reducePointSize(this.PointResizeStages);
+    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.PointResizeStages.map(x => x.duration + x.delay)));
   }
-  private onChangePointSizeTransitionMouseEnter() {
-    renderTransitionTimeline('Animated Transition for Change Point', this.AggregateStages, true);
-  }
-  private onChangePointSizeTransitionMouseLeave() {
-    // removeTransitionTimeline();
-  }
-
-  private onAggregateTransitionShow() {
-    renderTransitionTimeline('', this.AggregateStages, false);
+  private onRemoveFillColorTransition() {
+    onPreviewReset(this.props.mainSpec, this.props.data.values);
+    renderTransitionTimeline('', this.RemoveFillColorStages, true);
+    removeFillColor(this.RemoveFillColorStages);
+    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.RemoveFillColorStages.map(x => x.duration + x.delay)));
   }
   private onAggregateTransition() {
     onPreviewReset(this.props.mainSpec, this.props.data.values);
     renderTransitionTimeline('', this.AggregateStages, true);
-    pointsAsMeanScatterplot(this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), this.AggregateStages, COMMON_DURATION);
-    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.AggregateStages.map(x => x.duration)));
+    pointsAsMeanScatterplot(this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), this.AggregateStages);
+    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.AggregateStages.map(x => x.duration + x.delay)));
   }
   private onEncodingDensityTransition() {
     onPreviewReset(this.props.mainSpec, this.props.data.values);
-    pointsAsDensityPlot(this.props.mainSpec, this.props.data.values, COMMON_DURATION);
-    this.onEncodingDensityMouseLeave();
+    renderTransitionTimeline('', this.DensityPlotStages, true);
+    pointsAsDensityPlot(this.props.mainSpec, this.props.data.values, this.DensityPlotStages);
+    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.DensityPlotStages.map(x => x.duration + x.delay)));
   }
   private onSeparateGraphTransition() {
     onPreviewReset(this.props.mainSpec, this.props.data.values);
@@ -352,19 +345,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     svg.selectAll('.remove-when-reset').attr('opacity', 0).transition().duration(COMMON_DURATION).attr('opacity', 1);
     this.onSeparateGraphMouseLeave();
   }
-
-  // TODO: do we have to consider exact reversing animation?
-  private onChangePointSizeMouseLeave() {
-    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, COMMON_DELAY);
-  }
   private onChangeOpacityMouseLeave() {
     onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, COMMON_DELAY);
-  }
-  private onRemoveFillColorMouseLeave() {
-    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, COMMON_DELAY);
-  }
-  private onEncodingDensityMouseLeave() {
-    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, COMMON_DELAY * 2);
   }
   private onSeparateGraphMouseLeave() {
     resizeRootSVG(1, false, COMMON_DURATION, COMMON_DELAY);
@@ -620,9 +602,24 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     ];
     return paneData;
   }
+
+  public PointOpacityStages: TransitionAttr[] =[
+    {id: 'COLOR', title: 'Reduce point opacity', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+  ]
+  public PointResizeStages: TransitionAttr[] = [
+    {id: 'MORPH', title: 'Reduce point size', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+  ]
+  public RemoveFillColorStages: TransitionAttr[] = [
+    {id: 'COLOR', title: 'Remove fill color', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+  ];
   public AggregateStages: TransitionAttr[] = [
-    {id: 'COLOR', title: 'Color by \'' + this.getDefaultSmallSizedNominalFieldName() + '\' field', duration: COMMON_DURATION},
-    {id: 'REPOSITION', title: 'Aggregate to mean position', duration: COMMON_DURATION}
+    {id: 'COLOR', title: 'Color by \'' + this.getDefaultSmallSizedNominalFieldName() + '\' field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY},
+    {id: 'REPOSITION', title: 'Aggregate to mean position', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+  ];
+  public DensityPlotStages: TransitionAttr[] = [
+    {id: 'MORPH', title: 'Rectangular Shape', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY},
+    {id: 'COLOR', title: 'Reduce Opacity', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY},
+    {id: 'REPOSITION', title: 'Move to binned position', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
   ];
 }
 

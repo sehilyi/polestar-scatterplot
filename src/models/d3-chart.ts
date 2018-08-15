@@ -4,7 +4,7 @@ import {BaseType, select} from 'd3';
 import {Schema} from '.';
 
 // Basic property for d3-chart
-export const COMMON_DURATION: number = 1500;
+export const COMMON_DURATION: number = 1000;
 export const COMMON_FAST_DURATION: number = 100;
 export const COMMON_DELAY: number = 2000;
 export const COMMON_SHORT_DELAY: number = 300;
@@ -23,6 +23,7 @@ export interface TransitionAttr {
   id: TIMELINE_CATEGORY;
   title: string;
   duration: number;
+  delay: number;  //delay after this transition
 }
 
 export interface PointAttr {
@@ -48,12 +49,6 @@ export function renderD3Chart(CHART_REF: any, spec: FacetedCompositeUnitSpec, da
   pointsAsScatterplot(spec, data);
 }
 
-export function removeTransitionTimeline(duration?: number) {
-  d3.select('#d3-timeline').select('svg').selectAll('*')
-    .transition().delay(duration).duration(COMMON_DURATION)
-    // .attr('opacity', 0)
-    .remove();
-}
 export function renderTransitionTimeline(title: string, stages: TransitionAttr[], isTransition: boolean) {
   this.removeTransitionTimeline(0);
   let svg = d3.select('#d3-timeline').select('svg');
@@ -71,35 +66,36 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
 
   // append each category of timeline
   // accumulated duration starts with zero: [0, d[0], d[0]+d[1], ...]
-  let accumDuration = stages.map(x => x.duration).reduce(function (r, a) {
+  let accumDurationPlusDelay = stages.map(x => x.duration + x.delay).reduce(function (r, a) {
     if (r.length > 0) {
       a += r[r.length - 1];
     }
     r.push(a);
     return r;
   }, []);
-  accumDuration.unshift(0);
+  accumDurationPlusDelay.unshift(0);
 
-  let totalDuration = d3.sum(stages.map(x => x.duration));
+  let totalDuration = d3.sum(stages.map(x => x.duration + x.delay));
   let timelineColor = d3.scaleOrdinal(TIMELINE_COLOR_SCHEME).domain(TIMELINE_CATEGORIES);
 
   svg.selectAll('.timeline-stage')
     .data(stages)
     .enter().append('rect')
     .classed('timeline-stage', true)
-    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + accumDuration[i] / totalDuration * TIMELINE_SIZE.width;})
-    .attr('width', function (d) {return d.duration / totalDuration * TIMELINE_SIZE.width;})
+    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + accumDurationPlusDelay[i] / totalDuration * TIMELINE_SIZE.width;})
+    .attr('width', function (d) {return (d.duration + d.delay) / totalDuration * TIMELINE_SIZE.width;})
     .attr('fill', function (d) {return timelineColor(d.id);})
     // .attr('stroke-width', 2)
     // .attr('stroke', 'white')
     .attr('y', TIMELINE_MARGIN.top)
     .attr('height', TIMELINE_SIZE.height)
-    // .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i]})
-    // .attr('y', TIMELINE_MARGIN.top - 1)
-    // .attr('height', TIMELINE_SIZE.height + 2)
-    // .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i] + d.duration})
-    // .attr('y', TIMELINE_MARGIN.top)
-    // .attr('height', TIMELINE_SIZE.height);
+    .attr('opacity', 1);
+  // .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i]})
+  // .attr('y', TIMELINE_MARGIN.top - 1)
+  // .attr('height', TIMELINE_SIZE.height + 2)
+  // .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i] + d.duration})
+  // .attr('y', TIMELINE_MARGIN.top)
+  // .attr('height', TIMELINE_SIZE.height);
 
   // append stage title
   svg.selectAll('.stage-label')
@@ -107,7 +103,7 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
     .enter().append('text')
     .classed('stage-label', true)
     .text(function (d) {return d.title;})
-    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + accumDuration[i] / totalDuration * TIMELINE_SIZE.width + d.duration / totalDuration * TIMELINE_SIZE.width / 2.0 + 4;})
+    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + accumDurationPlusDelay[i] / totalDuration * TIMELINE_SIZE.width + (d.duration + d.delay) / totalDuration * TIMELINE_SIZE.width / 2.0 + 4;})
     .attr('y', TIMELINE_MARGIN.top - 6)
     // .style('font-style', 'italic')
     // .style('font-weight', 'bold')
@@ -116,10 +112,11 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
     .style('fill', '#2e2e2e')
     // .style('fill', 'white')
     .attr('font-size', 12)
-    // .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i]})
-    // .attr('font-size', 13)
-    // .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i] + d.duration})
-    // .attr('font-size', 12);
+    .attr('opacity', 1);
+  // .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i]})
+  // .attr('font-size', 13)
+  // .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i] + d.duration})
+  // .attr('font-size', 12);
 
   // append progress bar
   // var arc = d3.symbol().type(d3.symbolTriangle).size(24);
@@ -137,20 +134,21 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
     .attr('x', TIMELINE_MARGIN.left + TIMELINE_SIZE.width)
     .attr('y', TIMELINE_MARGIN.top)
     .attr('height', TIMELINE_SIZE.height)
-    .attr('width', 0);
+    .attr('width', 0)
+    .attr('opacity', 1);
 
   // append stage betweens
   svg.selectAll('.stage-between')
-    .data(accumDuration)
+    .data(accumDurationPlusDelay)
     .enter().append('line')
     .classed('stage-between', true)
-    .attr('x1', function (d, i) {return TIMELINE_MARGIN.left + accumDuration[i] / totalDuration * TIMELINE_SIZE.width;})
-    .attr('x2', function (d, i) {return TIMELINE_MARGIN.left + accumDuration[i] / totalDuration * TIMELINE_SIZE.width;})
+    .attr('x1', function (d, i) {return TIMELINE_MARGIN.left + accumDurationPlusDelay[i] / totalDuration * TIMELINE_SIZE.width;})
+    .attr('x2', function (d, i) {return TIMELINE_MARGIN.left + accumDurationPlusDelay[i] / totalDuration * TIMELINE_SIZE.width;})
     .attr('y1', TIMELINE_MARGIN.top - 3)
     .attr('y2', TIMELINE_MARGIN.top + TIMELINE_SIZE.height + 3)
     .attr('stroke', '#2e2e2e')
     .attr('stroke-width', 1)
-    .attr('opacity', function(d, i) {return (stages.length <= i || stages[i].id != 'DELAY') ? 1 : 0});
+    .attr('opacity', function (d, i) {return (stages.length <= i || stages[i].id != 'DELAY') ? 1 : 0});
 
   removeTransitionTimeline(totalDuration);
 }
@@ -264,21 +262,21 @@ export function updatePoints(data: any[]) {
     .data(data)
     .exit().remove();
 }
-export function removeFillColor(duration?: number) {
+export function removeFillColor(stages: TransitionAttr[]) {
   selectRootSVG().selectAll('.point')
-    .transition().duration(duration)
+    .transition().duration(stages[0].duration)
     .attr('stroke', function () {return d3.select(this).attr('fill');})
     .attr('fill', 'transparent');
 }
-export function reducePointOpacity(opacity: number, duration?: number) {
+export function reducePointOpacity(opacity: number, stages: TransitionAttr[]) {
   selectRootSVG().selectAll('.point')
-    .transition().duration(duration)
+    .transition().duration(stages[0].duration)
     .attr('opacity', opacity);
 }
 
-export function reducePointSize(duration?: number) {
+export function reducePointSize(stages: TransitionAttr[]) {
   selectRootSVG().selectAll('.point')
-    .transition().duration(duration)
+    .transition().duration(stages[0].duration)
     .attr('width', function (d) {return parseFloat(d3.select(this).attr('width')) / 2.0;})
     .attr('height', function (d) {return parseFloat(d3.select(this).attr('height')) / 2.0;})
     .attr('x', function (d) {
@@ -338,7 +336,7 @@ export function resizeRootSVG(count: number, isLegend: boolean, duration?: numbe
     .attr('width', width)
     .attr('height', height);
 }
-export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, field: string, stages: TransitionAttr[], duration?: number) {
+export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, field: string, stages: TransitionAttr[]) {
   resizeRootSVG(1, true, COMMON_DURATION);
   let svg = selectRootSVG();
   let xField = spec.encoding.x['field'];
@@ -360,7 +358,7 @@ export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: an
     .transition().duration(stages[0].duration)
     .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : ordinalColor(d[field]);})
     .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : ordinalColor(d[field]);})
-    .transition().duration(stages[1].duration)
+    .transition().duration(stages[1].duration).delay(stages[0].delay)
     .attr('x', function (d) {return (x(d3.mean(data.map(function (d1) {return d1[field] == d[field] ? d1[xField] : null;})))) + (-attr.width / 2.0 + CHART_MARGIN.left);})
     .attr('y', function (d) {return (y(d3.mean(data.map(function (d1) {return d1[field] == d[field] ? d1[yField] : null;})))) + (-attr.height / 2.0 + CHART_MARGIN.top);})
 
@@ -401,7 +399,7 @@ export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: an
     .transition().duration(stages[0].duration)
     .attr('opacity', 1);
 }
-export function pointsAsDensityPlot(spec: FacetedCompositeUnitSpec, data: any[], duration?: number) {
+export function pointsAsDensityPlot(spec: FacetedCompositeUnitSpec, data: any[], stages: TransitionAttr[]) {
   let svg = selectRootSVG();
   let xField = spec.encoding.x['field'];
   let yField = spec.encoding.y['field'];
@@ -426,23 +424,32 @@ export function pointsAsDensityPlot(spec: FacetedCompositeUnitSpec, data: any[],
     .range(yBinRange.reverse());
 
   svg.selectAll('.point')
-    .transition().duration(duration)
-    .attr('fill', '#08519c')
-    .attr('stroke-width', 0)
-    .attr('opacity', 0.2)
-    .transition().duration(duration)
+    .transition().duration(stages[0].duration)
     .attr('rx', 0)
     .attr('ry', 0)
-    .attr('x', function (d) {return (qsx(d[xField]) + (-binWidth / 2.0 + CHART_MARGIN.left));})
-    .attr('y', function (d) {return (qsy(d[yField]) + (-binHeight / 2.0 + CHART_MARGIN.top));})
+    .attr('fill', '#08519c')
+    .attr('stroke-width', 0)
     .attr('width', binWidth)
-    .attr('height', binHeight);
+    .attr('height', binHeight)
+    .transition().duration(stages[1].duration).delay(stages[0].delay)
+    .attr('opacity', 0.2)
+    .transition().duration(stages[2].duration).delay(stages[1].delay)
+    .attr('x', function (d) {return (qsx(d[xField]) + (-binWidth / 2.0 + CHART_MARGIN.left));})
+    .attr('y', function (d) {return (qsy(d[yField]) + (-binHeight / 2.0 + CHART_MARGIN.top));});
 }
 export function onPreviewReset(spec: FacetedCompositeUnitSpec, values: any[], duration?: number, delay?: number) {
+  delay += COMMON_DELAY;
   resizeRootSVG(1, false, duration, delay);
   selectRootSVG()
     .selectAll('.remove-when-reset')
     .transition().delay(typeof delay == 'undefined' ? 0 : delay).duration(duration)
     .attr('opacity', 0).remove();
   pointsAsScatterplot(spec, values, duration, delay);
+}
+export function removeTransitionTimeline(duration?: number) {
+  duration += COMMON_DELAY;
+  d3.select('#d3-timeline').select('svg').selectAll('*')
+    .transition().delay(duration).duration(COMMON_DURATION)
+    .attr('opacity', 0)
+    .remove();
 }
