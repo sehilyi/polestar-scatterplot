@@ -46,13 +46,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   private vegaLiteWrapper: HTMLElement;
   private prevAttr: Object = new Object();
 
-  private AggregateStages: TransitionAttr[] = [
-    {id: 'COLOR', title: 'Color by \'' + this.getDefaultSmallSizedNominalFieldName() + '\' field', duration: COMMON_DURATION},
-    // {id: 'DELAY', title: '', duration: COMMON_SHORT_DELAY},
-    {id: 'REPOSITION', title: 'Aggregate to mean position', duration: COMMON_DURATION}
-    // {id: 'DELAY', title: '', duration: COMMON_SHORT_DELAY}
-  ];
-
   constructor(props: ActionableOverplottingProps) {
     super(props);
     this.state = ({
@@ -113,17 +106,19 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   private previewPane(data: ActionPaneData) {
     if (!data.isPaneUsing) return null;
     return (
-      <div styleName='guide-preview' id={data.actionItem.title}>
+      <div styleName='guide-preview' key={data.actionItem.title}>
         <div styleName='transition-progress-bg'>
           <div styleName='transition-progress'></div>
-          <p styleName='left-buttons'>
+          {/* <p styleName='left-buttons'>
             <i className='fa fa-play' styleName='top-button' aria-hidden='true'
               onClick={data.onTransition.bind(this)} />
             <i className="fa fa-thumb-tack" styleName='top-button' aria-hidden="true"
             // onClick={this.onAggregateTransitionShow.bind(this)}
             />
-          </p>
+          </p> */}
           <p styleName='right-buttons'>
+            <i className='fa fa-play' styleName='top-button-right' aria-hidden='true'
+              onClick={data.onTransition.bind(this)} />
             <i className="fa fa-check" styleName='top-button-right' aria-hidden="true"
               onClick={data.onAction.bind(this)} />
           </p>
@@ -263,11 +258,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   private onAggregateTransitionShow() {
     renderTransitionTimeline('', this.AggregateStages, false);
   }
-  private onAggregateTransitionClick() {
-    renderTransitionTimeline('', this.AggregateStages, true);
+  private onAggregateTransition() {
     onPreviewReset(this.props.mainSpec, this.props.data.values);
-    pointsAsMeanScatterplot(this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), COMMON_DURATION);
-    this.onAggregateMouseLeave();
+    renderTransitionTimeline('', this.AggregateStages, true);
+    pointsAsMeanScatterplot(this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), this.AggregateStages, COMMON_DURATION);
+    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.AggregateStages.map(x => x.duration)));
   }
   private onEncodingDensityTransition() {
     onPreviewReset(this.props.mainSpec, this.props.data.values);
@@ -367,9 +362,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private onRemoveFillColorMouseLeave() {
     onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, COMMON_DELAY);
-  }
-  private onAggregateMouseLeave() {
-    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, COMMON_DELAY * 2);
   }
   private onEncodingDensityMouseLeave() {
     onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, COMMON_DELAY * 2);
@@ -600,7 +592,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       isPaneUsing: this.isAggregateUsing(),
       actionItem: ACTIONABLE_AGGREGATE,
       renderPreview: this.renderAggregatePreview,
-      onTransition: this.onAggregateTransitionClick,
+      onTransition: this.onAggregateTransition,
       onAction: this.onAggregatePointsClick
     }
     const PANE_ENCODING_DENSITY: ActionPaneData = {
@@ -628,6 +620,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     ];
     return paneData;
   }
+  public AggregateStages: TransitionAttr[] = [
+    {id: 'COLOR', title: 'Color by \'' + this.getDefaultSmallSizedNominalFieldName() + '\' field', duration: COMMON_DURATION},
+    {id: 'REPOSITION', title: 'Aggregate to mean position', duration: COMMON_DURATION}
+  ];
 }
 
 export const ActionableOverplotting = (CSSModules(ActionableOverplottingBase, styles));

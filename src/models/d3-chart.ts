@@ -48,14 +48,14 @@ export function renderD3Chart(CHART_REF: any, spec: FacetedCompositeUnitSpec, da
   pointsAsScatterplot(spec, data);
 }
 
-export function removeTransitionTimeline(duration: number) {
+export function removeTransitionTimeline(duration?: number) {
   d3.select('#d3-timeline').select('svg').selectAll('*')
-    // .transition().delay(duration).duration(COMMON_DURATION)
+    .transition().delay(duration).duration(COMMON_DURATION)
     // .attr('opacity', 0)
     .remove();
 }
 export function renderTransitionTimeline(title: string, stages: TransitionAttr[], isTransition: boolean) {
-  this.removeTransitionTimeline();
+  this.removeTransitionTimeline(0);
   let svg = d3.select('#d3-timeline').select('svg');
 
   // append title
@@ -152,7 +152,7 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
     .attr('stroke-width', 1)
     .attr('opacity', function(d, i) {return (stages.length <= i || stages[i].id != 'DELAY') ? 1 : 0});
 
-  // removeTransitionTimeline(totalDuration + COMMON_DELAY);
+  removeTransitionTimeline(totalDuration);
 }
 
 export function isThereD3Chart() {
@@ -338,7 +338,7 @@ export function resizeRootSVG(count: number, isLegend: boolean, duration?: numbe
     .attr('width', width)
     .attr('height', height);
 }
-export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, field: string, duration?: number) {
+export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, field: string, stages: TransitionAttr[], duration?: number) {
   resizeRootSVG(1, true, COMMON_DURATION);
   let svg = selectRootSVG();
   let xField = spec.encoding.x['field'];
@@ -357,10 +357,10 @@ export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: an
   let attr = getPointAttrs(spec);
 
   svg.selectAll('.point')
-    .transition().duration(duration)
+    .transition().duration(stages[0].duration)
     .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : ordinalColor(d[field]);})
     .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : ordinalColor(d[field]);})
-    .transition().duration(duration)
+    .transition().duration(stages[1].duration)
     .attr('x', function (d) {return (x(d3.mean(data.map(function (d1) {return d1[field] == d[field] ? d1[xField] : null;})))) + (-attr.width / 2.0 + CHART_MARGIN.left);})
     .attr('y', function (d) {return (y(d3.mean(data.map(function (d1) {return d1[field] == d[field] ? d1[yField] : null;})))) + (-attr.height / 2.0 + CHART_MARGIN.top);})
 
@@ -398,7 +398,7 @@ export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: an
 
   legend
     .attr('opacity', 0)
-    .transition().duration(duration)
+    .transition().duration(stages[0].duration)
     .attr('opacity', 1);
 }
 export function pointsAsDensityPlot(spec: FacetedCompositeUnitSpec, data: any[], duration?: number) {
