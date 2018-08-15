@@ -15,7 +15,7 @@ export const NOMINAL_COLOR_SCHEME = ['#4c78a8', '#f58518', '#e45756', '#72b7b2',
 
 export const TIMELINE_SIZE = {width: 400, height: 8};
 export const TIMELINE_MARGIN = {top: 20, right: 10, bottom: 20, left: 10};
-export const TIMELINE_COLOR_SCHEME = ['#ad8bc9', '#ed665d', '#67bf5c', '#ff9e4a', '#729ece'];
+export const TIMELINE_COLOR_SCHEME = ['#ad8bc9', '#8DD3C7', '#FB8072', '#ff9e4a', '#729ece'];
 export const TIMELINE_CATEGORIES = ['MORPH', 'REPOSITION', 'COLOR', 'DELAY'];
 export type TIMELINE_CATEGORY = 'MORPH' | 'REPOSITION' | 'COLOR' | 'DELAY';
 export interface TransitionAttr {
@@ -93,12 +93,12 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
     // .attr('stroke', 'white')
     .attr('y', TIMELINE_MARGIN.top)
     .attr('height', TIMELINE_SIZE.height)
-    .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i]})
-    .attr('y', TIMELINE_MARGIN.top - 1)
-    .attr('height', TIMELINE_SIZE.height + 2)
-    .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i] + d.duration})
-    .attr('y', TIMELINE_MARGIN.top)
-    .attr('height', TIMELINE_SIZE.height);
+    // .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i]})
+    // .attr('y', TIMELINE_MARGIN.top - 1)
+    // .attr('height', TIMELINE_SIZE.height + 2)
+    // .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i] + d.duration})
+    // .attr('y', TIMELINE_MARGIN.top)
+    // .attr('height', TIMELINE_SIZE.height);
 
   // append stage title
   svg.selectAll('.stage-label')
@@ -115,21 +115,28 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
     .style('fill', '#2e2e2e')
     // .style('fill', 'white')
     .attr('font-size', 12)
-    .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i]})
-    .attr('font-size', 13)
-    .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i] + d.duration})
-    .attr('font-size', 12);
+    // .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i]})
+    // .attr('font-size', 13)
+    // .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i] + d.duration})
+    // .attr('font-size', 12);
 
-  // append tick
+  // append progress bar
   // var arc = d3.symbol().type(d3.symbolTriangle).size(24);
-  // svg.selectAll('.timeline-tick')
-  //   .data(['tick'])
-  //   .enter().append('path')
-  //   .attr('d', arc)
-  //   .attr('fill', '#2e2e2e')
-  //   .attr('transform', 'translate(' + (TIMELINE_MARGIN.left) + ',' + (TIMELINE_MARGIN.top - 6) + ') rotate(180)')
-  //   .transition().duration(isTransition ? totalDuration : 0).ease(d3.easeLinear)
-  //   .attr('transform', 'translate(' + (TIMELINE_MARGIN.left + TIMELINE_SIZE.width) + ',' + (TIMELINE_MARGIN.top - 6) + ') rotate(180)')
+  svg.selectAll('.timeline-pb')
+    .data(['pb'])
+    .enter().append('rect')
+    .classed('timeline-pb', true)
+    .attr('x', TIMELINE_MARGIN.left)
+    .attr('y', TIMELINE_MARGIN.top)
+    .attr('height', TIMELINE_SIZE.height)
+    .attr('width', TIMELINE_SIZE.width)
+    .attr('fill', 'white')
+    .attr('opacity', 0.6)
+    .transition().duration(isTransition ? totalDuration : 0).ease(d3.easeLinear)
+    .attr('x', TIMELINE_MARGIN.left + TIMELINE_SIZE.width)
+    .attr('y', TIMELINE_MARGIN.top)
+    .attr('height', TIMELINE_SIZE.height)
+    .attr('width', 0);
 
   // append stage betweens
   svg.selectAll('.stage-between')
@@ -141,7 +148,7 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
     .attr('y1', TIMELINE_MARGIN.top - 3)
     .attr('y2', TIMELINE_MARGIN.top + TIMELINE_SIZE.height + 3)
     .attr('stroke', '#2e2e2e')
-    .attr('stroke-width', 2);
+    .attr('stroke-width', 1);
 
   // removeTransitionTimeline(totalDuration + COMMON_DELAY);
 }
