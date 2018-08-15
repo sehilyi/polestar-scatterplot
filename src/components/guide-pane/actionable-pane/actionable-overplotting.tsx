@@ -3,7 +3,7 @@ import * as CSSModules from 'react-css-modules';
 import * as styles from './actionable-overplotting.scss';
 
 import * as d3 from 'd3';
-import {Actionables, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_CHANGE_SHAPE, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting} from '../../../models/guidelines';
+import {Actionables, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_CHANGE_SHAPE, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting, GuideActionItem} from '../../../models/guidelines';
 import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_MARK_CHANGE_TYPE, SPEC_FIELD_ADD, SPEC_FUNCTION_CHANGE, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR} from '../../../actions';
 import {Logger} from '../../util/util.logger';
 import {Themes} from '../../../models/theme/theme';
@@ -31,6 +31,15 @@ export interface ActionableOverplottingState {
   triggeredAction: Actionables;
 }
 
+export interface ActionPaneData {
+  isPaneUsing: boolean;
+  actionItem: GuideActionItem;
+  // functions
+  renderPreview: () => void;
+  onTransition: () => void;
+  onAction: () => void;
+}
+
 export class ActionableOverplottingBase extends React.PureComponent<ActionableOverplottingProps, ActionableOverplottingState>{
 
   private plotLogger: Logger;
@@ -53,233 +62,15 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
 
   public render() {
-    const vegaReady = typeof this.props.mainSpec != 'undefined';
+    // const vegaReady = typeof this.props.mainSpec != 'undefined';
     const {triggeredAction} = this.state;
-    const filter = ACTIONABLE_FILTER_GENERAL,
-      pointSize = ACTIONABLE_POINT_SIZE,
-      pointOpacity = ACTIONABLE_POINT_OPACITY,
-      removeFill = ACTIONABLE_REMOVE_FILL_COLOR,
-      changeShape = ACTIONABLE_CHANGE_SHAPE,
-      aggregate = ACTIONABLE_AGGREGATE,
-      encodingDensity = ACTIONABLE_ENCODING_DENSITY,
-      separateGraph = ACTIONABLE_SEPARATE_GRAPH;
+    const paneData = this.getPaneData();
+    const actionPanes = paneData.map(this.previewPane, this);
 
     return (
-      // TODO: this should be more general!
       <div styleName='ac-root'>
         <div styleName={triggeredAction == 'NONE' ? 'guide-previews' : 'guide-previews-hidden'}>
-          {/* TODO: show action filter */}
-          <div styleName='guide-preview'>
-            <div styleName='transition-progress-bg'>
-              <div styleName='transition-progress'></div>
-              <p styleName='right-buttons'>
-                <i className='fa fa-play' styleName='top-button' aria-hidden='true' />
-                <i className="fa fa-check" styleName='top-button' aria-hidden="true"
-                  onClick={this.onFilterClick.bind(this)} />
-              </p>
-            </div>
-            <div styleName='guide-preview-inner' className='preview-large' ref={this.vegaLiteWrapperRefHandler} >
-              {/* TODO: how to best decide the default of the filtering target? */}
-              <p styleName='preview-title'>
-                <i className={filter.faIcon} aria-hidden='true' />
-                {' ' + filter.title}
-              </p>
-              <p styleName='preview-score'>77% experts</p>
-              {vegaReady ? this.renderFilterPreview() : null}
-              <ul styleName='preview-desc' className='fa-ul'>
-                <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{filter.pros}</li>
-                <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' />{filter.cons}</li>
-              </ul>
-            </div>
-          </div>
-          {vegaReady && this.isChangePointSizeUsing() ?
-            <div styleName='guide-preview'>
-              <div styleName='transition-progress-bg'>
-                <div styleName='transition-progress'></div>
-                <p styleName='right-buttons'>
-                  <i className='fa fa-play' styleName='top-button' aria-hidden='true'
-                    onClick={this.onChangePointSizeTransition.bind(this)}
-                    onMouseEnter={this.onChangePointSizeTransitionMouseEnter.bind(this)}
-                    onMouseLeave={this.onChangePointSizeTransitionMouseLeave.bind(this)} />
-                  <i className="fa fa-check" styleName='top-button' aria-hidden="true"
-                    onClick={this.onChangePointSizeClick.bind(this)} />
-                </p>
-              </div>
-              <div styleName='guide-preview-inner' className='preview-large' ref={this.vegaLiteWrapperRefHandler}>
-                <p styleName='preview-title'>
-                  <i className={pointSize.faIcon} aria-hidden='true' />
-                  {' ' + pointSize.title}
-                </p>
-                <p styleName='preview-score'>75% experts</p>
-                {vegaReady ? this.renderChangePointSizePreview() : null}
-                <ul styleName='preview-desc' className='fa-ul'>
-                  <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{pointSize.pros}</li>
-                  <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' />{pointSize.cons}</li>
-                </ul>
-              </div>
-            </div> :
-            null
-          }
-          {vegaReady && this.isChangeOpacityUsing() ?
-            <div styleName='guide-preview'>
-              <div styleName='transition-progress-bg'>
-                <div styleName='transition-progress'></div>
-                <p styleName='right-buttons'>
-                  <i className='fa fa-play' styleName='top-button' aria-hidden='true'
-                    onClick={this.onChangeOpacityTransition.bind(this)} />
-                  <i className="fa fa-check" styleName='top-button' aria-hidden="true"
-                    onClick={this.onChangeOpacityClick.bind(this)} />
-                </p>
-              </div>
-              <div styleName='guide-preview-inner' className='preview-large' ref={this.vegaLiteWrapperRefHandler}>
-                <p styleName='preview-title'>
-                  <i className={pointOpacity.faIcon} aria-hidden='true' />
-                  {' ' + pointOpacity.title}
-                </p>
-                <p styleName='preview-score'>72% experts</p>
-                {vegaReady ? this.renderChangeOpacityPreview() : null}
-                <ul styleName='preview-desc' className='fa-ul'>
-                  <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{pointOpacity.pros}</li>
-                  <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' />{pointOpacity.cons}</li>
-                </ul>
-              </div>
-            </div> :
-            null
-          }
-          {vegaReady && this.isRemoveFillColorUsing() ?
-            <div styleName='guide-preview'>
-              <div styleName='transition-progress-bg'>
-                <div styleName='transition-progress'></div>
-                <p styleName='right-buttons'>
-                  <i className='fa fa-play' styleName='top-button' aria-hidden='true'
-                    onClick={this.onRemoveFillColorTransition.bind(this)} />
-                  <i className="fa fa-check" styleName='top-button' aria-hidden="true"
-                    onClick={this.onRemoveFillColorClick.bind(this)} />
-                </p>
-              </div>
-              <div styleName='guide-preview-inner' className='preview-large' ref={this.vegaLiteWrapperRefHandler}>
-                <p styleName='preview-title'>
-                  <i className={removeFill.faIcon} aria-hidden='true' />
-                  {' ' + removeFill.title}
-                </p>
-                <p styleName='preview-score'>45% experts</p>
-                {vegaReady ? this.renderRemoveFillColorPreview() : null}
-                <ul styleName='preview-desc' className='fa-ul'>
-                  <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{removeFill.pros}</li>
-                  <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' />{removeFill.cons}</li>
-                </ul>
-              </div>
-            </div> :
-            null
-          }
-          {vegaReady && this.isChangeShapeUsing() ?
-            <div styleName='guide-preview'>
-              <div styleName='transition-progress-bg'>
-                <div styleName='transition-progress'></div>
-                <p styleName='right-buttons'>
-                  <i className='fa fa-play' styleName='top-button' aria-hidden='true'
-                    onClick={this.onRemoveFillColorTransition.bind(this)} />
-                  <i className="fa fa-check" styleName='top-button' aria-hidden="true"
-                    onClick={this.onRemoveFillColorClick.bind(this)} />
-                </p>
-              </div>
-              <div styleName='guide-preview-inner' className='preview-large' ref={this.vegaLiteWrapperRefHandler} >
-                <p styleName='preview-title'>
-                  <i className={changeShape.faIcon} aria-hidden='true' />
-                  {' ' + changeShape.title}
-                </p>
-                <p styleName='preview-score'>42% experts</p>
-                {vegaReady ? this.renderChangeShapePreview() : null}
-                <ul styleName='preview-desc' className='fa-ul'>
-                  <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{changeShape.pros}</li>
-                  <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' />{changeShape.cons}</li>
-                </ul>
-              </div>
-            </div> :
-            null
-          }
-          {vegaReady && this.isAggregateUsing() ?
-            <div styleName='guide-preview'>
-              <div styleName='transition-progress-bg'>
-                <div styleName='transition-progress'></div>
-                <p styleName='left-buttons'>
-                  <i className='fa fa-play' styleName='top-button' aria-hidden='true'
-                    onClick={this.onAggregateTransitionClick.bind(this)} />
-                  <i className="fa fa-thumb-tack" styleName='top-button' aria-hidden="true"
-                    onClick={this.onAggregateTransitionShow.bind(this)} />
-                </p>
-                <p styleName='right-buttons'>
-                  <i className="fa fa-check" styleName='top-button' aria-hidden="true"
-                    onClick={this.onAggregatePointsClick.bind(this)} />
-                </p>
-              </div>
-              <div styleName='guide-preview-inner' className='preview-large' ref={this.vegaLiteWrapperRefHandler}>
-                <p styleName='preview-title'>
-                  <i className={aggregate.faIcon} aria-hidden='true' />
-                  {' ' + aggregate.title}
-                </p>
-                <p styleName='preview-score'>38% experts</p>
-                {vegaReady ? this.renderAggregatePreview() : null}
-                <ul styleName='preview-desc' className='fa-ul'>
-                  <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{aggregate.pros}</li>
-                  <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' />{aggregate.cons}</li>
-                </ul>
-              </div>
-            </div> :
-            null
-          }
-          {vegaReady && this.isEncodingDensityUsing() ?
-            <div styleName='guide-preview'>
-              <div styleName='transition-progress-bg'>
-                <div styleName='transition-progress'></div>
-                <p styleName='right-buttons'>
-                  <i className='fa fa-play' styleName='top-button' aria-hidden='true'
-                    onClick={this.onEncodingDensityTransition.bind(this)} />
-                  <i className="fa fa-check" styleName='top-button' aria-hidden="true"
-                    onClick={this.onEncodingDensityClick.bind(this)} />
-                </p>
-              </div>
-              <div styleName='guide-preview-inner' className='preview-large' ref={this.vegaLiteWrapperRefHandler}>
-                <p styleName='preview-title'>
-                  <i className={encodingDensity.faIcon} aria-hidden='true' />
-                  {' ' + encodingDensity.title}
-                </p>
-                <p styleName='preview-score'>18% experts</p>
-                {vegaReady ? this.renderEncodingDensityPreview() : null}
-                <ul styleName='preview-desc' className='fa-ul'>
-                  <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{encodingDensity.pros}</li>
-                  <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' />{encodingDensity.cons}</li>
-                </ul>
-              </div>
-            </div> :
-            null
-          }
-          {vegaReady && this.isSeparateGraphUsing() ?
-            <div styleName='guide-preview'>
-              <div styleName='transition-progress-bg'>
-                <div styleName='transition-progress'></div>
-                <p styleName='right-buttons'>
-                  <i className='fa fa-play' styleName='top-button' aria-hidden='true'
-                    onClick={this.onSeparateGraphTransition.bind(this)} />
-                  <i className="fa fa-check" styleName='top-button' aria-hidden="true"
-                    onClick={this.onSeparateGraphClick.bind(this)} />
-                </p>
-              </div>
-              <div styleName='guide-preview-inner' className='preview-large' ref={this.vegaLiteWrapperRefHandler}>
-                <p styleName='preview-title'>
-                  <i className={separateGraph.faIcon} aria-hidden='true' />
-                  {' ' + separateGraph.title}
-                </p>
-                <p styleName='preview-score'>11% experts</p>
-                {vegaReady ? this.renderSeparateGraphPreview() : null}
-                <ul styleName='preview-desc' className='fa-ul'>
-                  <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{separateGraph.pros}</li>
-                  <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' />{separateGraph.cons}</li>
-                </ul>
-              </div>
-            </div> :
-            null
-          }
+          {actionPanes}
         </div>
         <div className='fa-gray' styleName='ignore-button'>
           <a onClick={this.onIgnore.bind(this)}>
@@ -293,6 +84,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           <i className='fa fa-chevron-circle-left' aria-hidden='true' />
           {' '} Back
         </div>
+        {/* Detail Actions */}
         <div styleName={triggeredAction == 'AGGREGATE_POINTS' ? '' : 'hidden'}>
           <FieldPicker
             id={this.props.item.id + 'AGGREGATE_POINTS'}
@@ -314,6 +106,39 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             defaultField={this.getDefaultSmallSizedNominalFieldName()}
             pickedFieldAction={this.separateByFieldAction}
           />
+        </div>
+      </div>
+    );
+  }
+  private previewPane(data: ActionPaneData) {
+    if (!data.isPaneUsing) return null;
+    return (
+      <div styleName='guide-preview' id={data.actionItem.title}>
+        <div styleName='transition-progress-bg'>
+          <div styleName='transition-progress'></div>
+          <p styleName='left-buttons'>
+            <i className='fa fa-play' styleName='top-button' aria-hidden='true'
+              onClick={data.onTransition.bind(this)} />
+            <i className="fa fa-thumb-tack" styleName='top-button' aria-hidden="true"
+            // onClick={this.onAggregateTransitionShow.bind(this)}
+            />
+          </p>
+          <p styleName='right-buttons'>
+            <i className="fa fa-check" styleName='top-button-right' aria-hidden="true"
+              onClick={data.onAction.bind(this)} />
+          </p>
+        </div>
+        <div styleName='guide-preview-inner' className='preview-large' ref={this.vegaLiteWrapperRefHandler}>
+          <p styleName='preview-title'>
+            <i className={data.actionItem.faIcon} aria-hidden='true' />
+            {' ' + data.actionItem.title}
+          </p>
+          {/* <p styleName='preview-score'>72% experts</p> */}
+          {data.renderPreview.bind(this)()}
+          <ul styleName='preview-desc' className='fa-ul'>
+            <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{data.actionItem.pros}</li>
+            <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' />{data.actionItem.cons}</li>
+          </ul>
         </div>
       </div>
     );
@@ -356,6 +181,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     return this.isThereSmallSizedNominalField();
   }
 
+  private onFilterTransition() {
+
+  }
   private onFilterClick() {
 
   }
@@ -571,6 +399,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private renderChangeOpacityPreview() {
     let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
+
     previewSpec.encoding = {
       ...previewSpec.encoding,
       opacity: {value: 0.3}
@@ -736,6 +565,68 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
 
   private vegaLiteWrapperRefHandler = (ref: any) => {
     this.vegaLiteWrapper = ref;
+  }
+
+  private getPaneData() {
+    const PANE_FILTER_GENERAL: ActionPaneData = {
+      isPaneUsing: true,
+      actionItem: ACTIONABLE_FILTER_GENERAL,
+      renderPreview: this.renderFilterPreview,
+      onTransition: this.onFilterTransition,
+      onAction: this.onFilterClick
+    }
+    const PANE_POINT_SIZE: ActionPaneData = {
+      isPaneUsing: this.isChangePointSizeUsing(),
+      actionItem: ACTIONABLE_POINT_SIZE,
+      renderPreview: this.renderChangePointSizePreview,
+      onTransition: this.onChangePointSizeTransition,
+      onAction: this.onChangePointSizeClick
+    }
+    const PANE_POINT_OPACITY: ActionPaneData = {
+      isPaneUsing: this.isChangeOpacityUsing(),
+      actionItem: ACTIONABLE_POINT_OPACITY,
+      renderPreview: this.renderChangeOpacityPreview,
+      onTransition: this.onChangeOpacityTransition,
+      onAction: this.onChangeOpacityClick
+    };
+    const PANE_REMOVE_FILL_COLOR: ActionPaneData = {
+      isPaneUsing: this.isRemoveFillColorUsing(),
+      actionItem: ACTIONABLE_REMOVE_FILL_COLOR,
+      renderPreview: this.renderRemoveFillColorPreview,
+      onTransition: this.onRemoveFillColorTransition,
+      onAction: this.onRemoveFillColorClick
+    }
+    const PANE_AGGREGATE: ActionPaneData = {
+      isPaneUsing: this.isAggregateUsing(),
+      actionItem: ACTIONABLE_AGGREGATE,
+      renderPreview: this.renderAggregatePreview,
+      onTransition: this.onAggregateTransitionClick,
+      onAction: this.onAggregatePointsClick
+    }
+    const PANE_ENCODING_DENSITY: ActionPaneData = {
+      isPaneUsing: this.isEncodingDensityUsing(),
+      actionItem: ACTIONABLE_ENCODING_DENSITY,
+      renderPreview: this.renderEncodingDensityPreview,
+      onTransition: this.onEncodingDensityTransition,
+      onAction: this.onEncodingDensityClick
+    }
+    const PANE_SEPARATE_GRAPH: ActionPaneData = {
+      isPaneUsing: this.isSeparateGraphUsing(),
+      actionItem: ACTIONABLE_SEPARATE_GRAPH,
+      renderPreview: this.renderSeparateGraphPreview,
+      onTransition: this.onSeparateGraphTransition,
+      onAction: this.onSeparateGraphClick
+    }
+    const paneData: ActionPaneData[] = [
+      PANE_FILTER_GENERAL,
+      PANE_POINT_SIZE,
+      PANE_POINT_OPACITY,
+      PANE_REMOVE_FILL_COLOR,
+      PANE_AGGREGATE,
+      PANE_ENCODING_DENSITY,
+      PANE_SEPARATE_GRAPH
+    ];
+    return paneData;
   }
 }
 

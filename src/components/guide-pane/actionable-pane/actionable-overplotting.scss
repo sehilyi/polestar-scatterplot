@@ -94,6 +94,11 @@ $grid-margin-double: 4px;
   }
 }
 
+.top-button-right {
+  @extend .top-button;
+  margin-right: 8px;
+}
+
 .pros {
   color: #4d4dd1;
 }
