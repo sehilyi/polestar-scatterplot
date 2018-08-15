@@ -7,6 +7,7 @@ import {Schema} from '.';
 export const COMMON_DURATION: number = 1500;
 export const COMMON_FAST_DURATION: number = 100;
 export const COMMON_DELAY: number = 2000;
+export const COMMON_SHORT_DELAY: number = 300;
 export const CHART_SIZE = {width: 200, height: 200};
 export const CHART_MARGIN = {top: 20, right: 20, bottom: 50, left: 50};
 export const LEGEND_WIDTH = 100;
@@ -15,7 +16,7 @@ export const NOMINAL_COLOR_SCHEME = ['#4c78a8', '#f58518', '#e45756', '#72b7b2',
 
 export const TIMELINE_SIZE = {width: 400, height: 8};
 export const TIMELINE_MARGIN = {top: 20, right: 10, bottom: 20, left: 10};
-export const TIMELINE_COLOR_SCHEME = ['#ad8bc9', '#8DD3C7', '#FB8072', '#ff9e4a', '#729ece'];
+export const TIMELINE_COLOR_SCHEME = ['#ad8bc9', '#8DD3C7', '#FB8072', 'gray', '#729ece'];
 export const TIMELINE_CATEGORIES = ['MORPH', 'REPOSITION', 'COLOR', 'DELAY'];
 export type TIMELINE_CATEGORY = 'MORPH' | 'REPOSITION' | 'COLOR' | 'DELAY';
 export interface TransitionAttr {
@@ -148,7 +149,8 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
     .attr('y1', TIMELINE_MARGIN.top - 3)
     .attr('y2', TIMELINE_MARGIN.top + TIMELINE_SIZE.height + 3)
     .attr('stroke', '#2e2e2e')
-    .attr('stroke-width', 1);
+    .attr('stroke-width', 1)
+    .attr('opacity', function(d, i) {return (stages.length <= i || stages[i].id != 'DELAY') ? 1 : 0});
 
   // removeTransitionTimeline(totalDuration + COMMON_DELAY);
 }
