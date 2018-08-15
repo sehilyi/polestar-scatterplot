@@ -65,29 +65,30 @@ $grid-margin-double: 4px;
   font-weight: normal;
 }
 
+.left-buttons {
+  margin: 0px;
+  width: 65px;
+  background: linear-gradient(-65deg, transparent 0%, transparent 45%, #e8e8e8 45%);
+  text-align: left;
+  position: absolute;
+  left: 0;
+}
+
 .right-buttons {
   margin: 0px;
-  width: 70px;
-  background: linear-gradient(45deg, transparent 0%, transparent 45%, #e8e8e8 45%);
+  width: 65px;
+  background: linear-gradient(65deg, transparent 0%, transparent 45%, #e8e8e8 45%);
   text-align: right;
   position: absolute;
   right: 0;
 }
 
-.right-button {
+.top-button {
   color: #a5a2a2;
   padding: 4px;
-  padding-top: 0px;
+  // padding-top: 0px;
+  vertical-align: middle;
   font-size: 10px !important;
-}
-.right-button-play {
-  @extend .right-button;
-  &:hover{
-    color: green;
-  }
-}
-.right-button-check {
-  @extend .right-button;
   &:hover{
     color: green;
   }

@@ -4,7 +4,8 @@ import {BaseType, select} from 'd3';
 import {Schema} from '.';
 
 // Basic property for d3-chart
-export const COMMON_DURATION: number = 1000;
+export const COMMON_DURATION: number = 1500;
+export const COMMON_FAST_DURATION: number = 100;
 export const COMMON_DELAY: number = 2000;
 export const CHART_SIZE = {width: 200, height: 200};
 export const CHART_MARGIN = {top: 20, right: 20, bottom: 50, left: 50};
@@ -12,9 +13,9 @@ export const LEGEND_WIDTH = 100;
 export const LEGEND_LT_MARGIN = 20;
 export const NOMINAL_COLOR_SCHEME = ['#4c78a8', '#f58518', '#e45756', '#72b7b2', '#54a24b', '#eeca3b', '#b279a2', '#ff9da6', '#9d755d', '#bab0ac'];
 
-export const TIMELINE_SIZE = {width: 400, height: 10};
+export const TIMELINE_SIZE = {width: 400, height: 8};
 export const TIMELINE_MARGIN = {top: 20, right: 10, bottom: 20, left: 10};
-export const TIMELINE_COLOR_SCHEME = ['#6dccda', '#cdcc5d', '#ed97ca', '#a2a2a2', '#a8786e', '#ad8bc9', '#ed665d', '#67bf5c', '#ff9e4a', '#729ece'];
+export const TIMELINE_COLOR_SCHEME = ['#ad8bc9', '#ed665d', '#67bf5c', '#ff9e4a', '#729ece'];
 export const TIMELINE_CATEGORIES = ['MORPH', 'REPOSITION', 'COLOR', 'DELAY'];
 export type TIMELINE_CATEGORY = 'MORPH' | 'REPOSITION' | 'COLOR' | 'DELAY';
 export interface TransitionAttr {
@@ -48,10 +49,12 @@ export function renderD3Chart(CHART_REF: any, spec: FacetedCompositeUnitSpec, da
 
 export function removeTransitionTimeline(duration: number) {
   d3.select('#d3-timeline').select('svg').selectAll('*')
-    .transition().delay(duration).duration(COMMON_DURATION)
-    .attr('opacity', 0).remove();
+    // .transition().delay(duration).duration(COMMON_DURATION)
+    // .attr('opacity', 0)
+    .remove();
 }
-export function renderTransitionTimeline(title: string, stages: TransitionAttr[]) {
+export function renderTransitionTimeline(title: string, stages: TransitionAttr[], isTransition: boolean) {
+  this.removeTransitionTimeline();
   let svg = d3.select('#d3-timeline').select('svg');
 
   // append title
@@ -84,12 +87,18 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
     .enter().append('rect')
     .classed('timeline-stage', true)
     .attr('x', function (d, i) {return TIMELINE_MARGIN.left + accumDuration[i] / totalDuration * TIMELINE_SIZE.width;})
-    .attr('y', TIMELINE_MARGIN.top)
     .attr('width', function (d) {return d.duration / totalDuration * TIMELINE_SIZE.width;})
+    .attr('fill', function (d) {return timelineColor(d.id);})
+    // .attr('stroke-width', 2)
+    // .attr('stroke', 'white')
+    .attr('y', TIMELINE_MARGIN.top)
     .attr('height', TIMELINE_SIZE.height)
-    .attr('stroke-width', 2)
-    .attr('stroke', 'white')
-    .attr('fill', function (d) {return timelineColor(d.id);});
+    .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i]})
+    .attr('y', TIMELINE_MARGIN.top - 1)
+    .attr('height', TIMELINE_SIZE.height + 2)
+    .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i] + d.duration})
+    .attr('y', TIMELINE_MARGIN.top)
+    .attr('height', TIMELINE_SIZE.height);
 
   // append stage title
   svg.selectAll('.stage-label')
@@ -97,42 +106,44 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
     .enter().append('text')
     .classed('stage-label', true)
     .text(function (d) {return d.title;})
-    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + accumDuration[i] / totalDuration * TIMELINE_SIZE.width + d.duration / totalDuration * TIMELINE_SIZE.width / 2;})
-    .attr('y', TIMELINE_MARGIN.top + TIMELINE_SIZE.height + 15)
-    .style('font-style', 'italic')
-    .style('font-family', 'Roboto')
-    .style('font-size', 10)
+    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + accumDuration[i] / totalDuration * TIMELINE_SIZE.width + d.duration / totalDuration * TIMELINE_SIZE.width / 2.0 + 4;})
+    .attr('y', TIMELINE_MARGIN.top - 6)
+    // .style('font-style', 'italic')
+    // .style('font-weight', 'bold')
+    .style('font-family', 'Roboto Condensed')
     .style('text-anchor', 'middle')
-    .style('fill', '#2e2e2e');
+    .style('fill', '#2e2e2e')
+    // .style('fill', 'white')
+    .attr('font-size', 12)
+    .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i]})
+    .attr('font-size', 13)
+    .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i] + d.duration})
+    .attr('font-size', 12);
 
   // append tick
-  var arc = d3.symbol().type(d3.symbolTriangle).size(24);
-  svg.selectAll('.timeline-tick')
-    .data(['tick'])
-    .enter().append('path')
-    .attr('d', arc)
-    .attr('fill', '#2e2e2e')
-    .attr('transform', 'translate(' + (TIMELINE_MARGIN.left) + ',' + (TIMELINE_MARGIN.top - 6) + ') rotate(180)')
-    .transition().duration(totalDuration).ease(d3.easeLinear)
-    .attr('transform', 'translate(' + (TIMELINE_MARGIN.left + TIMELINE_SIZE.width) + ',' + (TIMELINE_MARGIN.top - 6) + ') rotate(180)')
+  // var arc = d3.symbol().type(d3.symbolTriangle).size(24);
+  // svg.selectAll('.timeline-tick')
+  //   .data(['tick'])
+  //   .enter().append('path')
+  //   .attr('d', arc)
+  //   .attr('fill', '#2e2e2e')
+  //   .attr('transform', 'translate(' + (TIMELINE_MARGIN.left) + ',' + (TIMELINE_MARGIN.top - 6) + ') rotate(180)')
+  //   .transition().duration(isTransition ? totalDuration : 0).ease(d3.easeLinear)
+  //   .attr('transform', 'translate(' + (TIMELINE_MARGIN.left + TIMELINE_SIZE.width) + ',' + (TIMELINE_MARGIN.top - 6) + ') rotate(180)')
 
-  // append stage between circles
+  // append stage betweens
   svg.selectAll('.stage-between')
     .data(accumDuration)
-    .enter().append('circle')
+    .enter().append('line')
     .classed('stage-between', true)
-    .attr('cx', function (d, i) {return TIMELINE_MARGIN.left + accumDuration[i] / totalDuration * TIMELINE_SIZE.width;})
-    .attr('cy', TIMELINE_MARGIN.top + TIMELINE_SIZE.height / 2.0)
-    .attr('r', 6)
+    .attr('x1', function (d, i) {return TIMELINE_MARGIN.left + accumDuration[i] / totalDuration * TIMELINE_SIZE.width;})
+    .attr('x2', function (d, i) {return TIMELINE_MARGIN.left + accumDuration[i] / totalDuration * TIMELINE_SIZE.width;})
+    .attr('y1', TIMELINE_MARGIN.top - 3)
+    .attr('y2', TIMELINE_MARGIN.top + TIMELINE_SIZE.height + 3)
     .attr('stroke', '#2e2e2e')
-    .attr('stroke-width', 2)
-    .attr('fill', 'white');
+    .attr('stroke-width', 2);
 
-  removeTransitionTimeline(totalDuration + COMMON_DELAY);
-  // svg.selectAll('*')
-  //   .attr('opacity', 0)
-  //   .transition().duration(COMMON_DURATION)
-  //   .attr('opacity', 1);
+  // removeTransitionTimeline(totalDuration + COMMON_DELAY);
 }
 
 export function isThereD3Chart() {

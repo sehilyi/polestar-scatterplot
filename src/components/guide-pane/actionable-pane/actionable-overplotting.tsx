@@ -37,6 +37,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   private vegaLiteWrapper: HTMLElement;
   private prevAttr: Object = new Object();
 
+  private AggregateStages: TransitionAttr[] = [
+    {id: 'COLOR', title: 'Color by \'' + this.getDefaultSmallSizedNominalFieldName() + '\' field', duration: COMMON_DURATION},
+    {id: 'REPOSITION', title: 'Aggregate to mean position', duration: COMMON_DURATION}
+  ];
+
   constructor(props: ActionableOverplottingProps) {
     super(props);
     this.state = ({
@@ -66,8 +71,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             <div styleName='transition-progress-bg'>
               <div styleName='transition-progress'></div>
               <p styleName='right-buttons'>
-                <i className='fa fa-play' styleName='right-button-play' aria-hidden='true' />
-                <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"
+                <i className='fa fa-play' styleName='top-button' aria-hidden='true' />
+                <i className="fa fa-check" styleName='top-button' aria-hidden="true"
                   onClick={this.onFilterClick.bind(this)} />
               </p>
             </div>
@@ -90,11 +95,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
                 <p styleName='right-buttons'>
-                  <i className='fa fa-play' styleName='right-button-play' aria-hidden='true'
+                  <i className='fa fa-play' styleName='top-button' aria-hidden='true'
                     onClick={this.onChangePointSizeTransition.bind(this)}
                     onMouseEnter={this.onChangePointSizeTransitionMouseEnter.bind(this)}
-                    onMouseLeave={this.onChangePointSizeTransitionMouseLeave.bind(this)}/>
-                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"
+                    onMouseLeave={this.onChangePointSizeTransitionMouseLeave.bind(this)} />
+                  <i className="fa fa-check" styleName='top-button' aria-hidden="true"
                     onClick={this.onChangePointSizeClick.bind(this)} />
                 </p>
               </div>
@@ -118,9 +123,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
                 <p styleName='right-buttons'>
-                  <i className='fa fa-play' styleName='right-button-play' aria-hidden='true'
+                  <i className='fa fa-play' styleName='top-button' aria-hidden='true'
                     onClick={this.onChangeOpacityTransition.bind(this)} />
-                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"
+                  <i className="fa fa-check" styleName='top-button' aria-hidden="true"
                     onClick={this.onChangeOpacityClick.bind(this)} />
                 </p>
               </div>
@@ -144,9 +149,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
                 <p styleName='right-buttons'>
-                  <i className='fa fa-play' styleName='right-button-play' aria-hidden='true'
+                  <i className='fa fa-play' styleName='top-button' aria-hidden='true'
                     onClick={this.onRemoveFillColorTransition.bind(this)} />
-                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"
+                  <i className="fa fa-check" styleName='top-button' aria-hidden="true"
                     onClick={this.onRemoveFillColorClick.bind(this)} />
                 </p>
               </div>
@@ -170,9 +175,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
                 <p styleName='right-buttons'>
-                  <i className='fa fa-play' styleName='right-button-play' aria-hidden='true'
+                  <i className='fa fa-play' styleName='top-button' aria-hidden='true'
                     onClick={this.onRemoveFillColorTransition.bind(this)} />
-                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"
+                  <i className="fa fa-check" styleName='top-button' aria-hidden="true"
                     onClick={this.onRemoveFillColorClick.bind(this)} />
                 </p>
               </div>
@@ -195,10 +200,14 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             <div styleName='guide-preview'>
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
+                <p styleName='left-buttons'>
+                  <i className='fa fa-play' styleName='top-button' aria-hidden='true'
+                    onClick={this.onAggregateTransitionClick.bind(this)} />
+                  <i className="fa fa-thumb-tack" styleName='top-button' aria-hidden="true"
+                    onClick={this.onAggregateTransitionShow.bind(this)} />
+                </p>
                 <p styleName='right-buttons'>
-                  <i className='fa fa-play' styleName='right-button-play' aria-hidden='true'
-                    onClick={this.onAggregateTransition.bind(this)} />
-                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"
+                  <i className="fa fa-check" styleName='top-button' aria-hidden="true"
                     onClick={this.onAggregatePointsClick.bind(this)} />
                 </p>
               </div>
@@ -222,9 +231,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
                 <p styleName='right-buttons'>
-                  <i className='fa fa-play' styleName='right-button-play' aria-hidden='true'
+                  <i className='fa fa-play' styleName='top-button' aria-hidden='true'
                     onClick={this.onEncodingDensityTransition.bind(this)} />
-                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"
+                  <i className="fa fa-check" styleName='top-button' aria-hidden="true"
                     onClick={this.onEncodingDensityClick.bind(this)} />
                 </p>
               </div>
@@ -248,9 +257,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               <div styleName='transition-progress-bg'>
                 <div styleName='transition-progress'></div>
                 <p styleName='right-buttons'>
-                  <i className='fa fa-play' styleName='right-button-play' aria-hidden='true'
+                  <i className='fa fa-play' styleName='top-button' aria-hidden='true'
                     onClick={this.onSeparateGraphTransition.bind(this)} />
-                  <i className="fa fa-check" styleName='right-button-check' aria-hidden="true"
+                  <i className="fa fa-check" styleName='top-button' aria-hidden="true"
                     onClick={this.onSeparateGraphClick.bind(this)} />
                 </p>
               </div>
@@ -409,34 +418,23 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     this.onChangeOpacityMouseLeave();
   }
   private onChangePointSizeTransition() {
-    let stages: TransitionAttr[] = [
-      {id: 'COLOR', title: 'Color by \'' +  this.getDefaultSmallSizedNominalFieldName() + '\' field', duration: COMMON_DURATION},
-      {id: 'REPOSITION', title: 'aggregate to mean position', duration: COMMON_DURATION}
-    ];
-
     onPreviewReset(this.props.mainSpec, this.props.data.values);
-    renderTransitionTimeline('Animated Transition for Change Point', stages);
+    renderTransitionTimeline('Animated Transition for Change Point', this.AggregateStages, true);
     reducePointSize(COMMON_DURATION);
     this.onChangePointSizeMouseLeave();
   }
   private onChangePointSizeTransitionMouseEnter() {
-    let stages: TransitionAttr[] = [
-      {id: 'COLOR', title: 'Color by \'' +  this.getDefaultSmallSizedNominalFieldName() + '\' field', duration: COMMON_DURATION},
-      {id: 'REPOSITION', title: 'aggregate to mean position', duration: COMMON_DURATION}
-    ];
-
-    renderTransitionTimeline('Animated Transition for Change Point', stages);
+    renderTransitionTimeline('Animated Transition for Change Point', this.AggregateStages, true);
   }
   private onChangePointSizeTransitionMouseLeave() {
     // removeTransitionTimeline();
   }
-  private onAggregateTransition() {
-    let stages: TransitionAttr[] = [
-      {id: 'COLOR', title: 'Color by \'' +  this.getDefaultSmallSizedNominalFieldName() + '\' field', duration: COMMON_DURATION},
-      {id: 'REPOSITION', title: 'aggregate to mean position', duration: COMMON_DURATION}
-    ];
 
-    renderTransitionTimeline('Animated Transition for Change Point', stages);
+  private onAggregateTransitionShow() {
+    renderTransitionTimeline('', this.AggregateStages, false);
+  }
+  private onAggregateTransitionClick() {
+    renderTransitionTimeline('', this.AggregateStages, true);
     onPreviewReset(this.props.mainSpec, this.props.data.values);
     pointsAsMeanScatterplot(this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), COMMON_DURATION);
     this.onAggregateMouseLeave();
