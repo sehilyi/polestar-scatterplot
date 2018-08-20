@@ -342,19 +342,40 @@ export function resizeRootSVG(count: number, isLegend: boolean, duration?: numbe
     .attr('width', width)
     .attr('height', height);
 }
-export function showContourInD3Chart(data: any[]) {
+// https://bl.ocks.org/mbostock/7f5f22524bd1d824dd53c535eda0187f
+export function showContourInD3Chart(spec: FacetedCompositeUnitSpec, data: any[]) {
   // let width = (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right);
   // let height = CHART_MARGIN.top + CHART_SIZE.height + CHART_MARGIN.bottom;
   let svg = selectRootSVG();
+
+  let xField = spec.encoding.x['field'];
+  let yField = spec.encoding.y['field'];
+
+  let x = d3.scaleLinear()
+    .domain([0, d3.max(data, function (d) {return d[xField]})] as number[]).nice()
+    .range([0, CHART_SIZE.width]);
+  let y = d3.scaleLinear()
+    .domain([0, d3.max(data, function (d) {return d[yField]})] as number[]).nice()
+    .range([CHART_SIZE.height, 0]);
+
   svg.selectAll('.contour')
-    .data(d3.contours().thresholds(d3.range(0,1,100))(data))
+    .data(d3.contourDensity()
+      .x(function (d) {return CHART_MARGIN.left + x(d[xField]);})
+      .y(function (d) {return  CHART_MARGIN.top + y(d[yField]);})
+      .size([CHART_SIZE.width, CHART_SIZE.height])
+      .bandwidth(10)
+      (data))
     .enter().append('path')
     .classed('contour', true)
-    .attr('d', d3.geoPath(d3.geoIdentity().scale(1)))
-    .attr('fill', 'red');
+    .attr('d', d3.geoPath())
+    .attr('fill', 'red')
+    .attr('opacity', 0.05);
+    // .attr("stroke", "#000")
+    // .attr("stroke-width", 0.5)
+    // .attr("stroke-linejoin", "round");
 }
 export function hideContourInD3Chart() {
-
+  selectRootSVG().selectAll('.contour').remove();
 }
 export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, field: string, stages: TransitionAttr[]) {
   resizeRootSVG(1, true, COMMON_DURATION);

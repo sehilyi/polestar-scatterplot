@@ -206,7 +206,7 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
 
   private onShowContour() {
     if (isSimpleScatterPlot(this.props.mainSpec)) {
-      showContourInD3Chart(this.props.data.values);
+      showContourInD3Chart(this.props.mainSpec, this.props.data.values);
     }
   }
   private onHideContour() {
