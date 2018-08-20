@@ -55,7 +55,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
 
   public render() {
-    // const vegaReady = typeof this.props.mainSpec != 'undefined';
     const {triggeredAction} = this.state;
     const paneData = this.getPaneData();
     const actionPanes = paneData.map(this.previewPane, this);
@@ -104,7 +103,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     );
   }
   private previewPane(data: ActionPaneData) {
+    const vegaReady = typeof this.props.mainSpec != 'undefined';
     if (!data.isPaneUsing) return null;
+    if (!vegaReady) return null;
     return (
       <div styleName='guide-preview' key={data.actionItem.title}>
         <div styleName='transition-progress-bg'>
@@ -140,14 +141,13 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
 
   private isChangePointSizeUsing() {
-    // TODO:
     return true;
   }
   private isChangeOpacityUsing() {
-    // TODO:
     return true;
   }
   private isRemoveFillColorUsing() {
+    if (typeof this.props.mainSpec == 'undefined') return false;
     const {mainSpec} = this.props;
     const {encoding, mark} = mainSpec;
     try {
@@ -162,14 +162,12 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     }
   }
   private isChangeShapeUsing() {
-    // TODO:
     return false;
   }
   private isAggregateUsing() {
     return this.isThereNominalField();
   }
   private isEncodingDensityUsing() {
-    // TODO:
     return true;
   }
   private isSeparateGraphUsing() {
@@ -603,7 +601,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     return paneData;
   }
 
-  public PointOpacityStages: TransitionAttr[] =[
+  public PointOpacityStages: TransitionAttr[] = [
     {id: 'COLOR', title: 'Reduce point opacity', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
   ]
   public PointResizeStages: TransitionAttr[] = [
