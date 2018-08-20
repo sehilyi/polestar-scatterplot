@@ -268,6 +268,12 @@ export function removeFillColor(stages: TransitionAttr[]) {
     .attr('stroke', function () {return d3.select(this).attr('fill');})
     .attr('fill', 'transparent');
 }
+export function filterPoint(field: string, oneOf: any[], stages: TransitionAttr[]) {
+  selectRootSVG().selectAll('.point')
+  .filter(function(d) {return oneOf.indexOf(d[field]) == -1;})
+  .transition().duration(stages[0].duration)
+  .attr('opacity', 0);
+}
 export function reducePointOpacity(opacity: number, stages: TransitionAttr[]) {
   selectRootSVG().selectAll('.point')
     .transition().duration(stages[0].duration)

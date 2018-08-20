@@ -12,10 +12,12 @@ import {InlineData} from '../../../../node_modules/vega-lite/build/src/data';
 import {CIRCLE, SQUARE, POINT, Mark, RECT} from '../../../../node_modules/vega-lite/build/src/mark';
 import {VegaLite} from '../../vega-lite';
 import {QUANTITATIVE, NOMINAL} from '../../../../node_modules/vega-lite/build/src/type';
-import {Schema, FieldSchema} from '../../../models';
+import {Schema, FieldSchema, toTransforms} from '../../../models';
 import {COLOR, X, Y, COLUMN} from '../../../../node_modules/vega-lite/build/src/channel';
 import {FieldPicker} from './actionable-common-ui/field-picker';
-import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN, pointsAsDensityPlot, pointsAsMeanScatterplot, NOMINAL_COLOR_SCHEME, reducePointSize, reducePointOpacity, removeFillColor, resizeRootSVG, COMMON_DELAY, renderTransitionTimeline, removeTransitionTimeline, TransitionAttr, COMMON_SHORT_DELAY} from '../../../models/d3-chart';
+import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN, pointsAsDensityPlot, pointsAsMeanScatterplot, NOMINAL_COLOR_SCHEME, reducePointSize, reducePointOpacity, removeFillColor, resizeRootSVG, COMMON_DELAY, renderTransitionTimeline, removeTransitionTimeline, TransitionAttr, COMMON_SHORT_DELAY, filterPoint} from '../../../models/d3-chart';
+import {OneOfFilter} from 'vega-lite/build/src/filter';
+import {Transition} from 'd3';
 
 export interface ActionableOverplottingProps extends ActionHandler<GuidelineAction | LogAction | SpecAction> {
   item: GuidelineItemOverPlotting;
@@ -228,7 +230,12 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     })
   }
   private onFilterTransition() {
-
+    let field = this.getDefaultSmallSizedNominalFieldName();
+    let oneOf = this.getDefaultOneOf(field);
+    onPreviewReset(this.props.mainSpec, this.props.data.values);
+    renderTransitionTimeline('', this.FilterStages, true);
+    filterPoint(field, oneOf, this.FilterStages);
+    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.FilterStages.map(x => x.duration + x.delay)));
   }
   private onChangeOpacityTransition() {
     onPreviewReset(this.props.mainSpec, this.props.data.values);
@@ -350,10 +357,19 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     resizeRootSVG(1, false, COMMON_DURATION, COMMON_DELAY);
     onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, COMMON_DELAY);
   }
-
+  private getDefaultOneOf(field: string){
+    return [this.props.schema.domain({field})[0]];
+  }
   private renderFilterPreview() {
-    // TODO: how to set default filter?
     let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
+    let field = this.getDefaultSmallSizedNominalFieldName();
+    const {transform} = previewSpec;
+    let newFilter: OneOfFilter = {
+      field,
+      oneOf: this.getDefaultOneOf(field)
+    }
+    const newTransform = (transform || []).concat(toTransforms([newFilter]));
+    previewSpec.transform = newTransform;
     return (
       <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true} />
     );
@@ -601,6 +617,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     return paneData;
   }
 
+  public FilterStages: TransitionAttr[] = [
+    {id: 'COLOR', title: 'Hide points by \'' + this.getDefaultLargeSizedNominalFieldName() + '\' field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+  ];
   public PointOpacityStages: TransitionAttr[] = [
     {id: 'COLOR', title: 'Reduce point opacity', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
   ]

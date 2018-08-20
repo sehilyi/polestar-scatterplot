@@ -170,11 +170,6 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
       const runtime = vega.parse(spec, vlSpec.config);// vlConfig);
       // console.log(this.props.filters);
       if (this.isRenderD3Chart()) {
-        // console.log('vlSpec:');
-        // console.log(vlSpec);
-        // console.log('runtime:');
-        // console.log(runtime);
-        //
         renderD3Chart(this.refs[CHART_REF], vlSpec as FacetedCompositeUnitSpec, this.props.data.values);
       }
       else {
