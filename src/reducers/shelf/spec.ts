@@ -81,7 +81,7 @@ export function shelfSpecReducer(
             fn: 'count',
             field: '*',
             type: QUANTITATIVE,
-            scale: {scheme: 'greenblue'}
+            scale: {scheme: 'blues'}
           },
           [X]: {
             ...shelfSpec.encoding[X],
