@@ -270,9 +270,9 @@ export function removeFillColor(stages: TransitionAttr[]) {
 }
 export function filterPoint(field: string, oneOf: any[], stages: TransitionAttr[]) {
   selectRootSVG().selectAll('.point')
-  .filter(function(d) {return oneOf.indexOf(d[field]) == -1;})
-  .transition().duration(stages[0].duration)
-  .attr('opacity', 0);
+    .filter(function (d) {return oneOf.indexOf(d[field]) == -1;})
+    .transition().duration(stages[0].duration)
+    .attr('opacity', 0);
 }
 export function reducePointOpacity(opacity: number, stages: TransitionAttr[]) {
   selectRootSVG().selectAll('.point')
@@ -341,6 +341,20 @@ export function resizeRootSVG(count: number, isLegend: boolean, duration?: numbe
     .transition().delay(typeof delay == 'undefined' ? 0 : delay).duration(duration)
     .attr('width', width)
     .attr('height', height);
+}
+export function showContourInD3Chart(data: any[]) {
+  // let width = (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right);
+  // let height = CHART_MARGIN.top + CHART_SIZE.height + CHART_MARGIN.bottom;
+  let svg = selectRootSVG();
+  svg.selectAll('.contour')
+    .data(d3.contours().thresholds(d3.range(0,1,100))(data))
+    .enter().append('path')
+    .classed('contour', true)
+    .attr('d', d3.geoPath(d3.geoIdentity().scale(1)))
+    .attr('fill', 'red');
+}
+export function hideContourInD3Chart() {
+
 }
 export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, field: string, stages: TransitionAttr[]) {
   resizeRootSVG(1, true, COMMON_DURATION);

@@ -158,7 +158,7 @@ $guideline-margin: 8px;
   flex-grow: 1;
 
   // margin: 10px 30px 4px 20px;
-  color: #a7a7a7;
+  color: #3d3d3d;
   border-left: #b7cbd3 10px solid;
   text-align: left;
   padding: 10px;
@@ -175,6 +175,13 @@ $guideline-margin: 8px;
 
   font-size: 12px;
   line-height: 18px;
+}
+
+.guide-content-text-hl{
+  font-weight: 400;
+  border-bottom: 1px dotted #aaa;
+  color: #c30101;
+  cursor: pointer;
 }
 
 .actionable-pane{

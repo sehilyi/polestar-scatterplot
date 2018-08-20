@@ -6,7 +6,7 @@ import * as warn from '../../../images/warning.png';
 import * as tip from '../../../images/tip.png';
 import * as done from '../../../images/done.png';
 import * as ignore from '../../../images/ignore.png';
-import {GuidelineItemTypes, GuidelineItemActionableCategories} from '../../models/guidelines';
+import {GuidelineItemTypes, GuidelineItemActionableCategories, isSimpleScatterPlot} from '../../models/guidelines';
 import {ActionHandler} from '../../actions';
 import {GuidelineAction, GUIDELINE_SHOW_RECT_INDICATOR, GUIDELINE_HIDE_INDICATOR, GUIDELINE_TOGGLE_IGNORE_ITEM, GUIDELINE_TOGGLE_ISEXPANDED} from '../../actions/guidelines';
 import {ActionableCategory} from './actionable-pane/actionable-category';
@@ -18,6 +18,7 @@ import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 import {COLOR, SHAPE} from '../../../node_modules/vega-lite/build/src/channel';
 import {ActionableNewVis} from './actionable-pane/actionable-new-vis';
 import {ActionableOverplotting} from './actionable-pane/actionable-overplotting';
+import {showContourInD3Chart, hideContourInD3Chart} from '../../models/d3-chart';
 
 export interface GuideElementProps extends ActionHandler<GuidelineAction> {
   item: GuidelineItemTypes;
@@ -46,6 +47,8 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
 
     this.onShowIndicator = this.onShowIndicator.bind(this);
     this.onHideIndicator = this.onHideIndicator.bind(this);
+    this.onShowContour = this.onShowContour.bind(this);
+    this.onHideContour = this.onHideContour.bind(this);
     this.onOpenGuide = this.onOpenGuide.bind(this);
     this.onIgnore = this.onIgnore.bind(this);
   }
@@ -88,13 +91,22 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
           </span>
         </div>
         <div styleName="splitter" />
-        <div styleName={content != '' ? "guide-content" : null}>
-          {content != '' ?
-            <h2>Why Is This Matter?</h2> :
-            null
-          }
-          <span styleName="guide-content-text">{content}</span>
-        </div>
+        {content != '' ?
+          <div styleName={'guide-content'}>
+            <h2>Why Is This Matter?</h2>
+            {/* <span styleName="guide-content-text">{content}</span> */}
+            <span styleName="guide-content-text">
+              In some graphs, especially those that use data points or lines to encode data, multiple objects can end up <span
+                styleName='guide-content-text-hl'
+                onMouseEnter={this.onShowContour}
+                onMouseLeave={this.onHideContour}>
+                sharing the same space, positioned on top of one another
+                </span>
+              . This makes it difficult or impossible to see the individual values, which in turn makes analysis of the data difficult.
+            </span>
+          </div>
+          : null
+        }
         <div styleName="actionable-pane">
           {this.renderActionablePane()}
         </div>
@@ -192,6 +204,14 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
     }
   }
 
+  private onShowContour() {
+    if (isSimpleScatterPlot(this.props.mainSpec)) {
+      showContourInD3Chart(this.props.data.values);
+    }
+  }
+  private onHideContour() {
+    hideContourInD3Chart();
+  }
   // As reviewed, legends are shown with the following order: color, size, shape
   private onShowIndicator() {
     if (this.props.item.noneIndicator) return;

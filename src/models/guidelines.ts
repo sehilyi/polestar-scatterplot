@@ -214,7 +214,7 @@ export function checkGuideline(props: any) {
     if (isScatterPlot(spec)) {
       addGuidelineItem(GUIDELINE_OVER_PLOTTING, props.handleAction);
     } else {
-      // removeGuidelineItem(GUIDELINE_OVER_PLOTTING, props.handleAction);
+      removeGuidelineItem(GUIDELINE_OVER_PLOTTING, props.handleAction);
     }
   }
 
