@@ -406,7 +406,7 @@ export function pointsAsDensityPlot(spec: FacetedCompositeUnitSpec, data: any[],
 
   let xBinRange = [],
     yBinRange = [],
-    numOfBin = 30,
+    numOfBin = 45,
     binWidth = CHART_SIZE.width / numOfBin,
     binHeight = CHART_SIZE.height / numOfBin;
 

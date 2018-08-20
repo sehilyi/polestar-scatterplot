@@ -136,8 +136,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
   }
 
   private isRenderD3Chart(): boolean {
-    return this.props.isSpecifiedView && isSimpleScatterPlot(this.props.spec); // &&
-      // (typeof this.props.filters == 'undefined' || this.props.filters.length == 0)
+    return this.props.isSpecifiedView && isSimpleScatterPlot(this.props.spec);
   }
   protected updateSpec() {
     // NOTE: spec used to test warning logger
