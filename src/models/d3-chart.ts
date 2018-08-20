@@ -361,18 +361,21 @@ export function showContourInD3Chart(spec: FacetedCompositeUnitSpec, data: any[]
   svg.selectAll('.contour')
     .data(d3.contourDensity()
       .x(function (d) {return CHART_MARGIN.left + x(d[xField]);})
-      .y(function (d) {return  CHART_MARGIN.top + y(d[yField]);})
+      .y(function (d) {return CHART_MARGIN.top + y(d[yField]);})
       .size([CHART_SIZE.width, CHART_SIZE.height])
       .bandwidth(10)
       (data))
     .enter().append('path')
     .classed('contour', true)
     .attr('d', d3.geoPath())
+    .attr('fill', 'none')
+    .attr('opacity', 0)
+    .transition().duration(COMMON_DURATION)
     .attr('fill', 'red')
     .attr('opacity', 0.05);
-    // .attr("stroke", "#000")
-    // .attr("stroke-width", 0.5)
-    // .attr("stroke-linejoin", "round");
+  // .attr("stroke", "#000")
+  // .attr("stroke-width", 0.5)
+  // .attr("stroke-linejoin", "round");
 }
 export function hideContourInD3Chart() {
   selectRootSVG().selectAll('.contour').remove();
