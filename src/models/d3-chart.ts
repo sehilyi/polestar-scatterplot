@@ -16,7 +16,8 @@ export const NOMINAL_COLOR_SCHEME = ['#4c78a8', '#f58518', '#e45756', '#72b7b2',
 
 export const TIMELINE_SIZE = {width: 400, height: 8};
 export const TIMELINE_MARGIN = {top: 20, right: 10, bottom: 20, left: 10};
-export const TIMELINE_COLOR_SCHEME = ['#ad8bc9', '#8DD3C7', '#FB8072', 'gray', '#729ece'];
+// export const TIMELINE_COLOR_SCHEME = ['#ad8bc9', '#8DD3C7', '#FB8072', 'gray', '#729ece'];
+export const TIMELINE_COLOR_SCHEME = ['#3CA9C4', '#FAAB49', '#E56548', '#7A8C8F'];
 export const TIMELINE_CATEGORIES = ['MORPH', 'REPOSITION', 'COLOR', 'DELAY'];
 export type TIMELINE_CATEGORY = 'MORPH' | 'REPOSITION' | 'COLOR' | 'DELAY';
 export interface TransitionAttr {
@@ -148,7 +149,7 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
     .attr('y2', TIMELINE_MARGIN.top + TIMELINE_SIZE.height + 3)
     .attr('stroke', '#2e2e2e')
     .attr('stroke-width', 1)
-    .attr('opacity', function (d, i) {return (stages.length <= i || stages[i].id != 'DELAY') ? 1 : 0});
+    .attr('opacity', function (d, i) {return (stages.length <= i || stages[i].id != 'DELAY') ? 1 : 0})
 
   removeTransitionTimeline(totalDuration);
 }
