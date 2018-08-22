@@ -8,7 +8,7 @@ import * as vegaTooltip from 'vega-tooltip';
 import {SPINNER_COLOR} from '../../constants';
 import {Logger} from '../util/util.logger';
 import {Themes, themeDict} from '../../models/theme/theme';
-import {Guidelines, GuidelineItemTypes, GuidelineItemActionableCategories, getRange, GuidelineItemOverPlotting, isScatterPlot, isSimpleScatterPlot, getDefaultCategoryPicks} from '../../models/guidelines';
+import {Guidelines, GuidelineItemTypes, GuidelineItemActionableCategories, getRange, GuidelineItemOverPlotting, isClutteredScatterPlot, isSimpleScatterPlot, getDefaultCategoryPicks} from '../../models/guidelines';
 import {Schema, ShelfFilter, filterHasField, filterIndexOf} from '../../models';
 import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 import {X} from '../../../node_modules/vega-lite/build/src/channel';

@@ -206,7 +206,7 @@ export function checkGuideline(props: any) {
   // OVER_PLOTTING
   {
     // TODO: only considering scatterplot for now
-    if (isScatterPlot(spec)) {
+    if (isClutteredScatterPlot(spec)) {
       addGuidelineItem(GUIDELINE_OVER_PLOTTING, props.handleAction);
     } else {
       removeGuidelineItem(GUIDELINE_OVER_PLOTTING, props.handleAction);
@@ -229,15 +229,16 @@ export function checkGuideline(props: any) {
   */
 }
 
-export function isScatterPlot(spec: any) {
-  // console.log("MainSpec:");
-  // console.log(spec);
+export function isClutteredScatterPlot(spec: any) {
+  console.log("Checking If This Is Scatterplot:");
+  console.log(spec);
   const {encoding, mark} = spec;
   try {
     // TODO: any other spec to make this not scatterplot?
     if (encoding.x.type === QUANTITATIVE && encoding.y.type === QUANTITATIVE &&
       typeof encoding.x.bin == 'undefined' && typeof encoding.y.bin == 'undefined' &&
-      (mark === POINT || mark === CIRCLE || mark === SQUARE)) {
+      (mark === POINT || mark === CIRCLE || mark === SQUARE) &&
+      (typeof encoding.x.aggregate == 'undefined' || typeof encoding.y.aggregate == 'undefined')) {
       return true;
     } else {
       return false;
@@ -255,8 +256,9 @@ export function isRowOrColumnUsed(spec: any) {
     return false;
   }
 }
+// For D3 chart
 export function isSimpleScatterPlot(spec: any) {
-  if (!isScatterPlot(spec)) {
+  if (!isClutteredScatterPlot(spec)) {
     return;
   }
   const {encoding} = spec;
