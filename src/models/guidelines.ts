@@ -246,7 +246,15 @@ export function isScatterPlot(spec: any) {
     return false;
   }
 }
-
+export function isRowOrColumnUsed(spec: any) {
+  const {encoding} = spec;
+  if (typeof encoding.row != 'undefined' || typeof encoding.column != 'undefined') {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
 export function isSimpleScatterPlot(spec: any) {
   if (!isScatterPlot(spec)) {
     return;

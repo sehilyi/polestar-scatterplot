@@ -3,7 +3,7 @@ import * as CSSModules from 'react-css-modules';
 import * as styles from './actionable-overplotting.scss';
 
 import * as d3 from 'd3';
-import {Actionables, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting, GuideActionItem} from '../../../models/guidelines';
+import {Actionables, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting, GuideActionItem, isRowOrColumnUsed} from '../../../models/guidelines';
 import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_FIELD_ADD, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR} from '../../../actions';
 import {Logger} from '../../util/util.logger';
 import {Themes} from '../../../models/theme/theme';
@@ -167,7 +167,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     return true;
   }
   private isSeparateGraphUsing() {
-    return this.isThereSmallSizedNominalField();
+    if (typeof this.props.mainSpec == 'undefined') return false;
+    return !isRowOrColumnUsed(this.props.mainSpec) && this.isThereSmallSizedNominalField();
   }
 
   private onFilterClick() {
