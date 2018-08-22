@@ -237,8 +237,8 @@ export function isClutteredScatterPlot(spec: any) {
     // TODO: any other spec to make this not scatterplot?
     if (encoding.x.type === QUANTITATIVE && encoding.y.type === QUANTITATIVE &&
       typeof encoding.x.bin == 'undefined' && typeof encoding.y.bin == 'undefined' &&
-      (mark === POINT || mark === CIRCLE || mark === SQUARE) &&
-      (typeof encoding.x.aggregate == 'undefined' || typeof encoding.y.aggregate == 'undefined')) {
+      (mark === POINT || mark === CIRCLE || mark === SQUARE)) { //&&
+      // (typeof encoding.x.aggregate == 'undefined' || typeof encoding.y.aggregate == 'undefined')) {
       return true;
     } else {
       return false;
