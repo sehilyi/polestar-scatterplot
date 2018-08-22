@@ -256,6 +256,15 @@ export function isRowOrColumnUsed(spec: any) {
     return false;
   }
 }
+export function isColorUsed(spec: any) {
+  const {encoding} = spec;
+  if (typeof encoding.color != 'undefined') {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
 // For D3 chart
 export function isSimpleScatterPlot(spec: any) {
   if (!isClutteredScatterPlot(spec)) {

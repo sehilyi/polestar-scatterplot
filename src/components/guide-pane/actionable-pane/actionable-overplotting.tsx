@@ -3,7 +3,7 @@ import * as CSSModules from 'react-css-modules';
 import * as styles from './actionable-overplotting.scss';
 
 import * as d3 from 'd3';
-import {Actionables, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting, GuideActionItem, isRowOrColumnUsed} from '../../../models/guidelines';
+import {Actionables, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting, GuideActionItem, isRowOrColumnUsed, isColorUsed} from '../../../models/guidelines';
 import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_FIELD_ADD, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR} from '../../../actions';
 import {Logger} from '../../util/util.logger';
 import {Themes} from '../../../models/theme/theme';
@@ -164,7 +164,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     return this.isThereNominalField();
   }
   private isEncodingDensityUsing() {
-    return true;
+    if (typeof this.props.mainSpec == 'undefined') return false;
+    return !isColorUsed(this.props.mainSpec);
   }
   private isSeparateGraphUsing() {
     if (typeof this.props.mainSpec == 'undefined') return false;
@@ -272,6 +273,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   private getDefaultOneOf(field: string) {
     return [this.props.schema.domain({field})[0]];
   }
+  //TODO: consider only column
   private renderFilterPreview() {
     let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
     let field = this.getDefaultSmallSizedNominalFieldName();
@@ -427,10 +429,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     return nFields;
   }
 
-  private isThereSmallSizedNominalField() {
+  private isThereSmallSizedNominalField(exceptField?: string) {
+    if (typeof exceptField == 'undefined') exceptField = '';
     const {schema} = this.props;
     for (let f of schema.fieldSchemas) {
-      if (f.vlType == NOMINAL && schema.domain({field: f.name}).length < 10)
+      if (f.vlType == NOMINAL && schema.domain({field: f.name}).length < 10 && f.name != exceptField)
         return true;
     }
     return false;
