@@ -66,7 +66,7 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
           <img styleName={guideState == "WARN" ? 'icon-show' : 'icon-hide'} src={warn} />
           <img styleName={guideState == "TIP" ? 'icon-show' : 'icon-hide'} src={tip} />
           <img styleName={guideState == "DONE" ? 'icon-show' : 'icon-hide'} src={done} />
-          <img styleName={guideState == "IGNORE" ? 'icon-show' : 'icon-hide'} src={ignore} />
+          {/* <img styleName={guideState == "IGNORE" ? 'icon-show' : 'icon-hide'} src={ignore} /> */}
           <div styleName="guide-label" className="hover-background">
             <span styleName={guideState == "WARN" || guideState == "TIP" ? "guide-category" : guideState == "DONE" ? "guide-category-done" : "guide-category-ignore"}
               onMouseEnter={this.onShowIndicator}
