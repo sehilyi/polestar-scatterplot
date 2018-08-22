@@ -40,15 +40,18 @@ export class NumberAdjusterBase extends React.PureComponent<NumberAdjusterProps,
           null
         }
         <div styleName='slider'>
-          <span>{min + ' '}</span>
-          <input type='range'
-            id={id}
-            styleName='range-input'
-            min={min} max={max} step={step}
-            defaultValue={defaultNumber.toString()}
-            value={adjustedNumber}
-            onChange={this.changeValue.bind(this)} />
-          <span>{' ' + max}</span>
+          <div>{this.state.adjustedNumber}</div>
+          <div>
+            <span>{min + ' '}</span>
+            <input type='range'
+              id={id}
+              styleName='range-input'
+              min={min} max={max} step={step}
+              defaultValue={defaultNumber.toString()}
+              value={adjustedNumber}
+              onChange={this.changeValue.bind(this)} />
+            <span>{' ' + max}</span>
+          </div>
         </div>
       </div>
     );
