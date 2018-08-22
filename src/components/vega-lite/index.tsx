@@ -8,7 +8,7 @@ import * as vegaTooltip from 'vega-tooltip';
 import {SPINNER_COLOR} from '../../constants';
 import {Logger} from '../util/util.logger';
 import {Themes, themeDict} from '../../models/theme/theme';
-import {Guidelines, GuidelineItemTypes, GuidelineItemActionableCategories, getRange, GuidelineItemOverPlotting, isClutteredScatterPlot, isSimpleScatterPlot, getDefaultCategoryPicks} from '../../models/guidelines';
+import {Guidelines, GuidelineItemTypes, GuidelineItemActionableCategories, getRange, GuidelineItemOverPlotting, isClutteredScatterPlot, isSimpleScatterPlot, getDefaultCategoryPicks, getGuidedSpec} from '../../models/guidelines';
 import {Schema, ShelfFilter, filterHasField, filterIndexOf} from '../../models';
 import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 import {X} from '../../../node_modules/vega-lite/build/src/channel';
@@ -60,7 +60,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
   public render() {
     return (
       <div>
-        <ClipLoader color={SPINNER_COLOR} loading={this.state.isLoading} />
+        {/* <ClipLoader color={SPINNER_COLOR} loading={this.state.isLoading} /> */}
         <div className='chart' ref={CHART_REF} />
         {/* chart is defined in app.scss */}
         <div id="vis-tooltip" className="vg-tooltip" />
@@ -226,38 +226,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     if (!this.props.isSpecifiedView) {
       return this.props.spec;
     }
-    // console.log(spec);
-    let newSpec = (JSON.parse(JSON.stringify(this.props.spec))) as FacetedCompositeUnitSpec;
-    const {guidelines, schema} = this.props;
-    guidelines.forEach(item => {
-      const {id} = item;
-      switch (id) {
-        case "GUIDELINE_TOO_MANY_COLOR_CATEGORIES":
-        case "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES": {
-          const itemDetail = (item as GuidelineItemActionableCategories);
-          if (itemDetail.selectedCategories.length !== 0)
-            newSpec = this.handleTooManyCategories(newSpec, itemDetail, schema, "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" === id);
-          break;
-        }
-        default:
-          break;
-      }
-    });
-
-    // HACK to put maxbins if binned for better look and feel
-    try {
-      if (newSpec.encoding.x['bin'] === true) {
-        newSpec.encoding.x['bin'] = {maxbins: 60};
-      }
-    } catch (e) {}
-    try {
-      if (newSpec.encoding.y['bin'] === true) {
-        newSpec.encoding.y['bin'] = {maxbins: 60};
-      }
-    } catch (e) {}
-
-    // console.log("newSpec:");
-    // console.log(newSpec);
+    let newSpec = getGuidedSpec(this.props.spec, this.props.guidelines, this.props.schema);
     return newSpec;
   }
 

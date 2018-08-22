@@ -284,6 +284,7 @@ export function reducePointOpacity(opacity: number, stages: TransitionAttr[]) {
 export function reducePointSize(stages: TransitionAttr[]) {
   selectRootSVG().selectAll('.point')
     .transition().duration(stages[0].duration)
+    //TODO: DEFAULT_CHANGE_POINT_SIZE is not used
     .attr('width', function (d) {return parseFloat(d3.select(this).attr('width')) / 2.0;})
     .attr('height', function (d) {return parseFloat(d3.select(this).attr('height')) / 2.0;})
     .attr('x', function (d) {
@@ -324,15 +325,21 @@ export function pointsAsScatterplot(spec: FacetedCompositeUnitSpec, data: any[],
 }
 
 export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
+  // console.log(spec);
+  let size = spec.mark == 'square' ? 5 : 6;
+  try{
+    size = spec.encoding.size['value'] / 10.0;
+    // console.log(size);
+  } catch(e){ }
   return {
     fill: spec.mark == 'point' ? 'transparent' : '#4c78a8',
     opacity: 0.7,
     stroke: spec.mark != 'point' ? 'transparent' : '#4c78a8',
     stroke_width: spec.mark == 'point' ? 2 : 2,  //TODO: do we have to handle this?
-    width: spec.mark == 'square' ? 5 : 6,
-    height: spec.mark == 'square' ? 5 : 6,
-    rx: spec.mark == 'square' ? 0 : 6,
-    ry: spec.mark == 'square' ? 0 : 6
+    width: size,
+    height: size,
+    rx: spec.mark == 'square' ? 0 : size,
+    ry: spec.mark == 'square' ? 0 : size,
   };
 }
 export function resizeRootSVG(count: number, isLegend: boolean, duration?: number, delay?: number) {

@@ -7,6 +7,8 @@ import {GUIDELINE_REMOVE_ITEM, GUIDELINE_ADD_ITEM, GuidelineAction} from "../act
 import {OneOfFilterShelfProps} from "../components/filter-pane/one-of-filter-shelf";
 import {NOMINAL, QUANTITATIVE} from "../../node_modules/vega-lite/build/src/type";
 import {POINT, CIRCLE, SQUARE} from "vega-lite/build/src/mark";
+import {FacetedCompositeUnitSpec, TopLevelExtendedSpec} from "vega-lite/build/src/spec";
+import {Schema} from "../api/api";
 
 export type GuideState = "WARN" | "TIP" | "DONE" | "IGNORE";
 export type guidelineIds = "NEW_CHART_BINNED_SCATTERPLOT" | "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" | "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES" |
@@ -15,6 +17,7 @@ export type GuidelineItemTypes = GuidelineItemOverPlotting | GuidelineItemAction
 
 //Thresholds
 export const CATEGORY_THRESHOLD = 10;
+export const DEFAULT_CHANGE_POINT_SIZE = 12;
 
 export interface Guidelines {
   list: GuidelineItemTypes[];
@@ -35,6 +38,7 @@ export interface GuidelineItem {
 
 export interface GuidelineItemOverPlotting extends GuidelineItem {
   fieldToSeparate?: string;
+  pointSize?: number;
   // TODO: add more
 }
 
@@ -99,7 +103,7 @@ export const GUIDELINE_TOO_MANY_SHAPE_CATEGORIES: GuidelineItemActionableCategor
 }
 
 //TODO: Later, this could be more systematic, including all kinds of actionables in all guidelines
-export type Actionables = "SEPARATE_GRAPH" | "AGGREGATE_POINTS" |
+export type Actionables = "SEPARATE_GRAPH" | "AGGREGATE_POINTS" | 'CHANGE_POINT_SIZE' |
   "FILTER_CATEGORIES" | "SELECT_CATEGORIES" | "REMOVE_FIELD" | "NONE";
 
 export interface GuideActionItem {
@@ -228,10 +232,55 @@ export function checkGuideline(props: any) {
   }
   */
 }
+export function getGuidedSpec(spec: TopLevelExtendedSpec, guidelines: GuidelineItemTypes[], schema: Schema): any{
+  if(typeof spec == 'undefined') return spec;
+  // console.log(spec);
+  let newSpec = (JSON.parse(JSON.stringify(spec))) as FacetedCompositeUnitSpec;
+  guidelines.forEach(item => {
+    const {id} = item;
+    switch (id) {
+      case "GUIDELINE_TOO_MANY_COLOR_CATEGORIES":
+      case "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES": {
+        const itemDetail = (item as GuidelineItemActionableCategories);
+        if (itemDetail.selectedCategories.length !== 0)
+          newSpec = this.handleTooManyCategories(newSpec, itemDetail, schema, "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" === id);
+        break;
+      }
+      case "GUIDELINE_OVER_PLOTTING": {
+        const itemDetail = (item as GuidelineItemOverPlotting);
+        if (typeof itemDetail.pointSize != 'undefined') {
+          newSpec.encoding = {
+            ...newSpec.encoding,
+            size: {value: itemDetail.pointSize}
+          }
+        }
+        break;
+      }
+      default:
+        break;
+    }
+  });
+
+  // HACK to put maxbins if binned for better look and feel
+  try {
+    if (newSpec.encoding.x['bin'] === true) {
+      newSpec.encoding.x['bin'] = {maxbins: 60};
+    }
+  } catch (e) {}
+  try {
+    if (newSpec.encoding.y['bin'] === true) {
+      newSpec.encoding.y['bin'] = {maxbins: 60};
+    }
+  } catch (e) {}
+
+  // console.log("newSpec:");
+  // console.log(newSpec);
+  return newSpec;
+}
 
 export function isClutteredScatterPlot(spec: any) {
-  console.log("Checking If This Is Scatterplot:");
-  console.log(spec);
+  // console.log("Checking If This Is Scatterplot:");
+  // console.log(spec);
   const {encoding, mark} = spec;
   try {
     // TODO: any other spec to make this not scatterplot?
@@ -256,13 +305,13 @@ export function isRowOrColumnUsed(spec: any) {
     return false;
   }
 }
-export function getRowAndColumnField(spec: any){
+export function getRowAndColumnField(spec: any) {
   const {encoding} = spec;
   let fields: string[] = [];
   if (typeof encoding.row != 'undefined') {
     fields.push(encoding.row.field);
   }
-  else if(typeof encoding.column != 'undefined'){
+  else if (typeof encoding.column != 'undefined') {
     fields.push(encoding.column.field);
   }
   return fields;

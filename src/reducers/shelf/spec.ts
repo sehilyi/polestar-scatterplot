@@ -12,14 +12,14 @@ import {
   SPEC_FUNCTION_ADD_WILDCARD, SPEC_FUNCTION_DISABLE_WILDCARD,
   SPEC_FUNCTION_REMOVE_WILDCARD
 } from '../../actions/shelf';
-import {SPEC_FIELD_NESTED_PROP_CHANGE, SPEC_FIELD_PROP_CHANGE, SpecFieldAutoAdd, SPEC_COLOR_SCALE_SPECIFIED, SPEC_COLOR_TRANSFORM_SPECIFIED, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR} from '../../actions/shelf/spec';
+import {SPEC_FIELD_NESTED_PROP_CHANGE, SPEC_FIELD_PROP_CHANGE, SpecFieldAutoAdd, SPEC_COLOR_SCALE_SPECIFIED, SPEC_POINT_SIZE_SPECIFIED, SPEC_COLOR_TRANSFORM_SPECIFIED, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR} from '../../actions/shelf/spec';
 import {isWildcardChannelId} from '../../models';
 import {ShelfAnyEncodingDef, ShelfFieldDef, ShelfId, ShelfUnitSpec} from '../../models/shelf';
 import {sortFunctions} from '../../models/shelf';
 import {autoAddFieldQuery} from '../../models/shelf';
 import {DEFAULT_SHELF_UNIT_SPEC, fromSpecQuery} from '../../models/shelf/spec';
 import {insertItemToArray, modifyItemInArray, removeItemFromArray} from '../util';
-import {COLOR, X, Y} from 'vega-lite/build/src/channel';
+import {COLOR, X, Y, SIZE} from 'vega-lite/build/src/channel';
 import {Scale} from 'vega-lite/build/src/scale';
 import {Transform} from 'vega-lite/build/src/transform';
 import {QUANTITATIVE} from '../../../node_modules/vega-lite/build/src/type';
@@ -138,6 +138,12 @@ export function shelfSpecReducer(
       const {fieldDef} = action.payload;
       return addScaleToColor(shelfSpec, fieldDef);
     }
+
+    // //TODO: make sure if this is okay with other than scatterplot
+    // case SPEC_POINT_SIZE_SPECIFIED: {
+    //   const value = action.payload;
+    //   return modifyPointSize(shelfSpec, value);
+    // }
 
     case SPEC_COLOR_TRANSFORM_SPECIFIED: {
       const {fieldDef, transform} = action.payload;

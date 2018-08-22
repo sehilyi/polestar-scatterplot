@@ -20,7 +20,7 @@ export type SpecEncodingAction = SpecFieldAdd | SpecFieldAutoAdd |
   SpecLoad |
   SpecColorScaleSpecified | SpecColorTransformSpecified |
   // Guideline for over-plotting
-  SpecToDensityPlot | SpecAggregatePointsByColor;
+  SpecToDensityPlot | SpecAggregatePointsByColor | SpecPointSizeSpecified;
 
 export const SPEC_CLEAR = 'SPEC_CLEAR';
 export type SpecClear = PlainReduxAction<typeof SPEC_CLEAR>;
@@ -51,6 +51,9 @@ export const SPEC_COLOR_SCALE_SPECIFIED = 'SPEC_COLOR_SCALE_SPECIFIED';
 export type SpecColorScaleSpecified = ReduxAction<typeof SPEC_COLOR_SCALE_SPECIFIED, {
   fieldDef: ShelfFieldDef;
 }>;
+
+export const SPEC_POINT_SIZE_SPECIFIED = 'SPEC_POINT_SIZE_SPECIFIED';
+export type SpecPointSizeSpecified = ReduxAction<typeof SPEC_POINT_SIZE_SPECIFIED, number>;
 
 export const SPEC_COLOR_TRANSFORM_SPECIFIED = 'SPEC_COLOR_TRANSFORM_SPECIFIED';
 export type SpecColorTransformSpecified = ReduxAction<typeof SPEC_COLOR_TRANSFORM_SPECIFIED, {
@@ -143,6 +146,7 @@ export const SPEC_ACTION_TYPE_INDEX: {[k in SpecAction['type']]: 1} = {
 
   SPEC_FIELD_ADD: 1,
   SPEC_COLOR_SCALE_SPECIFIED: 1,
+  SPEC_POINT_SIZE_SPECIFIED: 1,
   SPEC_COLOR_TRANSFORM_SPECIFIED: 1,
   SPEC_FIELD_AUTO_ADD: 1,
   SPEC_FIELD_MOVE: 1,

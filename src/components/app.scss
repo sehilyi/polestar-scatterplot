@@ -135,16 +135,19 @@
 
   .chart {
     margin: auto;
+    min-height: 320px;
   }
 
   .preview .chart, .preview .marks {
     width: 100px !important;
     height: 100px !important;
+    min-height: 100px;
   }
 
   .preview-large .chart, .preview-large .marks {
     width: 125px !important;
     height: 125px !important;
+    min-height: 100px;
   }
   .preview-larg .chart {
     margin-top: -7px;
@@ -248,7 +251,7 @@
 
   // to differenciate with normal vl chart
   .d3-chart {
-    border-left: dotted 1px lightgray;
+    border-bottom: dotted 1px lightgray;
   }
   .d3-chart .grid line, .d3-chart .grid path {
     stroke: rgb(221, 221, 221);

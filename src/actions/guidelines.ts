@@ -1,10 +1,10 @@
-import {GuidelineItemTypes, GuidelineItemActionableCategories, Actionables} from "../models/guidelines";
+import {GuidelineItemTypes, GuidelineItemActionableCategories, Actionables, GuidelineItemOverPlotting} from "../models/guidelines";
 import {ReduxAction} from "./redux-action";
 import {DateTime} from "vega-lite/build/src/datetime";
 
 export type GuidelineAction = GuidelineRemoveItem | GuidelineAddItem | ActionableSelectCategories | GuidelineShowIndicator |
   GuidelineHideIndicator | GuidelineToggleIgnoreItem | GuidelineToggleIsExpanded | ActionableTriggerInterface |
-  ActionableModifyOneOfCategories | GuidelineSetUserActionType;
+  ActionableModifyOneOfCategories | GuidelineSetUserActionType | ActionableAdjustPointSize;
 
 export const GUIDELINE_ADD_ITEM = 'GUIDELINE_ADD_ITEM';
 export type GuidelineAddItem = ReduxAction<typeof GUIDELINE_ADD_ITEM, {
@@ -42,6 +42,11 @@ export type GuidelineToggleIsExpanded = ReduxAction<typeof GUIDELINE_TOGGLE_ISEX
 }>;
 
 ///
+export const ACTIONABLE_ADJUST_POINT_SIZE = 'ACTIONABLE_ADJUST_POINT_SIZE';
+export type ActionableAdjustPointSize = ReduxAction<typeof ACTIONABLE_ADJUST_POINT_SIZE, {
+  item: GuidelineItemOverPlotting,
+  pointSize: number
+}>;
 
 export const ACTIONABLE_SELECT_CATEGORIES = 'ACTIONABLE_SELECT_CATEGORIES';
 export type ActionableSelectCategories = ReduxAction<typeof ACTIONABLE_SELECT_CATEGORIES, {

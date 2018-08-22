@@ -65,13 +65,6 @@ export class FieldPickerBase extends React.PureComponent<FieldPickerProps, Field
   private toggleRadio(option: string) {
     const {pickedFieldAction} = this.props;
     this.setState({selectedField: option});
-    // const valueIndex = (selected as any[]).indexOf(option);
-    // let changedSelectedValues;
-    // if (valueIndex === -1) {
-    //   changedSelectedValues = insertItemToArray(selected, selected.length, option);
-    // } else {
-    //   changedSelectedValues = removeItemFromArray(selected, valueIndex).array;
-    // }
     pickedFieldAction(option);
   }
 }

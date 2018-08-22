@@ -6,7 +6,7 @@ import * as warn from '../../../images/warning.png';
 import * as tip from '../../../images/tip.png';
 import * as done from '../../../images/done.png';
 import * as ignore from '../../../images/ignore.png';
-import {GuidelineItemTypes, GuidelineItemActionableCategories, isSimpleScatterPlot} from '../../models/guidelines';
+import {GuidelineItemTypes, GuidelineItemActionableCategories, isSimpleScatterPlot, getGuidedSpec, GuidelineItem, Guidelines} from '../../models/guidelines';
 import {ActionHandler} from '../../actions';
 import {GuidelineAction, GUIDELINE_SHOW_RECT_INDICATOR, GUIDELINE_HIDE_INDICATOR, GUIDELINE_TOGGLE_IGNORE_ITEM, GUIDELINE_TOGGLE_ISEXPANDED} from '../../actions/guidelines';
 import {ActionableCategory} from './actionable-pane/actionable-category';
@@ -31,6 +31,9 @@ export interface GuideElementProps extends ActionHandler<GuidelineAction> {
   mainSpec: FacetedCompositeUnitSpec;
   filters: ShelfFilter[];
   theme: Themes;
+
+  // TODO: try to remove this
+  guidelines: GuidelineItemTypes[];
 }
 
 export interface GuideElementState {
@@ -115,7 +118,7 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
   }
   private renderActionablePane() {
     const {id} = this.props.item;
-    const {item, schema, spec, handleAction, data, mainSpec, theme, filters} = this.props;
+    const {item, schema, spec, handleAction, data, mainSpec, theme, filters, guidelines} = this.props;
 
     switch (id) {
       case 'GUIDELINE_OVER_PLOTTING': {
@@ -127,7 +130,7 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
 
             // for vega preview
             data={data}
-            mainSpec={mainSpec}
+            mainSpec={getGuidedSpec(mainSpec, guidelines, schema)}
             theme={theme}
           />
         );

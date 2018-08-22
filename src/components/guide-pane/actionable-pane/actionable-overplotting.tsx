@@ -3,8 +3,8 @@ import * as CSSModules from 'react-css-modules';
 import * as styles from './actionable-overplotting.scss';
 
 import * as d3 from 'd3';
-import {Actionables, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting, GuideActionItem, isRowOrColumnUsed, isColorUsed, getRowAndColumnField} from '../../../models/guidelines';
-import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_FIELD_ADD, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR} from '../../../actions';
+import {Actionables, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting, GuideActionItem, isRowOrColumnUsed, isColorUsed, getRowAndColumnField, DEFAULT_CHANGE_POINT_SIZE} from '../../../models/guidelines';
+import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_FIELD_ADD, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR, SPEC_POINT_SIZE_SPECIFIED, ACTIONABLE_ADJUST_POINT_SIZE} from '../../../actions';
 import {Logger} from '../../util/util.logger';
 import {Themes} from '../../../models/theme/theme';
 import {FacetedCompositeUnitSpec} from '../../../../node_modules/vega-lite/build/src/spec';
@@ -13,10 +13,11 @@ import {CIRCLE, SQUARE, Mark, RECT} from '../../../../node_modules/vega-lite/bui
 import {VegaLite} from '../../vega-lite';
 import {QUANTITATIVE, NOMINAL} from '../../../../node_modules/vega-lite/build/src/type';
 import {Schema, toTransforms} from '../../../models';
-import {COLOR, COLUMN} from '../../../../node_modules/vega-lite/build/src/channel';
+import {COLOR, COLUMN, SIZE} from '../../../../node_modules/vega-lite/build/src/channel';
 import {FieldPicker} from './actionable-common-ui/field-picker';
 import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN, pointsAsDensityPlot, pointsAsMeanScatterplot, reducePointSize, reducePointOpacity, removeFillColor, resizeRootSVG, COMMON_DELAY, renderTransitionTimeline, TransitionAttr, COMMON_SHORT_DELAY, filterPoint, separateGraph} from '../../../models/d3-chart';
 import {OneOfFilter} from 'vega-lite/build/src/filter';
+import {NumberAdjuster} from './actionable-common-ui/number-adjuster';
 
 export interface ActionableOverplottingProps extends ActionHandler<GuidelineAction | LogAction | SpecAction> {
   item: GuidelineItemOverPlotting;
@@ -97,6 +98,17 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             pickedFieldAction={this.separateByFieldAction}
           />
         </div>
+        <div styleName={triggeredAction == 'CHANGE_POINT_SIZE' ? '' : 'hidden'}>
+          <NumberAdjuster
+            id={this.props.item.id + 'CHANGE_POINT_SIZE'}
+            title='Change Point Size'
+            subtitle='Adjust size of points'
+            min={1}
+            max={60}
+            defaultNumber={DEFAULT_CHANGE_POINT_SIZE}
+            adjustedNumberAction={this.changePointSizeAction}
+          />
+        </div>
       </div>
     );
   }
@@ -175,7 +187,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
 
   }
   private onChangePointSizeClick() {
-
+    this.changePointSizeAction(DEFAULT_CHANGE_POINT_SIZE);
+    this.setState({triggeredAction: 'CHANGE_POINT_SIZE'});
   }
   private onChangeOpacityClick() {
 
@@ -192,6 +205,19 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     this.setState({triggeredAction: 'SEPARATE_GRAPH'});
   }
 
+  changePointSizeAction = (adjusted: number) => {
+    // this.props.handleAction({
+    //   type: SPEC_POINT_SIZE_SPECIFIED,
+    //   payload: adjusted
+    // });
+    this.props.handleAction({
+      type: ACTIONABLE_ADJUST_POINT_SIZE,
+      payload: {
+        item: this.props.item,
+        pointSize: adjusted
+      }
+    });
+  }
   separateByFieldAction = (picked: string) => {
     this.props.handleAction({
       type: SPEC_FIELD_ADD,
@@ -292,7 +318,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
     previewSpec.encoding = {
       ...previewSpec.encoding,
-      size: {value: 10}
+      size: {value: DEFAULT_CHANGE_POINT_SIZE}
     }
     return (
       <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true} />
@@ -408,7 +434,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     return field;
   }
   private getDefaultSmallSizedNominalFieldName(exceptField?: string[]) {
-    console.log(exceptField);
+    // console.log(exceptField);
     if (typeof exceptField == 'undefined') exceptField = [];
     let minSize = 100, field = '';
     const {schema} = this.props;

@@ -191,12 +191,10 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
   }
 
   private onBackButton() {
-    // this.setUserActionType("NONE");
     this.setState({triggeredActionable: "NONE"});
   }
   private onFilterClick() {
     this.pickedCategoryActionForFilter(getDefaultCategoryPicks(this.props.domainWithFilter));
-    // this.setUserActionType("FILTER_CATEGORIES");
     this.setState({triggeredActionable: "FILTER_CATEGORIES"});
   }
   private onSelectClick() {
@@ -207,11 +205,9 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
         selectedCategories: getDefaultCategoryPicks(this.props.domainWithFilter)
       }
     });
-    // this.setUserActionType("SELECT_CATEGORIES");
     this.setState({triggeredActionable: "SELECT_CATEGORIES"});
   }
   private onRemoveField() {
-    // this.setUserActionType("REMOVE_FIELD");
     const {handleAction, channel} = this.props;
     handleAction({
       type: SPEC_FIELD_REMOVE,

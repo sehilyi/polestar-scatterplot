@@ -57,7 +57,7 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
   private guideElement(gs: GuidelineItem) {
 
     const {id} = gs;
-    const {handleAction, schema, spec, data, theme, filters, mainSpec} = this.props;
+    const {handleAction, schema, spec, data, theme, filters, mainSpec, guidelines} = this.props;
 
     return (
       <GuideElement
@@ -71,6 +71,9 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
         mainSpec={typeof mainSpec == "undefined" ? undefined : this.specWithFilter}
         theme={theme}
         filters={filters}
+
+        //TODO: try to remove this
+        guidelines={guidelines.list}
       />
     );
   }
