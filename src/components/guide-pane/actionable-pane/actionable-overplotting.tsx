@@ -3,21 +3,20 @@ import * as CSSModules from 'react-css-modules';
 import * as styles from './actionable-overplotting.scss';
 
 import * as d3 from 'd3';
-import {Actionables, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_CHANGE_SHAPE, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting, GuideActionItem} from '../../../models/guidelines';
-import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_MARK_CHANGE_TYPE, SPEC_FIELD_ADD, SPEC_FUNCTION_CHANGE, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR} from '../../../actions';
+import {Actionables, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting, GuideActionItem} from '../../../models/guidelines';
+import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_FIELD_ADD, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR} from '../../../actions';
 import {Logger} from '../../util/util.logger';
 import {Themes} from '../../../models/theme/theme';
 import {FacetedCompositeUnitSpec} from '../../../../node_modules/vega-lite/build/src/spec';
 import {InlineData} from '../../../../node_modules/vega-lite/build/src/data';
-import {CIRCLE, SQUARE, POINT, Mark, RECT} from '../../../../node_modules/vega-lite/build/src/mark';
+import {CIRCLE, SQUARE, Mark, RECT} from '../../../../node_modules/vega-lite/build/src/mark';
 import {VegaLite} from '../../vega-lite';
 import {QUANTITATIVE, NOMINAL} from '../../../../node_modules/vega-lite/build/src/type';
-import {Schema, FieldSchema, toTransforms} from '../../../models';
-import {COLOR, X, Y, COLUMN} from '../../../../node_modules/vega-lite/build/src/channel';
+import {Schema, toTransforms} from '../../../models';
+import {COLOR, COLUMN} from '../../../../node_modules/vega-lite/build/src/channel';
 import {FieldPicker} from './actionable-common-ui/field-picker';
-import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN, pointsAsDensityPlot, pointsAsMeanScatterplot, NOMINAL_COLOR_SCHEME, reducePointSize, reducePointOpacity, removeFillColor, resizeRootSVG, COMMON_DELAY, renderTransitionTimeline, removeTransitionTimeline, TransitionAttr, COMMON_SHORT_DELAY, filterPoint} from '../../../models/d3-chart';
+import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN, pointsAsDensityPlot, pointsAsMeanScatterplot, reducePointSize, reducePointOpacity, removeFillColor, resizeRootSVG, COMMON_DELAY, renderTransitionTimeline, TransitionAttr, COMMON_SHORT_DELAY, filterPoint, separateGraph} from '../../../models/d3-chart';
 import {OneOfFilter} from 'vega-lite/build/src/filter';
-import {Transition} from 'd3';
 
 export interface ActionableOverplottingProps extends ActionHandler<GuidelineAction | LogAction | SpecAction> {
   item: GuidelineItemOverPlotting;
@@ -45,8 +44,6 @@ export interface ActionPaneData {
 export class ActionableOverplottingBase extends React.PureComponent<ActionableOverplottingProps, ActionableOverplottingState>{
 
   private plotLogger: Logger;
-  private vegaLiteWrapper: HTMLElement;
-  private prevAttr: Object = new Object();
 
   constructor(props: ActionableOverplottingProps) {
     super(props);
@@ -151,7 +148,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   private isRemoveFillColorUsing() {
     if (typeof this.props.mainSpec == 'undefined') return false;
     const {mainSpec} = this.props;
-    const {encoding, mark} = mainSpec;
+    const {mark} = mainSpec;
     try {
       if (mark == CIRCLE || mark == SQUARE) {
         return true;
@@ -162,9 +159,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     } catch (e) {
       return false;
     }
-  }
-  private isChangeShapeUsing() {
-    return false;
   }
   private isAggregateUsing() {
     return this.isThereNominalField();
@@ -269,89 +263,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private onSeparateGraphTransition() {
     onPreviewReset(this.props.mainSpec, this.props.data.values);
-    let svg = selectRootSVG();
-    const {values} = this.props.data,
-      xField = this.props.mainSpec.encoding.x['field'],
-      yField = this.props.mainSpec.encoding.y['field'];
-
-    let categoryField = this.getDefaultSmallSizedNominalFieldName();
-    let numOfCategory = this.props.schema.domain({field: categoryField}).length;
-    const width = 200;
-    let widthPlusMargin = width + CHART_MARGIN.left + CHART_MARGIN.right;
-    svg.transition().duration(COMMON_DURATION).attr('width', function (d) {
-      return widthPlusMargin * numOfCategory;
-    });
-    for (let i = 0; i < numOfCategory; i++) {
-      if (i == 0) continue;
-
-      let x = d3.scaleLinear().domain([0, d3.max(values, function (d) {return d[xField]})]).nice().range([0, width]);
-      let y = d3.scaleLinear().domain([0, d3.max(values, function (d) {return d[yField]})]).nice().range([CHART_SIZE.height, 0]);
-
-      let xAxis = d3.axisBottom(x).ticks(Math.ceil(width / 40));
-      let yAxis = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40));
-      let xGrid = d3.axisBottom(x).ticks(Math.ceil(width / 40)).tickFormat(null).tickSize(-width);
-      let yGrid = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40)).tickFormat(null).tickSize(-CHART_SIZE.height);
-
-      svg.append('g')
-        .classed('grid remove-when-reset', true)
-        .attr('transform', 'translate(' + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
-        .call(xGrid);
-
-      svg.append('g')
-        .classed('grid remove-when-reset', true)
-        .attr('transform', 'translate(' + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + CHART_MARGIN.top + ')')
-        .call(yGrid);
-
-      svg.append('g')
-        .classed('axis remove-when-reset', true)
-        .attr('transform', 'translate(' + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
-        .attr('stroke', '#888888')
-        .attr('stroke-width', 0.5)
-        .call(xAxis)
-        .append('text')
-        .classed('label', true)
-        .attr('x', width / 2)
-        .attr('y', CHART_MARGIN.bottom - 10)
-        .style('fill', 'black')
-        .style('font-weight', 'bold')
-        .style('font-family', 'sans-serif')
-        .style('font-size', 11)
-        .style('text-anchor', 'middle')
-        .text(xField);
-
-      svg.append('g')
-        .classed('axis remove-when-reset', true)
-        .attr('transform', 'translate(' + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + CHART_MARGIN.top + ')')
-        .attr('stroke', '#888888')
-        .attr('stroke-width', 0.5)
-        .call(yAxis)
-        .append('text')
-        .classed('label', true)
-        .attr('transform', 'rotate(-90)')
-        .attr('x', -width / 2)
-        .attr('y', -50)
-        .attr('dy', '.71em')
-        .style('font-weight', 'bold')
-        .style('font-family', 'sans-serif')
-        .style('font-size', 11)
-        .style('fill', 'black')
-        .style('text-anchor', 'middle')
-        .text(yField);
-
-      let category = this.props.schema.domain({field: categoryField})[i];
-      svg.selectAll('.point')
-        .filter(function (d) {return d[categoryField] == category;})
-        .transition().duration(COMMON_DURATION)
-        .attr('x', function (d) {
-          return parseFloat(d3.select(this).attr('x')) + widthPlusMargin * i;
-        });
-    }
-    svg.selectAll('.point').raise();
-    svg.selectAll('.remove-when-reset').attr('opacity', 0).transition().duration(COMMON_DURATION).attr('opacity', 1);
-    this.onSeparateGraphMouseLeave();
-  }
-  private onChangeOpacityMouseLeave() {
-    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, COMMON_DELAY);
+    renderTransitionTimeline('', this.SeperateGraphStages, true);
+    separateGraph(this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), this.SeperateGraphStages);
+    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.SeperateGraphStages.map(x => x.duration + x.delay)));
+    // this.onSeparateGraphMouseLeave();
   }
   private onSeparateGraphMouseLeave() {
     resizeRootSVG(1, false, COMMON_DURATION, COMMON_DELAY);
@@ -402,13 +317,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       type: previewSpec.mark as Mark,
       filled: false
     };
-    return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true} />
-    );
-  }
-  private renderChangeShapePreview() {
-    let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
-
     return (
       <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true} />
     );
@@ -552,7 +460,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
 
   private vegaLiteWrapperRefHandler = (ref: any) => {
-    this.vegaLiteWrapper = ref;
   }
 
   private getPaneData() {
@@ -637,6 +544,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     {id: 'MORPH', title: 'Rectangular Shape', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY},
     {id: 'COLOR', title: 'Reduce Opacity', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY},
     {id: 'REPOSITION', title: 'Move to binned position', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+  ];
+  public SeperateGraphStages: TransitionAttr[] = [
+    {id: 'REPOSITION', title: 'Separate Graph by \'' + this.getDefaultLargeSizedNominalFieldName() + '\' field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
   ];
 }
 

@@ -381,8 +381,106 @@ export function showContourInD3Chart(spec: FacetedCompositeUnitSpec, data: any[]
 export function hideContourInD3Chart() {
   selectRootSVG().selectAll('.contour').remove();
 }
+export function separateGraph(spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, field: string, stages: TransitionAttr[]) {
+  let svg = selectRootSVG();
+  const values = data,
+    xField = spec.encoding.x['field'],
+    yField = spec.encoding.y['field'];
+
+  let categoryField = field;
+  let numOfCategory = schema.domain({field: categoryField}).length;
+  const width = 200;
+  //TODO: use resizeRootSVG function
+  let widthPlusMargin = width + CHART_MARGIN.left + CHART_MARGIN.right;
+  svg.transition().duration(stages[0].duration).attr('width', function () {
+    return widthPlusMargin * numOfCategory;
+  });
+
+  for (let i = 0; i < numOfCategory; i++) {
+    if (i == 0) continue;
+
+    let x = d3.scaleLinear().domain([0, d3.max(values, function (d) {return d[xField]})]).nice().range([0, width]);
+    let y = d3.scaleLinear().domain([0, d3.max(values, function (d) {return d[yField]})]).nice().range([CHART_SIZE.height, 0]);
+
+    let xAxis = d3.axisBottom(x).ticks(Math.ceil(width / 40));
+    let yAxis = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40));
+    let xGrid = d3.axisBottom(x).ticks(Math.ceil(width / 40)).tickFormat(null).tickSize(-width);
+    let yGrid = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40)).tickFormat(null).tickSize(-CHART_SIZE.height);
+
+    svg.append('g')
+      .classed('grid remove-when-reset', true)
+      .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
+      .call(xGrid)
+      .transition().duration(stages[0].duration)
+      .attr('transform', 'translate(' + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')');
+
+    svg.append('g')
+      .classed('grid remove-when-reset', true)
+      .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + CHART_MARGIN.top + ')')
+      .call(yGrid)
+      .transition().duration(stages[0].duration)
+      .attr('transform', 'translate(' + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + CHART_MARGIN.top + ')');
+
+    let xaxis = svg.append('g')
+      .classed('axis remove-when-reset', true)
+      .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
+      .attr('stroke', '#888888')
+      .attr('stroke-width', 0.5)
+      .call(xAxis);
+
+    xaxis
+      .transition().duration(stages[0].duration)
+      .attr('transform', 'translate(' + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')');
+
+    xaxis
+      .append('text')
+      .classed('label', true)
+      .attr('x', width / 2)
+      .attr('y', CHART_MARGIN.bottom - 10)
+      .style('fill', 'black')
+      .style('font-weight', 'bold')
+      .style('font-family', 'sans-serif')
+      .style('font-size', 11)
+      .style('text-anchor', 'middle')
+      .text(xField);
+
+    let yaxis = svg.append('g')
+      .classed('axis remove-when-reset', true)
+      .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + CHART_MARGIN.top + ')')
+      .attr('stroke', '#888888')
+      .attr('stroke-width', 0.5)
+      .call(yAxis);
+
+    yaxis
+    .transition().duration(stages[0].duration)
+    .attr('transform', 'translate(' + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + CHART_MARGIN.top + ')');
+
+    yaxis.append('text')
+      .classed('label', true)
+      .attr('transform', 'rotate(-90)')
+      .attr('x', -width / 2)
+      .attr('y', -50)
+      .attr('dy', '.71em')
+      .style('font-weight', 'bold')
+      .style('font-family', 'sans-serif')
+      .style('font-size', 11)
+      .style('fill', 'black')
+      .style('text-anchor', 'middle')
+      .text(yField);
+
+    let category = schema.domain({field: categoryField})[i];
+    svg.selectAll('.point')
+      .filter(function (d) {return d[categoryField] == category;})
+      .transition().duration(stages[0].duration)
+      .attr('x', function () {
+        return parseFloat(d3.select(this).attr('x')) + widthPlusMargin * i;
+      });
+  }
+  svg.selectAll('.point').raise();
+  // svg.selectAll('.remove-when-reset').attr('opacity', 0).transition().duration(stages[0].duration).attr('opacity', 1);
+}
 export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, field: string, stages: TransitionAttr[]) {
-  resizeRootSVG(1, true, COMMON_DURATION);
+  resizeRootSVG(1, true, stages[0].duration);
   let svg = selectRootSVG();
   let xField = spec.encoding.x['field'];
   let yField = spec.encoding.y['field'];

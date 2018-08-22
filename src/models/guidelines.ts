@@ -1,16 +1,12 @@
 import {DateTime} from "vega-lite/build/src/datetime";
-import {EncodingShelfProps} from "../components/encoding-pane/encoding-shelf";
-import {ShelfFieldDef, filterHasField, filterIndexOf} from "./shelf";
+import {filterHasField, filterIndexOf} from "./shelf";
 import {OneOfFilter, RangeFilter} from "vega-lite/build/src/filter";
-import {SPEC_FIELD_REMOVE, SPEC_FIELD_ADD, SPEC_FIELD_MOVE, FILTER_MODIFY_ONE_OF, FilterAction, SpecAction, createDispatchHandler, ActionHandler} from "../actions";
+import {SPEC_FIELD_REMOVE, SPEC_FIELD_ADD, SPEC_FIELD_MOVE, FILTER_MODIFY_ONE_OF, FilterAction, SpecAction} from "../actions";
 import {COLOR, Channel, SHAPE} from "vega-lite/build/src/channel";
 import {GUIDELINE_REMOVE_ITEM, GUIDELINE_ADD_ITEM, GuidelineAction} from "../actions/guidelines";
 import {OneOfFilterShelfProps} from "../components/filter-pane/one-of-filter-shelf";
 import {NOMINAL, QUANTITATIVE} from "../../node_modules/vega-lite/build/src/type";
 import {POINT, CIRCLE, SQUARE} from "vega-lite/build/src/mark";
-import {FacetedCompositeUnitSpec} from "../../node_modules/vega-lite/build/src/spec";
-import * as d3 from 'd3';
-import {InlineData} from "../../node_modules/vega-lite/build/src/data";
 
 export type GuideState = "WARN" | "TIP" | "DONE" | "IGNORE";
 export type guidelineIds = "NEW_CHART_BINNED_SCATTERPLOT" | "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" | "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES" |
@@ -206,7 +202,6 @@ export function checkGuideline(props: any) {
   if (typeof props.spec == "undefined") return; // vega spec is not ready
 
   const {spec} = props;
-  const {encoding, mark} = spec;
 
   // OVER_PLOTTING
   {
