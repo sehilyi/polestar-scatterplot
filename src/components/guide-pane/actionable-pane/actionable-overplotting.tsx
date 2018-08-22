@@ -266,13 +266,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     renderTransitionTimeline('', this.SeperateGraphStages, true);
     separateGraph(this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), this.SeperateGraphStages);
     onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.SeperateGraphStages.map(x => x.duration + x.delay)));
-    // this.onSeparateGraphMouseLeave();
   }
-  private onSeparateGraphMouseLeave() {
-    resizeRootSVG(1, false, COMMON_DURATION, COMMON_DELAY);
-    onPreviewReset(this.props.mainSpec, this.props.data.values, COMMON_DURATION, COMMON_DELAY);
-  }
-  private getDefaultOneOf(field: string){
+
+  private getDefaultOneOf(field: string) {
     return [this.props.schema.domain({field})[0]];
   }
   private renderFilterPreview() {

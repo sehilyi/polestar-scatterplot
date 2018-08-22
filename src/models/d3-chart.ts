@@ -452,8 +452,8 @@ export function separateGraph(spec: FacetedCompositeUnitSpec, data: any[], schem
       .call(yAxis);
 
     yaxis
-    .transition().duration(stages[0].duration)
-    .attr('transform', 'translate(' + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + CHART_MARGIN.top + ')');
+      .transition().duration(stages[0].duration)
+      .attr('transform', 'translate(' + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + CHART_MARGIN.top + ')');
 
     yaxis.append('text')
       .classed('label', true)

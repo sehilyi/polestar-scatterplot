@@ -237,8 +237,7 @@ export function isScatterPlot(spec: any) {
     // TODO: any other spec to make this not scatterplot?
     if (encoding.x.type === QUANTITATIVE && encoding.y.type === QUANTITATIVE &&
       typeof encoding.x.bin == 'undefined' && typeof encoding.y.bin == 'undefined' &&
-      (mark === POINT || mark === CIRCLE || mark === SQUARE) &&
-      typeof encoding.row == 'undefined' && typeof encoding.column == 'undefined') {
+      (mark === POINT || mark === CIRCLE || mark === SQUARE)) {
       return true;
     } else {
       return false;
@@ -255,7 +254,8 @@ export function isSimpleScatterPlot(spec: any) {
   const {encoding} = spec;
   if (typeof encoding.color == 'undefined' && typeof encoding.shape == 'undefined' &&
     typeof encoding.size == 'undefined' && typeof encoding.text == 'undefined' &&
-    typeof encoding.x.aggregate == 'undefined' && typeof encoding.y.aggregate == 'undefined') {
+    typeof encoding.x.aggregate == 'undefined' && typeof encoding.y.aggregate == 'undefined' &&
+    typeof encoding.row == 'undefined' && typeof encoding.column == 'undefined') {
     return true;
   }
   else {
