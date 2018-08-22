@@ -3,7 +3,7 @@ import * as CSSModules from 'react-css-modules';
 import * as styles from './actionable-overplotting.scss';
 
 import * as d3 from 'd3';
-import {Actionables, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting, GuideActionItem, isRowOrColumnUsed, isColorUsed} from '../../../models/guidelines';
+import {Actionables, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting, GuideActionItem, isRowOrColumnUsed, isColorUsed, getRowAndColumnField} from '../../../models/guidelines';
 import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_FIELD_ADD, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR} from '../../../actions';
 import {Logger} from '../../util/util.logger';
 import {Themes} from '../../../models/theme/theme';
@@ -226,7 +226,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     })
   }
   private onFilterTransition() {
-    let field = this.getDefaultSmallSizedNominalFieldName();
+    let field = this.getDefaultSmallSizedNominalFieldName(getRowAndColumnField(this.props.mainSpec));
     let oneOf = this.getDefaultOneOf(field);
     onPreviewReset(this.props.mainSpec, this.props.data.values);
     renderTransitionTimeline('', this.FilterStages, true);
@@ -276,7 +276,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   //TODO: consider only column
   private renderFilterPreview() {
     let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
-    let field = this.getDefaultSmallSizedNominalFieldName();
+    let field = this.getDefaultSmallSizedNominalFieldName(getRowAndColumnField(previewSpec));
     const {transform} = previewSpec;
     let newFilter: OneOfFilter = {
       field,
@@ -408,11 +408,13 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     }
     return field;
   }
-  private getDefaultSmallSizedNominalFieldName() {
+  private getDefaultSmallSizedNominalFieldName(exceptField?: string[]) {
+    console.log(exceptField);
+    if (typeof exceptField == 'undefined') exceptField = [];
     let minSize = 100, field = '';
     const {schema} = this.props;
     for (let f of schema.fieldSchemas) {
-      if (f.vlType == NOMINAL && schema.domain({field: f.name}).length < minSize) {
+      if (f.vlType == NOMINAL && schema.domain({field: f.name}).length < minSize && exceptField.indexOf(f.name) == -1){
         field = f.name;
         minSize = schema.domain({field: f.name}).length;
       }
@@ -429,11 +431,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     return nFields;
   }
 
-  private isThereSmallSizedNominalField(exceptField?: string) {
-    if (typeof exceptField == 'undefined') exceptField = '';
+  private isThereSmallSizedNominalField(exceptField?: string[]) {
+    if (typeof exceptField == 'undefined') exceptField = [];
     const {schema} = this.props;
     for (let f of schema.fieldSchemas) {
-      if (f.vlType == NOMINAL && schema.domain({field: f.name}).length < 10 && f.name != exceptField)
+      if (f.vlType == NOMINAL && schema.domain({field: f.name}).length < 10 && exceptField.indexOf(f.name) == -1)
         return true;
     }
     return false;

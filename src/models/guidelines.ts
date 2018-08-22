@@ -256,6 +256,17 @@ export function isRowOrColumnUsed(spec: any) {
     return false;
   }
 }
+export function getRowAndColumnField(spec: any){
+  const {encoding} = spec;
+  let fields: string[] = [];
+  if (typeof encoding.row != 'undefined') {
+    fields.push(encoding.row.field);
+  }
+  else if(typeof encoding.column != 'undefined'){
+    fields.push(encoding.column.field);
+  }
+  return fields;
+}
 export function isColorUsed(spec: any) {
   const {encoding} = spec;
   if (typeof encoding.color != 'undefined') {
