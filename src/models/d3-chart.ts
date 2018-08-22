@@ -194,10 +194,10 @@ export function appendAxes(spec: FacetedCompositeUnitSpec, data: any[]) {
   let xField = spec.encoding.x['field'];
   let yField = spec.encoding.y['field'];
   let x = d3.scaleLinear()
-    .domain([0, d3.max(data, function (d) {return d[xField]})] as number[]).nice()
+    .domain(d3.extent(data.map(x => x[xField]))).nice()
     .range([0, CHART_SIZE.width]);
   let y = d3.scaleLinear()
-    .domain([0, d3.max(data, function (d) {return d[yField]})] as number[]).nice()
+    .domain(d3.extent(data.map(x => x[yField]))).nice()
     .range([CHART_SIZE.height, 0]);
   let xAxis = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40));
   let yAxis = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40));
@@ -256,6 +256,7 @@ export function appendPoints(data: any[]) {
     .data(data)
     .enter().append('rect')
     .classed('point', true);
+  console.log(data);
 }
 
 export function updatePoints(data: any[]) {
@@ -301,10 +302,10 @@ export function pointsAsScatterplot(spec: FacetedCompositeUnitSpec, data: any[],
   let attr = getPointAttrs(spec);
 
   let x = d3.scaleLinear()
-    .domain([0, d3.max(data, function (d) {return d[xField]})] as number[]).nice()
+    .domain(d3.extent(data.map(d => d[xField]))).nice()
     .range([0, CHART_SIZE.width]);
   let y = d3.scaleLinear()
-    .domain([0, d3.max(data, function (d) {return d[yField]})] as number[]).nice()
+    .domain(d3.extent(data.map(d => d[yField]))).nice()
     .range([CHART_SIZE.height, 0]);
 
   selectRootSVG()
