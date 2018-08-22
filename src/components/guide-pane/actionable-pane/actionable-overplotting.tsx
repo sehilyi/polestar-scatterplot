@@ -63,13 +63,12 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         <div styleName={triggeredAction == 'NONE' ? 'guide-previews' : 'guide-previews-hidden'}>
           {actionPanes}
         </div>
-        <div className='fa-gray' styleName='ignore-button'>
+        {/* <div className='fa-gray' styleName='ignore-button'>
           <a onClick={this.onIgnore.bind(this)}>
             <i className='fa fa-eye-slash' aria-hidden='true' />
-            {/* TODO: d3-chart not working with this feature */}
             {' '} Ignore This Guideline...
             </a>
-        </div>
+        </div> */}
         <div styleName={triggeredAction == 'NONE' ? 'back-button-hidden' : 'back-button'}
           onClick={this.onBackButton.bind(this)}>
           <i className='fa fa-chevron-circle-left' aria-hidden='true' />
@@ -356,12 +355,12 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
 
     previewSpec.encoding.x = {
       ...previewSpec.encoding.x,
-      bin: {maxbins: 60}
+      bin: {maxbins: 50}
     };
 
     previewSpec.encoding.y = {
       ...previewSpec.encoding.y,
-      bin: {maxbins: 60}
+      bin: {maxbins: 50}
     };
 
     previewSpec.mark = RECT;
@@ -414,7 +413,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     let minSize = 100, field = '';
     const {schema} = this.props;
     for (let f of schema.fieldSchemas) {
-      if (f.vlType == NOMINAL && schema.domain({field: f.name}).length < minSize && exceptField.indexOf(f.name) == -1){
+      if (f.vlType == NOMINAL && schema.domain({field: f.name}).length < minSize && exceptField.indexOf(f.name) == -1) {
         field = f.name;
         minSize = schema.domain({field: f.name}).length;
       }
