@@ -10,6 +10,7 @@ export interface NumberAdjusterProps {
   defaultNumber: number;
   min: number;
   max: number;
+  step: number;
   adjustedNumberAction: (adjusted: number) => void;
 }
 
@@ -26,7 +27,7 @@ export class NumberAdjusterBase extends React.PureComponent<NumberAdjusterProps,
   }
 
   public render() {
-    const {id, title, subtitle, min, max, defaultNumber} = this.props;
+    const {id, title, subtitle, min, max, step, defaultNumber} = this.props;
     const {adjustedNumber} = this.state;
     return (
       <div id={id} styleName='number-adjuster'>
@@ -38,13 +39,17 @@ export class NumberAdjusterBase extends React.PureComponent<NumberAdjusterProps,
           <h3>{subtitle}</h3> :
           null
         }
-        <input type='range'
-          id={id}
-          styleName='range-input'
-          min={min} max={max} step={1}
-          defaultValue={defaultNumber.toString()}
-          value={adjustedNumber}
-          onChange={this.changeValue.bind(this)} />
+        <div styleName='slider'>
+          <span>{min + ' '}</span>
+          <input type='range'
+            id={id}
+            styleName='range-input'
+            min={min} max={max} step={step}
+            defaultValue={defaultNumber.toString()}
+            value={adjustedNumber}
+            onChange={this.changeValue.bind(this)} />
+          <span>{' ' + max}</span>
+        </div>
       </div>
     );
   }

@@ -4,7 +4,7 @@ import {DateTime} from "vega-lite/build/src/datetime";
 
 export type GuidelineAction = GuidelineRemoveItem | GuidelineAddItem | ActionableSelectCategories | GuidelineShowIndicator |
   GuidelineHideIndicator | GuidelineToggleIgnoreItem | GuidelineToggleIsExpanded | ActionableTriggerInterface |
-  ActionableModifyOneOfCategories | GuidelineSetUserActionType | ActionableAdjustPointSize;
+  ActionableModifyOneOfCategories | GuidelineSetUserActionType | ActionableAdjustPointSize | ActionableAdjustPointOpacity;
 
 export const GUIDELINE_ADD_ITEM = 'GUIDELINE_ADD_ITEM';
 export type GuidelineAddItem = ReduxAction<typeof GUIDELINE_ADD_ITEM, {
@@ -46,6 +46,12 @@ export const ACTIONABLE_ADJUST_POINT_SIZE = 'ACTIONABLE_ADJUST_POINT_SIZE';
 export type ActionableAdjustPointSize = ReduxAction<typeof ACTIONABLE_ADJUST_POINT_SIZE, {
   item: GuidelineItemOverPlotting,
   pointSize: number
+}>;
+
+export const ACTIONABLE_ADJUST_POINT_OPACITY = 'ACTIONABLE_ADJUST_POINT_OPACITY';
+export type ActionableAdjustPointOpacity = ReduxAction<typeof ACTIONABLE_ADJUST_POINT_OPACITY, {
+  item: GuidelineItemOverPlotting,
+  pointOpacity: number
 }>;
 
 export const ACTIONABLE_SELECT_CATEGORIES = 'ACTIONABLE_SELECT_CATEGORIES';

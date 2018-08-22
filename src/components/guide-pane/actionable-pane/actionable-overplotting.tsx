@@ -4,7 +4,7 @@ import * as styles from './actionable-overplotting.scss';
 
 import * as d3 from 'd3';
 import {Actionables, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting, GuideActionItem, isRowOrColumnUsed, isColorUsed, getRowAndColumnField, DEFAULT_CHANGE_POINT_SIZE} from '../../../models/guidelines';
-import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_FIELD_ADD, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR, SPEC_POINT_SIZE_SPECIFIED, ACTIONABLE_ADJUST_POINT_SIZE} from '../../../actions';
+import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_FIELD_ADD, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR, SPEC_POINT_SIZE_SPECIFIED, ACTIONABLE_ADJUST_POINT_SIZE, ACTIONABLE_ADJUST_POINT_OPACITY} from '../../../actions';
 import {Logger} from '../../util/util.logger';
 import {Themes} from '../../../models/theme/theme';
 import {FacetedCompositeUnitSpec} from '../../../../node_modules/vega-lite/build/src/spec';
@@ -105,8 +105,21 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             subtitle='Adjust size of points'
             min={1}
             max={60}
+            step={1}
             defaultNumber={DEFAULT_CHANGE_POINT_SIZE}
             adjustedNumberAction={this.changePointSizeAction}
+          />
+        </div>
+        <div styleName={triggeredAction == 'CHANGE_POINT_OPACITY' ? '' : 'hidden'}>
+          <NumberAdjuster
+            id={this.props.item.id + 'CHANGE_POINT_OPACITY'}
+            title='Change Point Opacity'
+            subtitle='Adjust oapcity of points'
+            min={0}
+            max={1}
+            step={0.01}
+            defaultNumber={0.3}
+            adjustedNumberAction={this.changePointOpacityAction}
           />
         </div>
       </div>
@@ -191,7 +204,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     this.setState({triggeredAction: 'CHANGE_POINT_SIZE'});
   }
   private onChangeOpacityClick() {
-
+    this.changePointOpacityAction(0.3);
+    this.setState({triggeredAction: 'CHANGE_POINT_OPACITY'});
   }
   private onRemoveFillColorClick() {
 
@@ -205,6 +219,15 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     this.setState({triggeredAction: 'SEPARATE_GRAPH'});
   }
 
+  changePointOpacityAction = (adjusted: number) => {
+    this.props.handleAction({
+      type: ACTIONABLE_ADJUST_POINT_OPACITY,
+      payload: {
+        item: this.props.item,
+        pointOpacity: adjusted
+      }
+    });
+  }
   changePointSizeAction = (adjusted: number) => {
     // this.props.handleAction({
     //   type: SPEC_POINT_SIZE_SPECIFIED,

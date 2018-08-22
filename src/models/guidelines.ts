@@ -39,6 +39,7 @@ export interface GuidelineItem {
 export interface GuidelineItemOverPlotting extends GuidelineItem {
   fieldToSeparate?: string;
   pointSize?: number;
+  pointOpacity?: number;
   // TODO: add more
 }
 
@@ -103,7 +104,7 @@ export const GUIDELINE_TOO_MANY_SHAPE_CATEGORIES: GuidelineItemActionableCategor
 }
 
 //TODO: Later, this could be more systematic, including all kinds of actionables in all guidelines
-export type Actionables = "SEPARATE_GRAPH" | "AGGREGATE_POINTS" | 'CHANGE_POINT_SIZE' |
+export type Actionables = "SEPARATE_GRAPH" | "AGGREGATE_POINTS" | 'CHANGE_POINT_SIZE' | 'CHANGE_POINT_OPACITY' |
   "FILTER_CATEGORIES" | "SELECT_CATEGORIES" | "REMOVE_FIELD" | "NONE";
 
 export interface GuideActionItem {
@@ -252,6 +253,12 @@ export function getGuidedSpec(spec: TopLevelExtendedSpec, guidelines: GuidelineI
           newSpec.encoding = {
             ...newSpec.encoding,
             size: {value: itemDetail.pointSize}
+          }
+        }
+        if (typeof itemDetail.pointOpacity != 'undefined') {
+          newSpec.encoding = {
+            ...newSpec.encoding,
+            opacity: {value: itemDetail.pointOpacity}
           }
         }
         break;

@@ -327,13 +327,12 @@ export function pointsAsScatterplot(spec: FacetedCompositeUnitSpec, data: any[],
 export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
   // console.log(spec);
   let size = spec.mark == 'square' ? 5 : 6;
-  try{
-    size = spec.encoding.size['value'] / 10.0;
-    // console.log(size);
-  } catch(e){ }
+  let opacity = 0.7;
+  try {size = spec.encoding.size['value'] / 10.0;} catch (e) {}
+  try {opacity = spec.encoding.opacity['value'];} catch (e) {}
   return {
     fill: spec.mark == 'point' ? 'transparent' : '#4c78a8',
-    opacity: 0.7,
+    opacity,
     stroke: spec.mark != 'point' ? 'transparent' : '#4c78a8',
     stroke_width: spec.mark == 'point' ? 2 : 2,  //TODO: do we have to handle this?
     width: size,

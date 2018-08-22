@@ -1,10 +1,110 @@
 .range-input {
-  background: white;
+  background: #fcfcfc;
+  vertical-align: middle;
+}
+.slider{
+  text-align: center;
 }
 
+.slider > span{
+  font-size: 14px;
+  font-family: 'Roboto Condensed';
+  font-weight: bold;
+}
 .number-adjuster {
   background: #fcfcfc;
   padding: 10px;
   margin: 2px;
   border: #dedede solid 1px;
+}
+
+//https://www.cssportal.com/style-input-range/
+input[type=range] {
+  height: 23px;
+  -webkit-appearance: none;
+  // margin: 10px 0;
+  // width: 100%;
+}
+input[type=range]:focus {
+  outline: none;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 10px;
+  cursor: pointer;
+  animate: 0.2s;
+  box-shadow: 0px 0px 0px #919191;
+  background: #298BCC;
+  border-radius: 0px;
+  border: 0px solid #4F7BBD;
+}
+input[type=range]::-webkit-slider-thumb {
+  box-shadow: 0px 0px 0px #878787;
+  border: 1px solid #000000;
+  height: 16px;
+  width: 6px;
+  border-radius: 0px;
+  background: #FFFFFF;
+  cursor: pointer;
+  -webkit-appearance: none;
+  margin-top: -3.5px;
+}
+input[type=range]:focus::-webkit-slider-runnable-track {
+  background: #298BCC;
+}
+input[type=range]::-moz-range-track {
+  width: 100%;
+  height: 10px;
+  cursor: pointer;
+  animate: 0.2s;
+  box-shadow: 0px 0px 0px #919191;
+  background: #298BCC;
+  border-radius: 0px;
+  border: 0px solid #4F7BBD;
+}
+input[type=range]::-moz-range-thumb {
+  box-shadow: 0px 0px 0px #878787;
+  border: 1px solid #000000;
+  height: 16px;
+  width: 6px;
+  border-radius: 0px;
+  background: #FFFFFF;
+  cursor: pointer;
+}
+input[type=range]::-ms-track {
+  width: 100%;
+  height: 10px;
+  cursor: pointer;
+  animate: 0.2s;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+input[type=range]::-ms-fill-lower {
+  background: #298BCC;
+  border: 0px solid #4F7BBD;
+  border-radius: 0px;
+  box-shadow: 0px 0px 0px #919191;
+}
+input[type=range]::-ms-fill-upper {
+  background: #298BCC;
+  border: 0px solid #4F7BBD;
+  border-radius: 0px;
+  box-shadow: 0px 0px 0px #919191;
+}
+input[type=range]::-ms-thumb {
+  margin-top: 1px;
+  box-shadow: 0px 0px 0px #878787;
+  border: 1px solid #000000;
+  height: 16px;
+  width: 6px;
+  border-radius: 0px;
+  background: #FFFFFF;
+  cursor: pointer;
+}
+input[type=range]:focus::-ms-fill-lower {
+  background: #298BCC;
+}
+input[type=range]:focus::-ms-fill-upper {
+  background: #298BCC;
 }
