@@ -233,8 +233,9 @@ export function checkGuideline(props: any) {
   }
   */
 }
-export function getGuidedSpec(spec: TopLevelExtendedSpec, guidelines: GuidelineItemTypes[], schema: Schema): any{
-  if(typeof spec == 'undefined') return spec;
+
+export function getGuidedSpec(spec: TopLevelExtendedSpec, guidelines: GuidelineItemTypes[], schema: Schema): any {
+  if (typeof spec == 'undefined') return spec;
   // console.log(spec);
   let newSpec = (JSON.parse(JSON.stringify(spec))) as FacetedCompositeUnitSpec;
   guidelines.forEach(item => {
@@ -282,6 +283,32 @@ export function getGuidedSpec(spec: TopLevelExtendedSpec, guidelines: GuidelineI
 
   // console.log("newSpec:");
   // console.log(newSpec);
+  return newSpec;
+}
+
+export function handleTooManyCategories(newSpec: FacetedCompositeUnitSpec, itemDetail: GuidelineItemActionableCategories, schema: Schema, isColor: boolean) {
+  let field = newSpec.encoding.color["field"].toString();
+  const domainWithFilter = (filterHasField(this.props.filters, field) ?
+    (this.props.filters[filterIndexOf(this.props.filters, field)] as OneOfFilter).oneOf :
+    schema.domain({field}));
+  let selected = itemDetail.selectedCategories;
+  if (isColor) {
+    newSpec.encoding.color = {
+      ...newSpec.encoding.color,
+      scale: {
+        domain: domainWithFilter,
+        range: getRange(selected, domainWithFilter)
+      }
+    }
+  } else {
+    newSpec.encoding.shape = {
+      ...newSpec.encoding.shape,
+      scale: {
+        domain: domainWithFilter,
+        range: getRange(selected, domainWithFilter)
+      }
+    }
+  }
   return newSpec;
 }
 

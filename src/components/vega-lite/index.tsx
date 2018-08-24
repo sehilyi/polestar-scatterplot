@@ -234,29 +234,4 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     newSpec.encoding.column = {field, type: NOMINAL};
     return newSpec;
   }
-  private handleTooManyCategories(newSpec: FacetedCompositeUnitSpec, itemDetail: GuidelineItemActionableCategories, schema: Schema, isColor: boolean) {
-    let field = newSpec.encoding.color["field"].toString();
-    const domainWithFilter = (filterHasField(this.props.filters, field) ?
-      (this.props.filters[filterIndexOf(this.props.filters, field)] as OneOfFilter).oneOf :
-      schema.domain({field}));
-    let selected = itemDetail.selectedCategories;
-    if (isColor) {
-      newSpec.encoding.color = {
-        ...newSpec.encoding.color,
-        scale: {
-          domain: domainWithFilter,
-          range: getRange(selected, domainWithFilter)
-        }
-      }
-    } else {
-      newSpec.encoding.shape = {
-        ...newSpec.encoding.shape,
-        scale: {
-          domain: domainWithFilter,
-          range: getRange(selected, domainWithFilter)
-        }
-      }
-    }
-    return newSpec;
-  }
 }
