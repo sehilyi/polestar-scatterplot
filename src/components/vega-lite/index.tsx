@@ -226,7 +226,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     if (!this.props.isSpecifiedView) {
       return this.props.spec;
     }
-    let newSpec = getGuidedSpec(this.props.spec, this.props.guidelines, this.props.schema);
+    let newSpec = getGuidedSpec(this.props.spec, this.props.guidelines, this.props.schema, this.props.filters);
     return newSpec;
   }
 
