@@ -26,10 +26,33 @@ $grid-margin-double: 4px;
   display: none;
 }
 
-// .guide-preview:hover .transition-progress,
-// .guide-preview:hover #specified-view .transition-progress{
-//   width: 100%;
+.guide-preview {
+  margin: $grid-margin;
+  background: #fcfcfc;
+  // width: 125px;
+  display: block;
+  text-align: center;
+  border: #dedede solid 1px;
+  flex-grow: 1;
+  position: relative;
+}
+.guide-preview-expand {
+  @extend .guide-preview;
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.guide-preview-inner {
+  padding: 10px;
+  padding-top: 13px;
+  margin-bottom: 20px;
+}
+
+// .preview-larg .chart {
+//   margin-top: -7px;
+//   margin-bottom: -7px;
 // }
+
 .transition-progress-bg {
   height: 3px;
   background: #e8e8e8;
@@ -40,26 +63,6 @@ $grid-margin-double: 4px;
   background: #3f88e6;
   transition: width 1.0s linear;
 }
-.guide-preview {
-  margin: $grid-margin;
-  background: #fcfcfc;
-  // width: 125px;
-  display: block;
-  text-align: center;
-  border: #dedede solid 1px;
-  flex-grow: 1;
-  position: relative;
-  // cursor: pointer;
-
-  // &:hover{
-  //   box-shadow: 0 0 3px 0px rgba(0, 0, 0, 0.3);
-  // }
-}
-.guide-preview-inner {
-  padding: 10px;
-  padding-top: 13px;
-}
-
 .preview-score {
   color: #b6b6b6;
   padding: 0px;
@@ -67,6 +70,51 @@ $grid-margin-double: 4px;
   font-weight: normal;
 }
 
+.bottom-button {
+  vertical-align: bottom;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 28px;
+  display: flex;
+  border-top: 1px #ececec solid;
+}
+.expand-button {
+  padding: 5px;
+  flex-grow: 1;
+  color: #a5a2a2;
+  right: 0;
+  position: absolute;
+  margin-right: 4px;
+  cursor: pointer;
+  &:hover {
+    color: black;
+  }
+}
+.transition-button {
+  padding: 5px;
+  flex-grow: 1;
+  color: #38425d;
+  padding-top: 7px;
+  cursor: pointer;
+  &:hover{
+    // color: #277dfc;
+    background: #f0f0f0;
+  }
+}
+.apply-button {
+  padding: 5px;
+  flex-grow: 4;
+  margin-top: 0;
+  border-left: 1px solid #ececec;
+  padding-top: 7px;
+  color: #38425d;
+  cursor: pointer;
+  &:hover{
+    // color: #277dfc;
+    background: #f0f0f0;
+  }
+}
 .left-buttons {
   margin: 0px;
   width: 65px;

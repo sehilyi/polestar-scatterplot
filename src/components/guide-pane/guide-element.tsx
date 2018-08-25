@@ -209,11 +209,11 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
 
   private onShowContour() {
     if (isSimpleScatterPlot(this.props.mainSpec)) {
-      showContourInD3Chart(this.props.mainSpec, this.props.data.values);
+      // showContourInD3Chart(this.props.mainSpec, this.props.data.values);
     }
   }
   private onHideContour() {
-    hideContourInD3Chart();
+    // hideContourInD3Chart();
   }
   // As reviewed, legends are shown with the following order: color, size, shape
   private onShowIndicator() {

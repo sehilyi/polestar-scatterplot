@@ -16,7 +16,6 @@ export const NOMINAL_COLOR_SCHEME = ['#4c78a8', '#f58518', '#e45756', '#72b7b2',
 
 export const TIMELINE_SIZE = {width: 400, height: 8};
 export const TIMELINE_MARGIN = {top: 20, right: 10, bottom: 20, left: 10};
-// export const TIMELINE_COLOR_SCHEME = ['#ad8bc9', '#8DD3C7', '#FB8072', 'gray', '#729ece'];
 export const TIMELINE_COLOR_SCHEME = ['#3CA9C4', '#FAAB49', '#E56548', '#7A8C8F'];
 export const TIMELINE_CATEGORIES = ['MORPH', 'REPOSITION', 'COLOR', 'DELAY'];
 export type TIMELINE_CATEGORY = 'MORPH' | 'REPOSITION' | 'COLOR' | 'DELAY';
@@ -24,7 +23,7 @@ export interface TransitionAttr {
   id: TIMELINE_CATEGORY;
   title: string;
   duration: number;
-  delay: number;  //delay after this transition
+  delay: number;  // wait after transition
 }
 
 export interface PointAttr {
@@ -38,21 +37,29 @@ export interface PointAttr {
   ry: number;
 }
 
-export function renderD3Chart(CHART_REF: any, spec: FacetedCompositeUnitSpec, data: any[]) {
+export function renderD3Chart(id: string, CHART_REF: any, spec: FacetedCompositeUnitSpec, data: any[]) {
   //
-  console.log('spec for d3:');
+  console.log('spec for D3:');
   console.log(spec);
   //
+
   removePrevChart(CHART_REF);
-  appendRootSVG(CHART_REF);
-  appendAxes(spec, data);
-  appendPoints(data);
-  pointsAsScatterplot(spec, data);
+  appendRootSVG(id, CHART_REF);
+  appendAxes(id, spec, data);
+  appendPoints(id, data);
+  pointsAsScatterplot(id, spec, data);
 }
 
-export function renderTransitionTimeline(title: string, stages: TransitionAttr[], isTransition: boolean) {
+export function isThereD3Chart(id: string) {
+  return selectRootSVG(id) != null;
+}
+export function selectRootSVG(id: string): d3.Selection<BaseType, {}, HTMLElement, any> {
+  return d3.select('#d3-chart-specified-' + id).select('svg');
+}
+
+export function renderTransitionTimeline(id: string, title: string, stages: TransitionAttr[], isTransition: boolean) {
   this.removeTransitionTimeline(0);
-  let svg = d3.select('#d3-timeline').select('svg');
+  let svg = d3.select('#d3-timeline' + id).select('svg');
 
   // append title
   svg.append('text')
@@ -86,17 +93,9 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
     .attr('x', function (d, i) {return TIMELINE_MARGIN.left + accumDurationPlusDelay[i] / totalDuration * TIMELINE_SIZE.width;})
     .attr('width', function (d) {return (d.duration + d.delay) / totalDuration * TIMELINE_SIZE.width;})
     .attr('fill', function (d) {return timelineColor(d.id);})
-    // .attr('stroke-width', 2)
-    // .attr('stroke', 'white')
     .attr('y', TIMELINE_MARGIN.top)
     .attr('height', TIMELINE_SIZE.height)
     .attr('opacity', 1);
-  // .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i]})
-  // .attr('y', TIMELINE_MARGIN.top - 1)
-  // .attr('height', TIMELINE_SIZE.height + 2)
-  // .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i] + d.duration})
-  // .attr('y', TIMELINE_MARGIN.top)
-  // .attr('height', TIMELINE_SIZE.height);
 
   // append stage title
   svg.selectAll('.stage-label')
@@ -106,21 +105,13 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
     .text(function (d) {return d.title;})
     .attr('x', function (d, i) {return TIMELINE_MARGIN.left + accumDurationPlusDelay[i] / totalDuration * TIMELINE_SIZE.width + (d.duration + d.delay) / totalDuration * TIMELINE_SIZE.width / 2.0 + 4;})
     .attr('y', TIMELINE_MARGIN.top - 6)
-    // .style('font-style', 'italic')
-    // .style('font-weight', 'bold')
     .style('font-family', 'Roboto Condensed')
     .style('text-anchor', 'middle')
     .style('fill', '#2e2e2e')
-    // .style('fill', 'white')
     .attr('font-size', 12)
     .attr('opacity', 1);
-  // .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i]})
-  // .attr('font-size', 13)
-  // .transition().duration(COMMON_FAST_DURATION).delay(function (d, i) {return accumDuration[i] + d.duration})
-  // .attr('font-size', 12);
 
   // append progress bar
-  // var arc = d3.symbol().type(d3.symbolTriangle).size(24);
   svg.selectAll('.timeline-pb')
     .data(['pb'])
     .enter().append('rect')
@@ -154,51 +145,65 @@ export function renderTransitionTimeline(title: string, stages: TransitionAttr[]
   removeTransitionTimeline(totalDuration);
 }
 
-export function isThereD3Chart() {
-  return selectRootSVG() != null;
-}
-export function selectRootSVG(): d3.Selection<BaseType, {}, HTMLElement, any> {
-  return d3.select('#d3-chart-specified').select('svg');
-}
-
 export function removePrevChart(CHART_REF: any) {
   d3.select(CHART_REF)
     .selectAll('div')
     .remove();
 }
 
-export function appendRootSVG(CHART_REF: any) {
+export function appendRootSVG(id: string, CHART_REF: any) {
 
   // timeline
   d3.select(CHART_REF)
     .append('div')
-    .attr('id', 'd3-timeline')
+    .attr('id', 'd3-timeline-' + id)
+    .style('height', 0) //remove temporaly
     .style('margin', 'auto')
     .append('svg')
-    .attr('width', TIMELINE_SIZE.width + TIMELINE_MARGIN.left + TIMELINE_MARGIN.right)
-    .attr('height', TIMELINE_SIZE.height + TIMELINE_MARGIN.top + TIMELINE_MARGIN.bottom);
+    // .attr('width', TIMELINE_SIZE.width + TIMELINE_MARGIN.left + TIMELINE_MARGIN.right)
+    // .attr('height', TIMELINE_SIZE.height + TIMELINE_MARGIN.top + TIMELINE_MARGIN.bottom);
+    .attr('width', 0)
+    .attr('height', 0);
 
   // main chart
   d3.select(CHART_REF)
     .append('div')
     .classed('d3-chart', true)
-    .attr('id', 'd3-chart-specified')
+    .attr('id', 'd3-chart-specified-' + id)
     .style('margin', 'auto')
     .append('svg')
-    .attr('width', CHART_SIZE.width + CHART_MARGIN.left + CHART_MARGIN.right)
-    .attr('height', CHART_SIZE.height + CHART_MARGIN.top + CHART_MARGIN.bottom);
+    .attr('viewBox', '0 0 ' + (CHART_SIZE.width + CHART_MARGIN.left + CHART_MARGIN.right) + ' ' + (CHART_SIZE.height + CHART_MARGIN.top + CHART_MARGIN.bottom))
+    .attr('width', '100%')
+    .attr('height', '100%');
+}
+export function resizeRootSVG(id: string, count: number, isLegend: boolean, duration?: number, delay?: number) {
+  let width = (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right) * count + (isLegend ? LEGEND_WIDTH : 0);
+  let height = CHART_MARGIN.top + CHART_SIZE.height + CHART_MARGIN.bottom;
+  selectRootSVG(id)
+    .transition().delay(typeof delay == 'undefined' ? 0 : delay).duration(duration)
+    .attr('viewBox', '0 0 ' + width + ' ' + height);
+}
+export function onPreviewReset(id: string, spec: FacetedCompositeUnitSpec, values: any[], duration?: number, delay?: number) {
+  delay += COMMON_DELAY;
+  resizeRootSVG(id, 1, false, duration, delay);
+  selectRootSVG(id)
+    .selectAll('.remove-when-reset')
+    .transition().delay(typeof delay == 'undefined' ? 0 : delay).duration(duration)
+    .attr('opacity', 0).remove();
+  pointsAsScatterplot(id, spec, values, duration, delay);
 }
 
-export function appendAxes(spec: FacetedCompositeUnitSpec, data: any[]) {
-  let svg = selectRootSVG();
+export function appendAxes(id: string, spec: FacetedCompositeUnitSpec, data: any[]) {
+  let svg = selectRootSVG(id);
   let xField = spec.encoding.x['field'];
   let yField = spec.encoding.y['field'];
   let x = d3.scaleLinear()
-    .domain(d3.extent(data.map(x => x[xField]))).nice()
-    .range([0, CHART_SIZE.width]);
+    .domain(d3.extent(data.map(x => x[xField])))
+    .range([0, CHART_SIZE.width]).nice();
+
   let y = d3.scaleLinear()
-    .domain(d3.extent(data.map(x => x[yField]))).nice()
-    .range([CHART_SIZE.height, 0]);
+    .domain(d3.extent(data.map(x => x[yField])))
+    .range([CHART_SIZE.height, 0]).nice();
   let xAxis = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40));
   let yAxis = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40));
   let xGrid = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(null).tickSize(-CHART_SIZE.width);
@@ -251,39 +256,38 @@ export function appendAxes(spec: FacetedCompositeUnitSpec, data: any[]) {
     .text(yField);
 }
 
-export function appendPoints(data: any[]) {
-  selectRootSVG().selectAll('.point')
+export function appendPoints(id: string, data: any[]) {
+  selectRootSVG(id).selectAll('.point')
     .data(data)
     .enter().append('rect')
     .classed('point', true);
-  console.log(data);
 }
 
-export function updatePoints(data: any[]) {
-  selectRootSVG().selectAll('.point')
+export function updatePoints(id: string, data: any[]) {
+  selectRootSVG(id).selectAll('.point')
     .data(data)
     .exit().remove();
 }
-export function removeFillColor(stages: TransitionAttr[]) {
-  selectRootSVG().selectAll('.point')
+export function removeFillColor(id: string, stages: TransitionAttr[]) {
+  selectRootSVG(id).selectAll('.point')
     .transition().duration(stages[0].duration)
     .attr('stroke', function () {return d3.select(this).attr('fill');})
     .attr('fill', 'transparent');
 }
-export function filterPoint(field: string, oneOf: any[], stages: TransitionAttr[]) {
-  selectRootSVG().selectAll('.point')
+export function filterPoint(id: string, field: string, oneOf: any[], stages: TransitionAttr[]) {
+  selectRootSVG(id).selectAll('.point')
     .filter(function (d) {return oneOf.indexOf(d[field]) == -1;})
     .transition().duration(stages[0].duration)
     .attr('opacity', 0);
 }
-export function reducePointOpacity(opacity: number, stages: TransitionAttr[]) {
-  selectRootSVG().selectAll('.point')
+export function reducePointOpacity(id: string, opacity: number, stages: TransitionAttr[]) {
+  selectRootSVG(id).selectAll('.point')
     .transition().duration(stages[0].duration)
     .attr('opacity', opacity);
 }
 
-export function reducePointSize(stages: TransitionAttr[]) {
-  selectRootSVG().selectAll('.point')
+export function reducePointSize(id: string, stages: TransitionAttr[]) {
+  selectRootSVG(id).selectAll('.point')
     .transition().duration(stages[0].duration)
     //TODO: DEFAULT_CHANGE_POINT_SIZE is not used
     .attr('width', function (d) {return parseFloat(d3.select(this).attr('width')) / 2.0;})
@@ -295,7 +299,7 @@ export function reducePointSize(stages: TransitionAttr[]) {
       return parseFloat(d3.select(this).attr('y')) + parseFloat(d3.select(this).attr('height')) / 4.0;
     });
 }
-export function pointsAsScatterplot(spec: FacetedCompositeUnitSpec, data: any[], duration?: number, delay?: number) {
+export function pointsAsScatterplot(id: string, spec: FacetedCompositeUnitSpec, data: any[], duration?: number, delay?: number) {
   let xField = spec.encoding.x['field'];
   let yField = spec.encoding.y['field'];
 
@@ -308,7 +312,7 @@ export function pointsAsScatterplot(spec: FacetedCompositeUnitSpec, data: any[],
     .domain(d3.extent(data.map(d => d[yField]))).nice()
     .range([CHART_SIZE.height, 0]);
 
-  selectRootSVG()
+  selectRootSVG(id)
     .selectAll('.point')
     // TODO: any better idea for type check?
     .transition().delay(typeof delay == 'undefined' ? 0 : delay).duration(duration)
@@ -326,7 +330,6 @@ export function pointsAsScatterplot(spec: FacetedCompositeUnitSpec, data: any[],
 }
 
 export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
-  // console.log(spec);
   let size = spec.mark == 'square' ? 5 : 6;
   let opacity = 0.7;
   try {size = spec.encoding.size['value'] / 10.0;} catch (e) {}
@@ -342,19 +345,9 @@ export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
     ry: spec.mark == 'square' ? 0 : size,
   };
 }
-export function resizeRootSVG(count: number, isLegend: boolean, duration?: number, delay?: number) {
-  let width = (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right) * count + (isLegend ? LEGEND_WIDTH : 0);
-  let height = CHART_MARGIN.top + CHART_SIZE.height + CHART_MARGIN.bottom;
-  selectRootSVG()
-    .transition().delay(typeof delay == 'undefined' ? 0 : delay).duration(duration)
-    .attr('width', width)
-    .attr('height', height);
-}
 // https://bl.ocks.org/mbostock/7f5f22524bd1d824dd53c535eda0187f
-export function showContourInD3Chart(spec: FacetedCompositeUnitSpec, data: any[]) {
-  // let width = (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right);
-  // let height = CHART_MARGIN.top + CHART_SIZE.height + CHART_MARGIN.bottom;
-  let svg = selectRootSVG();
+export function showContourInD3Chart(id: string, spec: FacetedCompositeUnitSpec, data: any[]) {
+  let svg = selectRootSVG(id);
 
   let xField = spec.encoding.x['field'];
   let yField = spec.encoding.y['field'];
@@ -381,15 +374,12 @@ export function showContourInD3Chart(spec: FacetedCompositeUnitSpec, data: any[]
     .transition().duration(COMMON_DURATION)
     .attr('fill', 'red')
     .attr('opacity', 0.05);
-  // .attr("stroke", "#000")
-  // .attr("stroke-width", 0.5)
-  // .attr("stroke-linejoin", "round");
 }
-export function hideContourInD3Chart() {
-  selectRootSVG().selectAll('.contour').remove();
+export function hideContourInD3Chart(id: string) {
+  selectRootSVG(id).selectAll('.contour').remove();
 }
-export function separateGraph(spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, field: string, stages: TransitionAttr[]) {
-  let svg = selectRootSVG();
+export function separateGraph(id: string, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, field: string, stages: TransitionAttr[]) {
+  let svg = selectRootSVG(id);
   const values = data,
     xField = spec.encoding.x['field'],
     yField = spec.encoding.y['field'];
@@ -484,11 +474,10 @@ export function separateGraph(spec: FacetedCompositeUnitSpec, data: any[], schem
       });
   }
   svg.selectAll('.point').raise();
-  // svg.selectAll('.remove-when-reset').attr('opacity', 0).transition().duration(stages[0].duration).attr('opacity', 1);
 }
-export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, field: string, stages: TransitionAttr[]) {
-  resizeRootSVG(1, true, stages[0].duration);
-  let svg = selectRootSVG();
+export function pointsAsMeanScatterplot(id: string, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, field: string, stages: TransitionAttr[]) {
+  resizeRootSVG(id, 1, true, stages[0].duration);
+  let svg = selectRootSVG(id);
   let xField = spec.encoding.x['field'];
   let yField = spec.encoding.y['field'];
 
@@ -549,8 +538,8 @@ export function pointsAsMeanScatterplot(spec: FacetedCompositeUnitSpec, data: an
     .transition().duration(stages[0].duration)
     .attr('opacity', 1);
 }
-export function pointsAsDensityPlot(spec: FacetedCompositeUnitSpec, data: any[], stages: TransitionAttr[]) {
-  let svg = selectRootSVG();
+export function pointsAsDensityPlot(id: string, spec: FacetedCompositeUnitSpec, data: any[], stages: TransitionAttr[]) {
+  let svg = selectRootSVG(id);
   let xField = spec.encoding.x['field'];
   let yField = spec.encoding.y['field'];
 
@@ -586,15 +575,6 @@ export function pointsAsDensityPlot(spec: FacetedCompositeUnitSpec, data: any[],
     .transition().duration(stages[2].duration).delay(stages[1].delay)
     .attr('x', function (d) {return (qsx(d[xField]) + (-binWidth / 2.0 + CHART_MARGIN.left));})
     .attr('y', function (d) {return (qsy(d[yField]) + (-binHeight / 2.0 + CHART_MARGIN.top));});
-}
-export function onPreviewReset(spec: FacetedCompositeUnitSpec, values: any[], duration?: number, delay?: number) {
-  delay += COMMON_DELAY;
-  resizeRootSVG(1, false, duration, delay);
-  selectRootSVG()
-    .selectAll('.remove-when-reset')
-    .transition().delay(typeof delay == 'undefined' ? 0 : delay).duration(duration)
-    .attr('opacity', 0).remove();
-  pointsAsScatterplot(spec, values, duration, delay);
 }
 export function removeTransitionTimeline(duration?: number) {
   duration += COMMON_DELAY;

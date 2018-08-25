@@ -46,7 +46,7 @@ export interface GuidelineItemOverPlotting extends GuidelineItem {
 export interface GuidelineItemActionableCategories extends GuidelineItem {
   selectedCategories: string[] | number[] | boolean[] | DateTime[];
   oneOfCategories: string[] | number[] | boolean[] | DateTime[];
-  userActionType: Actionables;
+  userActionType: ActionableID;
 }
 
 export const DEFAULT_GUIDELINES: Guidelines = {
@@ -104,7 +104,7 @@ export const GUIDELINE_TOO_MANY_SHAPE_CATEGORIES: GuidelineItemActionableCategor
 }
 
 //TODO: Later, this could be more systematic, including all kinds of actionables in all guidelines
-export type Actionables = "SEPARATE_GRAPH" | "AGGREGATE_POINTS" | 'CHANGE_POINT_SIZE' | 'CHANGE_POINT_OPACITY' |
+export type ActionableID = "FILTER" | "SEPARATE_GRAPH" | "AGGREGATE_POINTS" | 'CHANGE_POINT_SIZE' | 'CHANGE_POINT_OPACITY' | "REMOVE_FILL_COLOR" | "ENCODING_DENSITY" |
   "FILTER_CATEGORIES" | "SELECT_CATEGORIES" | "REMOVE_FIELD" | "NONE";
 
 export interface GuideActionItem {

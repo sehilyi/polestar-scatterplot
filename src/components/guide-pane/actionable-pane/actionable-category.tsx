@@ -6,7 +6,7 @@ import {DateTime} from 'vega-lite/build/src/datetime';
 import {ShelfUnitSpec, Schema, toTransforms, ShelfFilter, filterHasField, filterIndexOf, ShelfWildcardChannelId} from '../../../models';
 import {ActionHandler, SpecAction, SPEC_COLOR_SCALE_SPECIFIED, SPEC_FIELD_REMOVE, LogAction, FILTER_MODIFY_ONE_OF, FilterAction, FILTER_ADD} from '../../../actions';
 import {ACTIONABLE_SELECT_CATEGORIES, GuidelineAction, ACTIONABLE_MODIFY_ONE_OF_CATEGORIES, GUIDELINE_TOGGLE_IGNORE_ITEM, GUIDELINE_SET_USER_ACTION_TYPE} from '../../../actions/guidelines';
-import {GuidelineItemActionableCategories, getDefaultCategoryPicks, guideActionShelf, getRange, Actionables} from '../../../models/guidelines';
+import {GuidelineItemActionableCategories, getDefaultCategoryPicks, guideActionShelf, getRange, ActionableID} from '../../../models/guidelines';
 import {VegaLite} from '../../vega-lite';
 import {InlineData} from 'vega-lite/build/src/data';
 import {FacetedCompositeUnitSpec} from 'vega-lite/build/src/spec';
@@ -36,7 +36,7 @@ export interface ActionableCategoryProps extends ActionHandler<GuidelineAction |
 
 export interface ActionableCategoryState {
   hideSearchBar: boolean;
-  triggeredActionable: Actionables;
+  triggeredActionable: ActionableID;
 }
 
 export class ActionableCategoryBase extends React.PureComponent<ActionableCategoryProps, ActionableCategoryState>{
@@ -182,7 +182,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     });
   }
 
-  private setUserActionType(type: Actionables) {
+  private setUserActionType(type: ActionableID) {
     const {item} = this.props;
     this.props.handleAction({
       type: GUIDELINE_SET_USER_ACTION_TYPE,
@@ -240,7 +240,7 @@ export class ActionableCategoryBase extends React.PureComponent<ActionableCatego
     previewSpec.transform = newTransform;
 
     return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} />
+      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true}/>
     );
   }
 

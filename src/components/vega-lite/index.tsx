@@ -8,7 +8,7 @@ import * as vegaTooltip from 'vega-tooltip';
 import {SPINNER_COLOR} from '../../constants';
 import {Logger} from '../util/util.logger';
 import {Themes, themeDict} from '../../models/theme/theme';
-import {Guidelines, GuidelineItemTypes, GuidelineItemActionableCategories, getRange, GuidelineItemOverPlotting, isClutteredScatterPlot, isSimpleScatterPlot, getDefaultCategoryPicks, getGuidedSpec} from '../../models/guidelines';
+import {Guidelines, GuidelineItemTypes, GuidelineItemActionableCategories, getRange, GuidelineItemOverPlotting, isClutteredScatterPlot, isSimpleScatterPlot, getDefaultCategoryPicks, getGuidedSpec, ActionableID} from '../../models/guidelines';
 import {Schema, ShelfFilter, filterHasField, filterIndexOf} from '../../models';
 import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 import {X} from '../../../node_modules/vega-lite/build/src/channel';
@@ -29,8 +29,9 @@ export interface VegaLiteProps {
 
   viewRunAfter?: (view: vega.View) => any;
 
-  // For considering guidelines
+  // For Guideline Preview
   isSpecifiedView?: boolean;
+  actionId?: ActionableID;
   guidelines?: GuidelineItemTypes[];
   schema?: Schema;
   filters?: ShelfFilter[];
@@ -107,7 +108,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
         } else if (prevProps.data !== data) {
           // TODO: should handle the filter!!!
           if (this.isRenderD3Chart()) {
-            renderD3Chart(this.refs[CHART_REF], spec as FacetedCompositeUnitSpec, this.props.data.values);
+            renderD3Chart(this.props.actionId, this.refs[CHART_REF], spec as FacetedCompositeUnitSpec, this.props.data.values);
           } else {
             this.bindData();
           }
@@ -136,7 +137,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
   }
 
   private isRenderD3Chart(): boolean {
-    return this.props.isSpecifiedView && isSimpleScatterPlot(this.props.spec);
+    return this.props.isPreview && isSimpleScatterPlot(this.props.spec);
   }
   protected updateSpec() {
     // NOTE: spec used to test warning logger
@@ -170,7 +171,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
       const runtime = vega.parse(spec, vlSpec.config);// vlConfig);
       // console.log(this.props.filters);
       if (this.isRenderD3Chart()) {
-        renderD3Chart(this.refs[CHART_REF], vlSpec as FacetedCompositeUnitSpec, this.props.data.values);
+        renderD3Chart(this.props.actionId, this.refs[CHART_REF], vlSpec as FacetedCompositeUnitSpec, this.props.data.values);
       }
       else {
         this.view = new vega.View(runtime)
