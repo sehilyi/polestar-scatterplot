@@ -153,6 +153,7 @@ export class PlotBase extends React.PureComponent<PlotProps, PlotState> {
         >
           <VegaLite spec={spec} logger={this.plotLogger} data={data} theme={theme}
             isSpecifiedView={isSpecifiedView}
+            actionId='NONE'
             guidelines={guidelines}
             schema={schema}
             filters={filters}/>

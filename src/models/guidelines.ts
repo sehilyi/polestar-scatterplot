@@ -360,7 +360,8 @@ export function isSimpleScatterplot(spec: any) {
       encoding.x.type === QUANTITATIVE && encoding.y.type === QUANTITATIVE &&
       // typeof encoding.x.bin == 'undefined' && typeof encoding.y.bin == 'undefined' &&
       // (typeof encoding.x.aggregate == 'undefined' || typeof encoding.y.aggregate == 'undefined')
-      (mark === POINT || mark === CIRCLE || mark === SQUARE)) {
+      (mark === POINT || mark === CIRCLE || mark === SQUARE ||
+      mark.type === POINT || mark.type === CIRCLE || mark.type === SQUARE)) {
       return true;
     } else {
       return false;

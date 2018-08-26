@@ -4,6 +4,7 @@ import {BaseType, select, transition} from 'd3';
 import {isDensityPlot, isMeanAggregated, getColorField, ActionableID} from './guidelines';
 import {Schema} from '../models';
 import {NOMINAL} from '../../node_modules/vega-lite/build/src/type';
+import {Filter, OneOfFilter} from '../../node_modules/vega-lite/build/src/filter';
 
 // Basic property for d3-chart
 export const COMMON_DURATION: number = 1000;
@@ -64,7 +65,7 @@ export const SeperateGraphStages: TransitionAttr[] = [
   {id: 'REPOSITION', title: 'Separate Graph By Another Field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
 ];
 
-export function renderD3Chart(id: ActionableID, CHART_REF: any, fromSpec: FacetedCompositeUnitSpec, toSpec: FacetedCompositeUnitSpec, schema: Schema, data: any[], transitionAttrs: TransitionAttr[], isTransition: boolean) {
+export function renderD3Preview(id: ActionableID, CHART_REF: any, fromSpec: FacetedCompositeUnitSpec, toSpec: FacetedCompositeUnitSpec, schema: Schema, data: any[], transitionAttrs: TransitionAttr[], isTransition: boolean) {
   // console.log('spec for D3:');
   // console.log(toSpec);
   removePrevChart(CHART_REF);
@@ -76,6 +77,8 @@ export function renderD3Chart(id: ActionableID, CHART_REF: any, fromSpec: Facete
 }
 
 export function renderPoints(id: ActionableID, fromSpec: FacetedCompositeUnitSpec, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, isTransition: boolean, duration?: number, delay?: number) {
+
+  let diffOneof = getFilterForTransition(fromSpec.transform, spec.transform);
 
   // from
   if (isTransition) {
@@ -92,8 +95,135 @@ export function renderPoints(id: ActionableID, fromSpec: FacetedCompositeUnitSpe
     renderDensityPlot(id, spec, data, DensityPlotStages, isTransition);
   }
   else {
-    renderScatterplot(id, spec, data, schema, isTransition);
+    renderScatterplot(id, spec, data, schema, isTransition, diffOneof);
   }
+}
+
+export function getFilterForTransition(a1: any[], a2: any[]) {
+  // console.log(a1);
+  // console.log(a2);
+  if (typeof a2 == 'undefined') {
+    return null;
+  }
+  if (typeof a1 == 'undefined') {
+    for (let i = 0; i < a2.length; i++) {
+      try {
+        if (typeof a2[i].filter.oneOf != 'undefined') {
+          return a2[i].filter;
+        }
+      } catch (e) {}
+    }
+  }
+  else {
+    for (let i = 0; i < a2.length; i++) {
+      try {
+        if (a1.indexOf(a2[i]) == -1 && typeof a2[i].filter.oneOf != 'undefined') {
+          return a2[i].filter;
+        }
+      } catch (e) {}
+    }
+  }
+  return null;
+}
+
+export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, isTransition: boolean, filter?: OneOfFilter) {
+  const {isXMeanFn, isYMeanFn} = isMeanAggregated(spec);
+  const {colorField} = getColorField(spec); //TODO: consider when nominal
+  const isLegend = isLegendUsing(spec);
+  const xField = spec.encoding.x['field'], yField = spec.encoding.y['field'];
+  const attr = getPointAttrs(spec);
+
+  const x = d3.scaleLinear()
+    .domain([0, d3.max(data.map(d => d[xField]))]).nice()
+    .rangeRound([0, CHART_SIZE.width]);
+  const y = d3.scaleLinear()
+    .domain([0, d3.max(data.map(d => d[yField]))]).nice()
+    .rangeRound([CHART_SIZE.height, 0]);
+
+  resizeRootSVG(id, 1, isLegend, false);
+
+  // render legend
+  let colorScale: d3.ScaleOrdinal<string, string>;
+  if (isLegend) {
+    colorScale = renderLegend(id, attr, colorField, schema, isTransition);
+  }
+
+  selectRootSVG(id)
+    .selectAll('.point')
+    // AGGREGATE_POINTS' COLORING
+    // REMOVE_FILL_COLOR's ENCODING
+    .transition().duration(function () {
+      if (isTransition && id == 'AGGREGATE_POINTS') {
+        return AggregateStages[0].duration;
+      }
+      else if (isTransition && id == 'REMOVE_FILL_COLOR') {
+        return RemoveFillColorStages[0].duration;
+      }
+      else {
+        return 0;
+      }
+    })
+    //
+    .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : (typeof colorScale != 'undefined' ? colorScale(d[colorField]) : attr.fill);})
+    .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : (typeof colorScale != 'undefined' ? colorScale(d[colorField]) : attr.stroke);})
+    // AGGREGATE_POINTS' REPOSITION
+    // CHANGE_POINT_SIZE, CHANGE_POINT_OPACITY's ENCODING/COLOR
+    .transition().delay(function () {
+      if (isTransition && id == 'AGGREGATE_POINTS') {
+        return AggregateStages[0].delay;
+      }
+      else {
+        return 0;
+      }
+    })
+    .duration(function () {
+      if (isTransition && id == 'AGGREGATE_POINTS') {
+        return AggregateStages[1].duration;
+      }
+      else if (isTransition && id == 'CHANGE_POINT_OPACITY') {
+        return PointOpacityStages[0].duration;
+      }
+      else if (isTransition && id == 'CHANGE_POINT_SIZE') {
+        return PointResizeStages[0].duration;
+      }
+      else {
+        return 0;
+      }
+    })
+    //
+    .attr('x', function (d) {
+      return !isXMeanFn ?
+        CHART_MARGIN.left + x(d[xField]) + (-attr.width / 2.0) :
+        CHART_MARGIN.left + x(d3.mean(data.map(function (_d) {return _d[colorField] == d[colorField] ? _d[xField] : null;}))) + (-attr.width / 2.0);
+    })
+    .attr('y', function (d) {
+      return !isYMeanFn ?
+        y(d[yField]) + (-attr.height / 2.0 + CHART_MARGIN.top) :
+        y(d3.mean(data.map(function (_d) {return _d[colorField] == d[colorField] ? _d[yField] : null;}))) + (-attr.height / 2.0 + CHART_MARGIN.top);
+    })
+    .attr('rx', attr.rx)  // to draw either circle or rect
+    .attr('ry', attr.ry)
+    .attr('width', attr.width)
+    .attr('height', attr.height)
+    .attr('stroke-width', attr.stroke_width)
+    .attr('opacity', attr.opacity);
+
+  if (typeof filter != 'undefined' && filter != null) {
+    console.log(filter.oneOf);
+    console.log(filter.field);
+    selectRootSVG(id).selectAll('.point')
+      .filter(function (d) {return (filter.oneOf as string[]).indexOf(d[filter.field]) == -1;})
+      .transition().duration(isTransition && id == 'FILTER' ? FilterStages[0].duration : 0)
+      .attr('opacity', 0);
+  }
+  // if (typeof spec.encoding.column != 'undefined') {
+  //   let field = spec.encoding.column.field as string;
+  //   separateGraph(id, spec, data, schema, field,
+  //     [{
+  //       id: 'REPOSITION', title: 'Separate Graph by \'' + field + '\' field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY
+  //     }]
+  //   );
+  // }
 }
 
 export function isThereD3Chart(id: string) {
@@ -401,98 +531,29 @@ export function renderLegend(id: string, attr: PointAttr, field: string, schema:
 export function isLegendUsing(spec: FacetedCompositeUnitSpec) {
   return typeof getColorField(spec).colorField != 'undefined';
 }
-export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, isTransition: boolean, duration?: number, delay?: number) {
-  const {isXMeanFn, isYMeanFn} = isMeanAggregated(spec);
-  const {colorField} = getColorField(spec); //TODO: consider when nominal
-  const isLegend = isLegendUsing(spec);
-  const xField = spec.encoding.x['field'], yField = spec.encoding.y['field'];
-  const attr = getPointAttrs(spec);
-
-  const x = d3.scaleLinear()
-    .domain([0, d3.max(data.map(d => d[xField]))]).nice()
-    .rangeRound([0, CHART_SIZE.width]);
-  const y = d3.scaleLinear()
-    .domain([0, d3.max(data.map(d => d[yField]))]).nice()
-    .rangeRound([CHART_SIZE.height, 0]);
-
-  resizeRootSVG(id, 1, isLegend, false);
-
-  // render legend
-  let colorScale: d3.ScaleOrdinal<string, string>;
-  if (isLegend) {
-    colorScale = renderLegend(id, attr, colorField, schema, isTransition);
-  }
-
-  selectRootSVG(id)
-    .selectAll('.point')
-    // AGGREGATE_POINTS' COLORING
-    .transition().duration(isTransition ? id == 'AGGREGATE_POINTS' ? AggregateStages[0].duration : 0 : 0)
-    //
-    .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : (typeof colorScale != 'undefined' ? colorScale(d[colorField]) : attr.fill);})
-    .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : (typeof colorScale != 'undefined' ? colorScale(d[colorField]) : attr.stroke);})
-    // AGGREGATE_POINTS' REPOSITION
-    // CHANGE_POINT_SIZE, CHANGE_POINT_OPACITY's ENCODING/COLOR
-    .transition().delay(function () {
-      if (isTransition && id == 'AGGREGATE_POINTS') {
-        return AggregateStages[0].delay;
-      }
-      else {
-        return 0;
-      }
-    })
-    .duration(function () {
-      if (isTransition && id == 'AGGREGATE_POINTS') {
-        return AggregateStages[1].duration;
-      }
-      else if (isTransition && id == 'CHANGE_POINT_OPACITY') {
-        return PointOpacityStages[0].duration;
-      }
-      else if (isTransition && id == 'CHANGE_POINT_SIZE') {
-        return PointResizeStages[0].duration;
-      }
-    })
-    //
-    .attr('x', function (d) {
-      return !isXMeanFn ?
-        CHART_MARGIN.left + x(d[xField]) + (-attr.width / 2.0) :
-        CHART_MARGIN.left + x(d3.mean(data.map(function (_d) {return _d[colorField] == d[colorField] ? _d[xField] : null;}))) + (-attr.width / 2.0);
-    })
-    .attr('y', function (d) {
-      return !isYMeanFn ?
-        y(d[yField]) + (-attr.height / 2.0 + CHART_MARGIN.top) :
-        y(d3.mean(data.map(function (_d) {return _d[colorField] == d[colorField] ? _d[yField] : null;}))) + (-attr.height / 2.0 + CHART_MARGIN.top);
-    })
-    .attr('rx', attr.rx)  // to draw either circle or rect
-    .attr('ry', attr.ry)
-    .attr('width', attr.width)
-    .attr('height', attr.height)
-    .attr('stroke-width', attr.stroke_width)
-    .attr('opacity', attr.opacity);
-
-  // if (typeof spec.encoding.column != 'undefined') {
-  //   let field = spec.encoding.column.field as string;
-  //   separateGraph(id, spec, data, schema, field,
-  //     [{
-  //       id: 'REPOSITION', title: 'Separate Graph by \'' + field + '\' field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY
-  //     }]
-  //   );
-  // }
-}
 
 export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
-  let size = spec.mark == 'square' ? 5 : 6;
+  let isRemoveFill = false;
+  if (typeof spec.mark['filled'] != 'undefined') {
+    isRemoveFill = !spec.mark['filled'];
+  }
+
+  // Notice: If filled === false? then, spec.mark is Object {type, filled} rather than string
+  const mark = !isRemoveFill ? spec.mark : spec.mark['type'];
+  let size = mark == 'square' ? 5 : 6;
   let opacity = 0.7;
   try {size = spec.encoding.size['value'] / 10.0;} catch (e) {}
   try {opacity = spec.encoding.opacity['value'];} catch (e) {}
+
   return {
-    fill: spec.mark == 'point' ? 'transparent' : '#4c78a8',
+    fill: (mark == 'point' || isRemoveFill) ? 'transparent' : '#4c78a8',
     opacity,
-    stroke: spec.mark != 'point' ? 'transparent' : '#4c78a8',
-    stroke_width: spec.mark == 'point' ? 2 : 2,  //TODO: do we have to handle this?
+    stroke: '#4c78a8',
+    stroke_width: mark == 'point' ? 2 : 2,  //TODO: do we have to handle this?
     width: size,
     height: size,
-    rx: spec.mark == 'square' ? 0 : size,
-    ry: spec.mark == 'square' ? 0 : size,
+    rx: mark == 'square' ? 0 : size,
+    ry: mark == 'square' ? 0 : size,
   };
 }
 // https://bl.ocks.org/mbostock/7f5f22524bd1d824dd53c535eda0187f

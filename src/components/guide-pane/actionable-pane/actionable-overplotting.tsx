@@ -291,25 +291,22 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
 
   private onFilterTransition() {
-    let field = this.getDefaultSmallSizedNominalFieldName(getRowAndColumnField(this.props.mainSpec));
-    let oneOf = this.getDefaultOneOf(field);
+    // let field = this.getDefaultSmallSizedNominalFieldName(getRowAndColumnField(this.props.mainSpec));
+    // let oneOf = this.getDefaultOneOf(field);
     let id: ActionableID = "FILTER";
-    onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
     startTimeline(id, FilterStages);
-    filterPoint(id, field, oneOf, FilterStages);
+    renderPoints(id, this.props.mainSpec, this.getFilterSpec().spec, this.props.data.values, this.props.schema, true);
+    // filterPoint(id, field, oneOf, FilterStages);
   }
   private onChangeOpacityTransition() {
     let id: ActionableID = "CHANGE_POINT_OPACITY";
     startTimeline(id, PointOpacityStages);
     renderPoints(id, this.props.mainSpec, this.getChangeOpacitySpec().spec, this.props.data.values, this.props.schema, true);
-    // reducePointOpacity(id, 0.1, this.PointOpacityStages);
   }
   private onChangePointSizeTransition() {
     let id: ActionableID = "CHANGE_POINT_SIZE";
-    // onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
     startTimeline(id, PointResizeStages);
     renderPoints(id, this.props.mainSpec, this.getResizePointSpec().spec, this.props.data.values, this.props.schema, true);
-    // reducePointSize(id, this.PointResizeStages);
   }
   private onAggregateTransition() {
     let id: ActionableID = "AGGREGATE_POINTS";
@@ -329,27 +326,32 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private onRemoveFillColorTransition() {
     let id: ActionableID = "REMOVE_FILL_COLOR";
-    onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
     startTimeline(id, RemoveFillColorStages);
-    removeFillColor(id, RemoveFillColorStages);
+    renderPoints(id, this.props.mainSpec, this.getRemoveFillColorSpec().spec, this.props.data.values, this.props.schema, true);
   }
 
   private getDefaultOneOf(field: string) {
     return [this.props.schema.domain({field})[0]];
   }
   //TODO: consider only column
-  private renderFilterPreview() {
-    let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
-    let field = this.getDefaultSmallSizedNominalFieldName(getRowAndColumnField(previewSpec));
-    const {transform} = previewSpec;
+  private getFilterSpec(){
+    let spec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
+    let field = this.getDefaultSmallSizedNominalFieldName(getRowAndColumnField(spec));
+    const {transform} = spec;
+
     let newFilter: OneOfFilter = {
       field,
       oneOf: this.getDefaultOneOf(field)
     }
     const newTransform = (transform || []).concat(toTransforms([newFilter]));
-    previewSpec.transform = newTransform;
+    spec.transform = newTransform;
+
+    return {spec};
+  }
+  private renderFilterPreview() {
+
     return (
-      <VegaLite spec={previewSpec}
+      <VegaLite spec={this.getFilterSpec().spec}
         logger={this.plotLogger}
         data={this.props.data}
         isPreview={true}
@@ -389,6 +391,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       ...spec.encoding,
       opacity: {value: 0.3}
     }
+
     return {spec};
   }
   private renderChangeOpacityPreview() {
@@ -403,14 +406,20 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         transitionAttrs={PointOpacityStages} />
     );
   }
-  private renderRemoveFillColorPreview() {
-    let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
-    previewSpec.mark = {
-      type: previewSpec.mark as Mark,
+  private getRemoveFillColorSpec(){
+    let spec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
+
+    spec.mark = {
+      type: spec.mark as Mark,
       filled: false
     };
+
+    return {spec};
+  }
+  private renderRemoveFillColorPreview() {
+    console.log(this.getRemoveFillColorSpec().spec);
     return (
-      <VegaLite spec={previewSpec}
+      <VegaLite spec={this.getRemoveFillColorSpec().spec}
         logger={this.plotLogger}
         data={this.props.data}
         isPreview={true}

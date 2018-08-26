@@ -14,7 +14,7 @@ import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 import {X} from '../../../node_modules/vega-lite/build/src/channel';
 import {NOMINAL} from '../../../node_modules/vega-lite/build/src/type';
 import * as d3 from 'd3';
-import {renderD3Chart, TransitionAttr} from '../../models/d3-chart';
+import {renderD3Preview, TransitionAttr} from '../../models/d3-chart';
 import {schemeAccent} from 'd3';
 
 export interface VegaLiteProps {
@@ -81,7 +81,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     });
     this.mountTimeout = window.setTimeout(() => {
       this.updateSpec();
-      if (!this.isRenderD3Chart()) {
+      if (!this.isRenderD3Preview()) {
         this.runView();
       }
       this.setState({
@@ -111,8 +111,8 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
           chart.style.height = this.size.height + 'px';
           this.updateSpec();
         } else if (prevProps.data !== data) {
-          if (this.isRenderD3Chart()) {
-            renderD3Chart(this.props.actionId, this.refs[CHART_REF], this.props.fromSpec as FacetedCompositeUnitSpec, spec as FacetedCompositeUnitSpec, this.props.schema, this.props.data.values, this.props.transitionAttrs, false);
+          if (this.isRenderD3Preview()) {
+            renderD3Preview(this.props.actionId, this.refs[CHART_REF], this.props.fromSpec as FacetedCompositeUnitSpec, spec as FacetedCompositeUnitSpec, this.props.schema, this.props.data.values, this.props.transitionAttrs, false);
           }
           else {
             this.bindData();
@@ -141,7 +141,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     }
   }
 
-  private isRenderD3Chart(): boolean {
+  private isRenderD3Preview(): boolean {
     return this.props.isPreview && isAllowedScatterplot(this.props.spec);
   }
   protected updateSpec() {
@@ -174,8 +174,8 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     try {
       let spec = vl.compile(vlSpec, logger).spec;
       const runtime = vega.parse(spec, vlSpec.config);// vlConfig);
-      if (this.isRenderD3Chart()) {
-        renderD3Chart(this.props.actionId, this.refs[CHART_REF], this.props.fromSpec as FacetedCompositeUnitSpec, vlSpec as FacetedCompositeUnitSpec, this.props.schema, this.props.data.values, this.props.transitionAttrs, false);
+      if (this.isRenderD3Preview()) {
+        renderD3Preview(this.props.actionId, this.refs[CHART_REF], this.props.fromSpec as FacetedCompositeUnitSpec, vlSpec as FacetedCompositeUnitSpec, this.props.schema, this.props.data.values, this.props.transitionAttrs, false);
       }
       else {
         this.view = new vega.View(runtime)
