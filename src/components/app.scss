@@ -149,10 +149,18 @@
     height: 125px !important;
     min-height: 125px;
   }
-  .preview-expand .chart, .preview-expand .marks {
-    width: 250px !important;
-    height: 250px !important;
-    min-height: 250px;
+  .preview .timeline {
+    display: none;
+  }
+  .preview-expand .chart {
+    width: 300px !important;
+    height: 348px !important;
+    min-height: 348px;
+  }
+  .preview-expand .marks {
+    width: 300px !important;
+    height: 300px !important;
+    min-height: 300px;
   }
 
   .preview .react-spinners--clip, .preview-large .react-spinners--clip {
@@ -252,7 +260,7 @@
 
   // to differenciate with normal vl chart
   .d3-chart {
-    border-left: dotted 1px #b3b3b3;
+    border-left: dotted 1px transparent;
   }
   .d3-chart .grid line, .d3-chart .grid path {
     stroke: rgb(221, 221, 221);

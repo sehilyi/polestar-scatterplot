@@ -296,49 +296,49 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     onPreviewReset(id, this.props.mainSpec, this.props.data.values);
     renderTransitionTimeline(id, '', this.FilterStages, true);
     filterPoint(id, field, oneOf, this.FilterStages);
-    onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.FilterStages.map(x => x.duration + x.delay)));
+    // onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.FilterStages.map(x => x.duration + x.delay)));
   }
   private onChangeOpacityTransition() {
     let id: ActionableID = "CHANGE_POINT_OPACITY";
     onPreviewReset(id, this.props.mainSpec, this.props.data.values);
     renderTransitionTimeline(id, '', this.PointOpacityStages, true);
     reducePointOpacity(id, 0.3, this.PointOpacityStages);
-    onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.PointOpacityStages.map(x => x.duration + x.delay)));
+    // onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.PointOpacityStages.map(x => x.duration + x.delay)));
   }
   private onChangePointSizeTransition() {
     let id: ActionableID = "CHANGE_POINT_SIZE";
     onPreviewReset(id, this.props.mainSpec, this.props.data.values);
     renderTransitionTimeline(id, '', this.PointResizeStages, true);
     reducePointSize(id, this.PointResizeStages);
-    onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.PointResizeStages.map(x => x.duration + x.delay)));
+    // onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.PointResizeStages.map(x => x.duration + x.delay)));
   }
   private onRemoveFillColorTransition() {
     let id: ActionableID = "REMOVE_FILL_COLOR";
     onPreviewReset(id, this.props.mainSpec, this.props.data.values);
     renderTransitionTimeline(id, '', this.RemoveFillColorStages, true);
     removeFillColor(id, this.RemoveFillColorStages);
-    onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.RemoveFillColorStages.map(x => x.duration + x.delay)));
+    // onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.RemoveFillColorStages.map(x => x.duration + x.delay)));
   }
   private onAggregateTransition() {
     let id: ActionableID = "AGGREGATE_POINTS";
     onPreviewReset(id, this.props.mainSpec, this.props.data.values);
     renderTransitionTimeline(id, '', this.AggregateStages, true);
     pointsAsMeanScatterplot(id, this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), this.AggregateStages);
-    onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.AggregateStages.map(x => x.duration + x.delay)));
+    // onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.AggregateStages.map(x => x.duration + x.delay)));
   }
   private onEncodingDensityTransition() {
     let id: ActionableID = "ENCODING_DENSITY";
     onPreviewReset(id, this.props.mainSpec, this.props.data.values);
     renderTransitionTimeline(id, '', this.DensityPlotStages, true);
     pointsAsDensityPlot(id, this.props.mainSpec, this.props.data.values, this.DensityPlotStages);
-    onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.DensityPlotStages.map(x => x.duration + x.delay)));
+    // onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.DensityPlotStages.map(x => x.duration + x.delay)));
   }
   private onSeparateGraphTransition() {
     let id: ActionableID = "SEPARATE_GRAPH";
     onPreviewReset(id, this.props.mainSpec, this.props.data.values);
     renderTransitionTimeline(id, '', this.SeperateGraphStages, true);
     separateGraph(id, this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), this.SeperateGraphStages);
-    onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.SeperateGraphStages.map(x => x.duration + x.delay)));
+    // onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.SeperateGraphStages.map(x => x.duration + x.delay)));
   }
 
   private getDefaultOneOf(field: string) {

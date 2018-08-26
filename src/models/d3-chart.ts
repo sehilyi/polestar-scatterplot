@@ -14,7 +14,7 @@ export const LEGEND_WIDTH = 100;
 export const LEGEND_LT_MARGIN = 20;
 export const NOMINAL_COLOR_SCHEME = ['#4c78a8', '#f58518', '#e45756', '#72b7b2', '#54a24b', '#eeca3b', '#b279a2', '#ff9da6', '#9d755d', '#bab0ac'];
 
-export const TIMELINE_SIZE = {width: 400, height: 8};
+export const TIMELINE_SIZE = {width: 250, height: 8};
 export const TIMELINE_MARGIN = {top: 20, right: 10, bottom: 20, left: 10};
 export const TIMELINE_COLOR_SCHEME = ['#3CA9C4', '#FAAB49', '#E56548', '#7A8C8F'];
 export const TIMELINE_CATEGORIES = ['MORPH', 'REPOSITION', 'COLOR', 'DELAY'];
@@ -57,9 +57,32 @@ export function selectRootSVG(id: string): d3.Selection<BaseType, {}, HTMLElemen
   return d3.select('#d3-chart-specified-' + id).select('svg');
 }
 
+export function appendRootSVG(id: string, CHART_REF: any) {
+  // timeline
+  d3.select(CHART_REF)
+    .append('div')
+    .attr('id', 'd3-timeline-' + id)
+    .classed('timeline', true)
+    .style('margin', 'auto')
+    .append('svg')
+    .attr('width', TIMELINE_SIZE.width + TIMELINE_MARGIN.left + TIMELINE_MARGIN.right)
+    .attr('height', TIMELINE_SIZE.height + TIMELINE_MARGIN.top + TIMELINE_MARGIN.bottom);
+
+  // main chart
+  d3.select(CHART_REF)
+    .append('div')
+    .classed('d3-chart', true)
+    .attr('id', 'd3-chart-specified-' + id)
+    .style('margin', 'auto')
+    .append('svg')
+    .attr('viewBox', '0 0 ' + (CHART_SIZE.width + CHART_MARGIN.left + CHART_MARGIN.right) + ' ' + (CHART_SIZE.height + CHART_MARGIN.top + CHART_MARGIN.bottom))
+    .attr('width', '100%')
+    .attr('height', '100%');
+}
+
 export function renderTransitionTimeline(id: string, title: string, stages: TransitionAttr[], isTransition: boolean) {
-  this.removeTransitionTimeline(0);
-  let svg = d3.select('#d3-timeline' + id).select('svg');
+  this.removeTransitionTimeline(id, 0);
+  let svg = d3.select('#d3-timeline-' + id).select('svg');
 
   // append title
   svg.append('text')
@@ -142,7 +165,7 @@ export function renderTransitionTimeline(id: string, title: string, stages: Tran
     .attr('stroke-width', 1)
     .attr('opacity', function (d, i) {return (stages.length <= i || stages[i].id != 'DELAY') ? 1 : 0})
 
-  removeTransitionTimeline(totalDuration);
+  // removeTransitionTimeline(id, totalDuration);
 }
 
 export function removePrevChart(CHART_REF: any) {
@@ -151,31 +174,6 @@ export function removePrevChart(CHART_REF: any) {
     .remove();
 }
 
-export function appendRootSVG(id: string, CHART_REF: any) {
-
-  // timeline
-  d3.select(CHART_REF)
-    .append('div')
-    .attr('id', 'd3-timeline-' + id)
-    .style('height', 0) //remove temporaly
-    .style('margin', 'auto')
-    .append('svg')
-    // .attr('width', TIMELINE_SIZE.width + TIMELINE_MARGIN.left + TIMELINE_MARGIN.right)
-    // .attr('height', TIMELINE_SIZE.height + TIMELINE_MARGIN.top + TIMELINE_MARGIN.bottom);
-    .attr('width', 0)
-    .attr('height', 0);
-
-  // main chart
-  d3.select(CHART_REF)
-    .append('div')
-    .classed('d3-chart', true)
-    .attr('id', 'd3-chart-specified-' + id)
-    .style('margin', 'auto')
-    .append('svg')
-    .attr('viewBox', '0 0 ' + (CHART_SIZE.width + CHART_MARGIN.left + CHART_MARGIN.right) + ' ' + (CHART_SIZE.height + CHART_MARGIN.top + CHART_MARGIN.bottom))
-    .attr('width', '100%')
-    .attr('height', '100%');
-}
 export function resizeRootSVG(id: string, count: number, isLegend: boolean, duration?: number, delay?: number) {
   let width = (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right) * count + (isLegend ? LEGEND_WIDTH : 0);
   let height = CHART_MARGIN.top + CHART_SIZE.height + CHART_MARGIN.bottom;
@@ -576,9 +574,9 @@ export function pointsAsDensityPlot(id: string, spec: FacetedCompositeUnitSpec, 
     .attr('x', function (d) {return (qsx(d[xField]) + (-binWidth / 2.0 + CHART_MARGIN.left));})
     .attr('y', function (d) {return (qsy(d[yField]) + (-binHeight / 2.0 + CHART_MARGIN.top));});
 }
-export function removeTransitionTimeline(duration?: number) {
+export function removeTransitionTimeline(id: string, duration?: number) {
   duration += COMMON_DELAY;
-  d3.select('#d3-timeline').select('svg').selectAll('*')
+  d3.select('#d3-timeline-' + id).select('svg').selectAll('*')
     .transition().delay(duration).duration(COMMON_DURATION)
     .attr('opacity', 0)
     .remove();
