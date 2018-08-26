@@ -39,9 +39,8 @@ export interface PointAttr {
 }
 
 export function renderD3Chart(id: ActionableID, CHART_REF: any, fromSpec: FacetedCompositeUnitSpec, toSpec: FacetedCompositeUnitSpec, sehcme: Schema, data: any[], transitionAttrs: TransitionAttr[]) {
-  console.log('spec for D3:');
-  console.log(toSpec);
-
+  // console.log('spec for D3:');
+  // console.log(toSpec);
   removePrevChart(CHART_REF);
   appendRootSVG(id, CHART_REF);
   appendTransitionTimeline(id, '', transitionAttrs, false);
@@ -56,7 +55,6 @@ export function isThereD3Chart(id: string) {
 export function selectRootSVG(id: string): d3.Selection<BaseType, {}, HTMLElement, any> {
   return d3.select('#d3-chart-specified-' + id).select('svg');
 }
-
 export function appendRootSVG(id: string, CHART_REF: any) {
   // timeline
   d3.select(CHART_REF)
@@ -212,13 +210,13 @@ export function appendAxes(id: string, spec: FacetedCompositeUnitSpec, data: any
   let xField = spec.encoding.x['field'];
   let yField = spec.encoding.y['field'];
   let x = d3.scaleLinear()
-    .domain(d3.extent(data.map(x => x[xField]))).nice()
+    .domain([0, d3.max(data.map(d => d[xField]))]).nice()
     .rangeRound([0, CHART_SIZE.width])
-    // .interpolate(d3.interpolateRound);
+  // .interpolate(d3.interpolateRound);
   let y = d3.scaleLinear()
-    .domain(d3.extent(data.map(x => x[yField]))).nice()
+    .domain([0, d3.max(data.map(x => x[yField]))]).nice()
     .rangeRound([CHART_SIZE.height, 0])
-    // .interpolate(d3.interpolateRound);
+  // .interpolate(d3.interpolateRound);
   let xAxis = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40));
   let yAxis = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40));
   let xGrid = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(null).tickSize(-CHART_SIZE.width);
@@ -277,7 +275,6 @@ export function appendPoints(id: string, data: any[]) {
     .enter().append('rect')
     .classed('point', true);
 }
-
 export function updatePoints(id: string, data: any[]) {
   selectRootSVG(id).selectAll('.point')
     .data(data)
@@ -321,11 +318,11 @@ export function pointsAsScatterplot(id: string, spec: FacetedCompositeUnitSpec, 
   let attr = getPointAttrs(spec);
 
   let x = d3.scaleLinear()
-    .domain(d3.extent(data.map(d => d[xField]))).nice()
-    .range([0, CHART_SIZE.width]);
+    .domain([0, d3.max(data.map(d => d[xField]))]).nice()
+    .rangeRound([0, CHART_SIZE.width]);
   let y = d3.scaleLinear()
-    .domain(d3.extent(data.map(d => d[yField]))).nice()
-    .range([CHART_SIZE.height, 0]);
+    .domain([0, d3.max(data.map(d => d[yField]))]).nice()
+    .rangeRound([CHART_SIZE.height, 0]);
 
   selectRootSVG(id)
     .selectAll('.point')
@@ -338,8 +335,8 @@ export function pointsAsScatterplot(id: string, spec: FacetedCompositeUnitSpec, 
     //circle vs rect
     .attr('width', attr.width)
     .attr('height', attr.height)
-    .attr('x', function (d) {return (x(d[xField]) + (-attr.width / 2.0 + CHART_MARGIN.left));})
-    .attr('y', function (d) {return (y(d[yField]) + (-attr.height / 2.0 + CHART_MARGIN.top));})
+    .attr('x', function (d) {return x(d[xField]) + (-attr.width / 2.0 + CHART_MARGIN.left);})
+    .attr('y', function (d) {return y(d[yField]) + (-attr.height / 2.0 + CHART_MARGIN.top);})
     .attr('rx', attr.rx)
     .attr('ry', attr.ry);
 
@@ -420,8 +417,12 @@ export function separateGraph(id: string, spec: FacetedCompositeUnitSpec, data: 
   for (let i = 0; i < numOfCategory; i++) {
     if (i == 0) continue;
 
-    let x = d3.scaleLinear().domain([0, d3.max(values, function (d) {return d[xField]})]).nice().range([0, width]);
-    let y = d3.scaleLinear().domain([0, d3.max(values, function (d) {return d[yField]})]).nice().range([CHART_SIZE.height, 0]);
+    let x = d3.scaleLinear()
+      .domain([0, d3.max(values, function (d) {return d[xField]})]).nice()
+      .rangeRound([0, width]);
+    let y = d3.scaleLinear()
+      .domain([0, d3.max(values, function (d) {return d[yField]})]).nice()
+      .rangeRound([CHART_SIZE.height, 0]);
 
     let xAxis = d3.axisBottom(x).ticks(Math.ceil(width / 40));
     let yAxis = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40));
@@ -507,10 +508,10 @@ export function pointsAsMeanScatterplot(id: string, spec: FacetedCompositeUnitSp
 
   let x = d3.scaleLinear()
     .domain([0, d3.max(data, function (d) {return d[xField]})]).nice()
-    .range([0, CHART_SIZE.width]);
+    .rangeRound([0, CHART_SIZE.width]);
   let y = d3.scaleLinear()
     .domain([0, d3.max(data, function (d) {return d[yField]})]).nice()
-    .range([CHART_SIZE.height, 0]);
+    .rangeRound([CHART_SIZE.height, 0]);
 
   let categoryDomain = schema.domain({field});
   let ordinalColor = d3.scaleOrdinal(NOMINAL_COLOR_SCHEME)

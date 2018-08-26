@@ -81,7 +81,9 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     });
     this.mountTimeout = window.setTimeout(() => {
       this.updateSpec();
-      this.runView();
+      if (!this.isRenderD3Chart()) {
+        this.runView();
+      }
       this.setState({
         isLoading: false
       });
@@ -114,9 +116,9 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
             renderD3Chart(this.props.actionId, this.refs[CHART_REF], this.props.fromSpec as FacetedCompositeUnitSpec, spec as FacetedCompositeUnitSpec, this.props.schema, this.props.data.values, this.props.transitionAttrs);
           } else {
             this.bindData();
+            this.runView();
           }
         }
-        this.runView();
         this.setState({
           isLoading: false
         });
@@ -172,7 +174,6 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
     try {
       let spec = vl.compile(vlSpec, logger).spec;
       const runtime = vega.parse(spec, vlSpec.config);// vlConfig);
-      // console.log(this.props.filters);
       if (this.isRenderD3Chart()) {
         renderD3Chart(this.props.actionId, this.refs[CHART_REF], this.props.fromSpec as FacetedCompositeUnitSpec, vlSpec as FacetedCompositeUnitSpec, this.props.schema, this.props.data.values, this.props.transitionAttrs);
       }
@@ -182,12 +183,10 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
           .initialize(this.refs[CHART_REF] as any)
           .renderer(this.props.renderer || 'svg')
           .hover();
-        if (!this.props.isPreview) {
-          // TODO: upgrade tooltip
-          // var handler = new vegaTooltip.Handler();
-          // vegaTooltip(this.view);
-          // this.view.tooltip(handler.call);
-        }
+        // TODO: upgrade tooltip
+        // var handler = new vegaTooltip.Handler();
+        // vegaTooltip(this.view);
+        // this.view.tooltip(handler.call);
         this.bindData();
       }
     } catch (err) {
