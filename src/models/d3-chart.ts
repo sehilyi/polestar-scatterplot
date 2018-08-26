@@ -212,12 +212,13 @@ export function appendAxes(id: string, spec: FacetedCompositeUnitSpec, data: any
   let xField = spec.encoding.x['field'];
   let yField = spec.encoding.y['field'];
   let x = d3.scaleLinear()
-    .domain(d3.extent(data.map(x => x[xField])))
-    .range([0, CHART_SIZE.width]).nice();
-
+    .domain(d3.extent(data.map(x => x[xField]))).nice()
+    .rangeRound([0, CHART_SIZE.width])
+    // .interpolate(d3.interpolateRound);
   let y = d3.scaleLinear()
-    .domain(d3.extent(data.map(x => x[yField])))
-    .range([CHART_SIZE.height, 0]).nice();
+    .domain(d3.extent(data.map(x => x[yField]))).nice()
+    .rangeRound([CHART_SIZE.height, 0])
+    // .interpolate(d3.interpolateRound);
   let xAxis = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40));
   let yAxis = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40));
   let xGrid = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(null).tickSize(-CHART_SIZE.width);
