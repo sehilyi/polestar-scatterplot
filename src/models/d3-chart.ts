@@ -16,7 +16,7 @@ export const LEGEND_LT_MARGIN = 20;
 export const NOMINAL_COLOR_SCHEME = ['#4c78a8', '#f58518', '#e45756', '#72b7b2', '#54a24b', '#eeca3b', '#b279a2', '#ff9da6', '#9d755d', '#bab0ac'];
 
 export const TIMELINE_SIZE = {width: 250, height: 8};
-export const TIMELINE_MARGIN = {top: 20, right: 10, bottom: 20, left: 10};
+export const TIMELINE_MARGIN = {top: 15, right: 10, bottom: 25, left: 10};
 export const TIMELINE_COLOR_SCHEME = ['#3CA9C4', '#FAAB49', '#E56548', '#7A8C8F'];
 export const TIMELINE_CATEGORIES = ['MORPH', 'REPOSITION', 'COLOR', 'DELAY'];
 export type TIMELINE_CATEGORY = 'MORPH' | 'REPOSITION' | 'COLOR' | 'DELAY';
@@ -140,8 +140,8 @@ export function appendTransitionTimeline(id: string, title: string, stages: Tran
     .enter().append('text')
     .classed('stage-label', true)
     .text(function (d) {return d.title;})
-    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + accumDurationPlusDelay[i] / totalDuration * TIMELINE_SIZE.width + (d.duration + d.delay) / totalDuration * TIMELINE_SIZE.width / 2.0 + 4;})
-    .attr('y', TIMELINE_MARGIN.top + 20)
+    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + accumDurationPlusDelay[i] / totalDuration * TIMELINE_SIZE.width + (d.duration + d.delay) / totalDuration * TIMELINE_SIZE.width / 2.0;}) // + 4
+    .attr('y', TIMELINE_MARGIN.top + 25)
     .style('font-family', 'Roboto Condensed')
     .style('text-anchor', 'middle')
     .style('fill', '#2e2e2e')

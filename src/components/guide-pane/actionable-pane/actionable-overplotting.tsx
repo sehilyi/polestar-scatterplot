@@ -659,25 +659,25 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
 
   public FilterStages: TransitionAttr[] = [
-    {id: 'COLOR', title: 'Hide points by \'' + this.getDefaultLargeSizedNominalFieldName() + '\' field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+    {id: 'COLOR', title: 'Filter By Another Field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
   ];
   public PointOpacityStages: TransitionAttr[] = [
-    {id: 'COLOR', title: 'Reduce point opacity', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+    {id: 'COLOR', title: 'Reduce Point Opacity', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
   ]
   public PointResizeStages: TransitionAttr[] = [
-    {id: 'MORPH', title: 'Reduce point size', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+    {id: 'MORPH', title: 'Reduce Point Size', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
   ]
   public RemoveFillColorStages: TransitionAttr[] = [
-    {id: 'COLOR', title: 'Remove fill color', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+    {id: 'COLOR', title: 'Remove Fill Color', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
   ];
   public AggregateStages: TransitionAttr[] = [
-    {id: 'COLOR', title: 'Color by \'' + this.getDefaultSmallSizedNominalFieldName() + '\' field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY},
-    {id: 'REPOSITION', title: 'Aggregate to mean position', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+    {id: 'COLOR', title: 'Color By Another Field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY},
+    {id: 'REPOSITION', title: 'Aggregate To Average', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
   ];
   public DensityPlotStages: TransitionAttr[] = [
-    {id: 'MORPH', title: 'Rectangular Shape', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY},
+    {id: 'MORPH', title: 'Rect Shape', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY},
     {id: 'COLOR', title: 'Reduce Opacity', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY},
-    {id: 'REPOSITION', title: 'Move to binned position', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+    {id: 'REPOSITION', title: 'Grid Position', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
   ];
   public SeperateGraphStages: TransitionAttr[] = [
     {id: 'REPOSITION', title: 'Separate Graph by \'' + this.getDefaultLargeSizedNominalFieldName() + '\' field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
