@@ -15,7 +15,7 @@ import {QUANTITATIVE, NOMINAL} from '../../../../node_modules/vega-lite/build/sr
 import {Schema, toTransforms} from '../../../models';
 import {COLOR, COLUMN, SIZE} from '../../../../node_modules/vega-lite/build/src/channel';
 import {FieldPicker} from './actionable-common-ui/field-picker';
-import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN, renderDensityPlot, pointsAsMeanScatterplot, reducePointSize, reducePointOpacity, removeFillColor, resizeRootSVG, COMMON_DELAY, appendTransitionTimeline, TransitionAttr, COMMON_SHORT_DELAY, filterPoint, separateGraph, renderTransition, DensityPlotStages, AggregateStages, renderPoints} from '../../../models/d3-chart';
+import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN, renderDensityPlot, pointsAsMeanScatterplot, reducePointSize, reducePointOpacity, removeFillColor, resizeRootSVG, COMMON_DELAY, appendTransitionTimeline, TransitionAttr, COMMON_SHORT_DELAY, filterPoint, separateGraph, startTimeline, DensityPlotStages, AggregateStages, renderPoints} from '../../../models/d3-chart';
 import {OneOfFilter} from 'vega-lite/build/src/filter';
 import {NumberAdjuster} from './actionable-common-ui/number-adjuster';
 
@@ -294,43 +294,43 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     let oneOf = this.getDefaultOneOf(field);
     let id: ActionableID = "FILTER";
     onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
-    renderTransition(id, this.FilterStages);
+    startTimeline(id, this.FilterStages);
     filterPoint(id, field, oneOf, this.FilterStages);
   }
   private onChangeOpacityTransition() {
     let id: ActionableID = "CHANGE_POINT_OPACITY";
     onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
-    renderTransition(id, this.PointOpacityStages)
+    startTimeline(id, this.PointOpacityStages)
     reducePointOpacity(id, 0.1, this.PointOpacityStages);
   }
   private onChangePointSizeTransition() {
     let id: ActionableID = "CHANGE_POINT_SIZE";
     onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
-    renderTransition(id, this.PointResizeStages);
+    startTimeline(id, this.PointResizeStages);
     reducePointSize(id, this.PointResizeStages);
   }
   private onRemoveFillColorTransition() {
     let id: ActionableID = "REMOVE_FILL_COLOR";
     onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
-    renderTransition(id, this.RemoveFillColorStages);
+    startTimeline(id, this.RemoveFillColorStages);
     removeFillColor(id, this.RemoveFillColorStages);
   }
   private onAggregateTransition() {
     let id: ActionableID = "AGGREGATE_POINTS";
-    onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
-    renderTransition(id, AggregateStages);
+    // onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values, false);
+    startTimeline(id, AggregateStages);
     renderPoints(id, this.props.mainSpec, this.getAggregateSpec().spec, this.props.data.values, this.props.schema, true);
   }
   private onEncodingDensityTransition() {
     let id: ActionableID = "ENCODING_DENSITY";
     onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
-    renderTransition(id, DensityPlotStages);
+    startTimeline(id, DensityPlotStages);
     renderDensityPlot(id, this.props.mainSpec, this.props.data.values, DensityPlotStages, true);
   }
   private onSeparateGraphTransition() {
     let id: ActionableID = "SEPARATE_GRAPH";
     onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
-    renderTransition(id, this.SeperateGraphStages);
+    startTimeline(id, this.SeperateGraphStages);
     separateGraph(id, this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), this.SeperateGraphStages);
   }
 

@@ -110,7 +110,7 @@ export function appendRootSVG(id: string, CHART_REF: any) {
     .attr('height', '100%');
 }
 
-export function renderTransition(id: string, stages: TransitionAttr[]) {
+export function startTimeline(id: string, stages: TransitionAttr[]) {
   let totalDuration = d3.sum(stages.map(x => x.duration + x.delay));
   d3.select('#d3-timeline-' + id).selectAll('.timeline-pb')
     .attr('x', TIMELINE_MARGIN.left)
@@ -224,7 +224,7 @@ export function resizeRootSVG(id: string, count: number, isLegend: boolean, isTr
   let width = (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right) * count + (isLegend ? LEGEND_WIDTH : 0);
   let height = CHART_MARGIN.top + CHART_SIZE.height + CHART_MARGIN.bottom;
   selectRootSVG(id)
-    .transition().delay(typeof delay == 'undefined' ? 0 : delay).duration(duration)
+    .transition().delay(isTransition ? delay : 0).duration(isTransition ? duration : 0)
     .attr('viewBox', '0 0 ' + width + ' ' + height);
 }
 export function onPreviewReset(id: string, spec: FacetedCompositeUnitSpec, schema: Schema, values: any[], isTransition?: boolean, duration?: number, delay?: number) {
@@ -401,7 +401,7 @@ export function renderScatterplot(id: string, spec: FacetedCompositeUnitSpec, da
     .domain([0, d3.max(data.map(d => d[yField]))]).nice()
     .rangeRound([CHART_SIZE.height, 0]);
 
-  resizeRootSVG(id, 1, isLegend, isTransition, id == 'AGGREGATE_POINTS' ? AggregateStages[0].duration : 0);
+  resizeRootSVG(id, 1, isLegend, false);
 
   // render legend
   let colorScale: d3.ScaleOrdinal<string, string>;
