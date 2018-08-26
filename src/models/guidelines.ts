@@ -9,6 +9,7 @@ import {NOMINAL, QUANTITATIVE} from "../../node_modules/vega-lite/build/src/type
 import {POINT, CIRCLE, SQUARE, RECT} from "vega-lite/build/src/mark";
 import {FacetedCompositeUnitSpec, TopLevelExtendedSpec} from "vega-lite/build/src/spec";
 import {Schema} from "../api/api";
+import {encoding} from "../../node_modules/vega-lite";
 
 export type GuideState = "WARN" | "TIP" | "DONE" | "IGNORE";
 export type guidelineIds = "NEW_CHART_BINNED_SCATTERPLOT" | "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" | "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES" |
@@ -383,7 +384,27 @@ export function isDensityPlot(spec: any) {
     return false;
   }
 }
-
+export function isMeanAggregated(spec: any) {
+  const {encoding} = spec;
+  let isXMeanFn = false, isYMeanFn = false;
+  if (typeof encoding.x.aggregate != 'undefined') {
+    isXMeanFn = true;
+  }
+  if (typeof encoding.y.aggregate != 'undefined') {
+    isYMeanFn = true;
+  }
+  return {isXMeanFn, isYMeanFn};
+}
+export function getColorField(spec: any) {
+  const {encoding} = spec;
+  let colorField;
+  try {
+    if (typeof encoding.color['field'] != 'undefined') {
+      colorField = encoding.color['field'];
+    }
+  } catch (e) {}
+  return {colorField};
+}
 /**
  * USED BY)
  * GUIDELINE_TOO_MANY_COLOR_CATEGORIES

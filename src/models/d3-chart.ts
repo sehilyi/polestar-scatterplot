@@ -1,8 +1,9 @@
 import * as d3 from 'd3';
 import {FacetedCompositeUnitSpec} from '../../node_modules/vega-lite/build/src/spec';
-import {BaseType, select} from 'd3';
-import {ActionableID} from './guidelines';
+import {BaseType, select, transition} from 'd3';
+import {isDensityPlot, isMeanAggregated, getColorField, ActionableID} from './guidelines';
 import {Schema} from '../models';
+import {NOMINAL} from '../../node_modules/vega-lite/build/src/type';
 
 // Basic property for d3-chart
 export const COMMON_DURATION: number = 1000;
@@ -11,7 +12,7 @@ export const COMMON_DELAY: number = 2000;
 export const COMMON_SHORT_DELAY: number = 300;
 export const CHART_SIZE = {width: 200, height: 200};
 export const CHART_MARGIN = {top: 20, right: 20, bottom: 50, left: 50};
-export const LEGEND_WIDTH = 100;
+export const LEGEND_WIDTH = 50;
 export const LEGEND_LT_MARGIN = 20;
 export const NOMINAL_COLOR_SCHEME = ['#4c78a8', '#f58518', '#e45756', '#72b7b2', '#54a24b', '#eeca3b', '#b279a2', '#ff9da6', '#9d755d', '#bab0ac'];
 
@@ -38,7 +39,17 @@ export interface PointAttr {
   ry: number;
 }
 
-export function renderD3Chart(id: ActionableID, CHART_REF: any, fromSpec: FacetedCompositeUnitSpec, toSpec: FacetedCompositeUnitSpec, sehcme: Schema, data: any[], transitionAttrs: TransitionAttr[]) {
+export const AggregateStages: TransitionAttr[] = [
+  {id: 'COLOR', title: 'Color By Another Field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY},
+  {id: 'REPOSITION', title: 'Aggregate To Average', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+];
+export const DensityPlotStages: TransitionAttr[] = [
+  {id: 'MORPH', title: 'Rect Shape', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY},
+  {id: 'COLOR', title: 'Reduce Opacity', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY},
+  {id: 'REPOSITION', title: 'Grid Position', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+];
+
+export function renderD3Chart(id: ActionableID, CHART_REF: any, fromSpec: FacetedCompositeUnitSpec, toSpec: FacetedCompositeUnitSpec, schema: Schema, data: any[], transitionAttrs: TransitionAttr[], isTransition: boolean) {
   // console.log('spec for D3:');
   // console.log(toSpec);
   removePrevChart(CHART_REF);
@@ -46,7 +57,28 @@ export function renderD3Chart(id: ActionableID, CHART_REF: any, fromSpec: Facete
   appendTransitionTimeline(id, '', transitionAttrs, false);
   appendAxes(id, toSpec, data);
   appendPoints(id, data);
-  pointsAsScatterplot(id, toSpec, data, sehcme);
+  renderPoints(id, fromSpec, toSpec, data, schema, isTransition);
+}
+
+export function renderPoints(id: string, fromSpec: FacetedCompositeUnitSpec, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, isTransition: boolean, duration?: number, delay?: number) {
+
+  // from
+  if (isTransition) {
+    if (isDensityPlot(fromSpec)) {
+      renderDensityPlot(id, fromSpec, data, DensityPlotStages, false);
+    }
+    else {
+      renderScatterplot(id, fromSpec, data, schema, false);
+    }
+  }
+
+  // to
+  if (isDensityPlot(spec)) {
+    renderDensityPlot(id, spec, data, DensityPlotStages, isTransition);
+  }
+  else {
+    renderScatterplot(id, spec, data, schema, isTransition);
+  }
 }
 
 export function isThereD3Chart(id: string) {
@@ -73,7 +105,7 @@ export function appendRootSVG(id: string, CHART_REF: any) {
     .attr('id', 'd3-chart-specified-' + id)
     .style('margin', 'auto')
     .append('svg')
-    .attr('viewBox', '0 0 ' + (CHART_SIZE.width + CHART_MARGIN.left + CHART_MARGIN.right) + ' ' + (CHART_SIZE.height + CHART_MARGIN.top + CHART_MARGIN.bottom))
+    // .attr('viewBox', '0 0 ' + (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right) + ' ' + (CHART_SIZE.height + CHART_MARGIN.top + CHART_MARGIN.bottom))
     .attr('width', '100%')
     .attr('height', '100%');
 }
@@ -188,27 +220,28 @@ export function removePrevChart(CHART_REF: any) {
     .remove();
 }
 
-export function resizeRootSVG(id: string, count: number, isLegend: boolean, duration?: number, delay?: number) {
+export function resizeRootSVG(id: string, count: number, isLegend: boolean, isTransition?: boolean, duration?: number, delay?: number) {
   let width = (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right) * count + (isLegend ? LEGEND_WIDTH : 0);
   let height = CHART_MARGIN.top + CHART_SIZE.height + CHART_MARGIN.bottom;
   selectRootSVG(id)
     .transition().delay(typeof delay == 'undefined' ? 0 : delay).duration(duration)
     .attr('viewBox', '0 0 ' + width + ' ' + height);
 }
-export function onPreviewReset(id: string, spec: FacetedCompositeUnitSpec, schema: Schema, values: any[], duration?: number, delay?: number) {
+export function onPreviewReset(id: string, spec: FacetedCompositeUnitSpec, schema: Schema, values: any[], isTransition?: boolean, duration?: number, delay?: number) {
   delay += COMMON_DELAY;
-  resizeRootSVG(id, 1, false, duration, delay);
+  resizeRootSVG(id, 1, false, isTransition, duration, delay);
   selectRootSVG(id)
     .selectAll('.remove-when-reset')
     .transition().delay(typeof delay == 'undefined' ? 0 : delay).duration(duration)
     .attr('opacity', 0).remove();
-  pointsAsScatterplot(id, spec, values, schema);//, duration, delay);
+  renderScatterplot(id, spec, values, schema, false);//, duration, delay);
 }
 
 export function appendAxes(id: string, spec: FacetedCompositeUnitSpec, data: any[]) {
   let svg = selectRootSVG(id);
   let xField = spec.encoding.x['field'];
   let yField = spec.encoding.y['field'];
+  const marginLeft = CHART_MARGIN.left;//isLegendUsing(spec) ? CHART_MARGIN.left + LEGEND_WIDTH : CHART_MARGIN.left;
   let x = d3.scaleLinear()
     .domain([0, d3.max(data.map(d => d[xField]))]).nice()
     .rangeRound([0, CHART_SIZE.width])
@@ -224,17 +257,17 @@ export function appendAxes(id: string, spec: FacetedCompositeUnitSpec, data: any
 
   svg.append('g')
     .classed('grid', true)
-    .attr('transform', 'translate(' + CHART_MARGIN.left + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
+    .attr('transform', 'translate(' + marginLeft + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
     .call(xGrid);
 
   svg.append('g')
     .classed('grid', true)
-    .attr('transform', 'translate(' + CHART_MARGIN.left + ',' + CHART_MARGIN.top + ')')
+    .attr('transform', 'translate(' + marginLeft + ',' + CHART_MARGIN.top + ')')
     .call(yGrid);
 
   svg.append('g')
     .classed('axis', true)
-    .attr('transform', 'translate(' + CHART_MARGIN.left + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
+    .attr('transform', 'translate(' + marginLeft + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
     .attr('stroke', '#888888')
     .attr('stroke-width', 0.5)
     .call(xAxis)
@@ -251,7 +284,7 @@ export function appendAxes(id: string, spec: FacetedCompositeUnitSpec, data: any
 
   svg.append('g')
     .classed('axis', true)
-    .attr('transform', 'translate(' + CHART_MARGIN.left + ',' + CHART_MARGIN.top + ')')
+    .attr('transform', 'translate(' + marginLeft + ',' + CHART_MARGIN.top + ')')
     .attr('stroke', '#888888')
     .attr('stroke-width', 0.5)
     .call(yAxis)
@@ -311,43 +344,107 @@ export function reducePointSize(id: string, stages: TransitionAttr[]) {
       return parseFloat(d3.select(this).attr('y')) + parseFloat(d3.select(this).attr('height')) / 4.0;
     });
 }
-export function pointsAsScatterplot(id: string, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, duration?: number, delay?: number) {
-  let xField = spec.encoding.x['field'];
-  let yField = spec.encoding.y['field'];
+export function renderLegend(id: string, attr: PointAttr, field: string, schema: Schema, isTransition: boolean, duration?: number, delay?: number): d3.ScaleOrdinal<string, string> {
+  const categoryDomain = schema.domain({field});
+  const colorScale = d3.scaleOrdinal(NOMINAL_COLOR_SCHEME)
+    .domain(categoryDomain);
+  let legend = selectRootSVG(id).selectAll('.legend')
+    .data(categoryDomain)
+    .enter().append('g')
+    .classed('legend remove-when-reset', true)
+    .attr('transform', function (d, i) {
+      return 'translate(' +
+        (CHART_MARGIN.left + CHART_SIZE.width + LEGEND_LT_MARGIN) + ',' +
+        (CHART_MARGIN.top + LEGEND_LT_MARGIN + i * 20) + ')';
+    });
+  legend.append('rect')
+    .attr('x', 0)
+    .attr('y', 0)
+    .attr('rx', attr.rx)
+    .attr('ry', attr.ry)
+    .attr('width', attr.width)
+    .attr('height', attr.height)
+    .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : colorScale(d);})
+    .attr('stroke-width', attr.stroke_width)
+    .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : colorScale(d);})
+    .attr('opacity', attr.opacity);
 
-  let attr = getPointAttrs(spec);
+  legend.append('text')
+    .attr('x', 10)
+    .attr('y', 10)
+    .text(function (d) {return d as string;})
+    .classed('textselected', true)
+    .style('text-anchor', 'start')
+    .style('font-size', 15);
 
-  let x = d3.scaleLinear()
+  legend
+    .attr('opacity', 0)
+    .transition().duration(isTransition ? AggregateStages[0].duration : 0)
+    .attr('opacity', 1);
+
+  return colorScale;
+}
+export function isLegendUsing(spec: FacetedCompositeUnitSpec) {
+  return typeof getColorField(spec).colorField != 'undefined';
+}
+export function renderScatterplot(id: string, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, isTransition: boolean, duration?: number, delay?: number) {
+  const {isXMeanFn, isYMeanFn} = isMeanAggregated(spec);
+  const {colorField} = getColorField(spec); //TODO: consider when nominal
+  const isLegend = isLegendUsing(spec);
+  const xField = spec.encoding.x['field'], yField = spec.encoding.y['field'];
+  const attr = getPointAttrs(spec);
+
+  const x = d3.scaleLinear()
     .domain([0, d3.max(data.map(d => d[xField]))]).nice()
     .rangeRound([0, CHART_SIZE.width]);
-  let y = d3.scaleLinear()
+  const y = d3.scaleLinear()
     .domain([0, d3.max(data.map(d => d[yField]))]).nice()
     .rangeRound([CHART_SIZE.height, 0]);
 
+  resizeRootSVG(id, 1, isLegend, isTransition, id == 'AGGREGATE_POINTS' ? AggregateStages[0].duration : 0);
+
+  // render legend
+  let colorScale: d3.ScaleOrdinal<string, string>;
+  if (isLegend) {
+    colorScale = renderLegend(id, attr, colorField, schema, isTransition);
+  }
+
   selectRootSVG(id)
     .selectAll('.point')
-    // TODO: any better idea for type check?
-    .transition().delay(typeof delay == 'undefined' ? 0 : delay).duration(duration)
-    .attr('stroke-width', attr.stroke_width)
-    .attr('fill', attr.fill)
-    .attr('opacity', attr.opacity)
-    .attr('stroke', attr.stroke)
-    //circle vs rect
+    // AGGREGATE_POINTS' COLORING
+    .transition().duration(isTransition ? id == 'AGGREGATE_POINTS' ? AggregateStages[0].duration : 0 : 0)
+    //
+    .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : (typeof colorScale != 'undefined' ? colorScale(d[colorField]) : attr.fill);})
+    .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : (typeof colorScale != 'undefined' ? colorScale(d[colorField]) : attr.stroke);})
+    // AGGREGATE_POINTS' REPOSITION
+    .transition().delay(isTransition ? id == 'AGGREGATE_POINTS' ? AggregateStages[0].delay : 0 : 0)
+    .duration(isTransition ? id == 'AGGREGATE_POINTS' ? AggregateStages[1].duration : 0 : 0)
+    //
+    .attr('x', function (d) {
+      return !isXMeanFn ?
+        CHART_MARGIN.left + x(d[xField]) + (-attr.width / 2.0) :
+        CHART_MARGIN.left + x(d3.mean(data.map(function (_d) {return _d[colorField] == d[colorField] ? _d[xField] : null;}))) + (-attr.width / 2.0);
+    })
+    .attr('y', function (d) {
+      return !isYMeanFn ?
+        y(d[yField]) + (-attr.height / 2.0 + CHART_MARGIN.top) :
+        y(d3.mean(data.map(function (_d) {return _d[colorField] == d[colorField] ? _d[yField] : null;}))) + (-attr.height / 2.0 + CHART_MARGIN.top);
+    })
+    .attr('rx', attr.rx)  // to draw either circle or rect
+    .attr('ry', attr.ry)
     .attr('width', attr.width)
     .attr('height', attr.height)
-    .attr('x', function (d) {return x(d[xField]) + (-attr.width / 2.0 + CHART_MARGIN.left);})
-    .attr('y', function (d) {return y(d[yField]) + (-attr.height / 2.0 + CHART_MARGIN.top);})
-    .attr('rx', attr.rx)
-    .attr('ry', attr.ry);
+    .attr('stroke-width', attr.stroke_width)
+    .attr('opacity', attr.opacity);
 
-  if (typeof spec.encoding.column != 'undefined') {
-    let field = spec.encoding.column.field as string;
-    separateGraph(id, spec, data, schema, field,
-      [{
-        id: 'REPOSITION', title: 'Separate Graph by \'' + field + '\' field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY
-      }]
-    );
-  }
+  // if (typeof spec.encoding.column != 'undefined') {
+  //   let field = spec.encoding.column.field as string;
+  //   separateGraph(id, spec, data, schema, field,
+  //     [{
+  //       id: 'REPOSITION', title: 'Separate Graph by \'' + field + '\' field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY
+  //     }]
+  //   );
+  // }
 }
 
 export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
@@ -500,8 +597,8 @@ export function separateGraph(id: string, spec: FacetedCompositeUnitSpec, data: 
   }
   svg.selectAll('.point').raise();
 }
-export function pointsAsMeanScatterplot(id: string, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, field: string, stages: TransitionAttr[]) {
-  resizeRootSVG(id, 1, true, stages[0].duration);
+export function pointsAsMeanScatterplot(id: string, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, field: string, stages: TransitionAttr[], isTransition: boolean) {
+  resizeRootSVG(id, 1, true, isTransition, stages[0].duration);
   let svg = selectRootSVG(id);
   let xField = spec.encoding.x['field'];
   let yField = spec.encoding.y['field'];
@@ -563,7 +660,7 @@ export function pointsAsMeanScatterplot(id: string, spec: FacetedCompositeUnitSp
     .transition().duration(stages[0].duration)
     .attr('opacity', 1);
 }
-export function pointsAsDensityPlot(id: string, spec: FacetedCompositeUnitSpec, data: any[], stages: TransitionAttr[]) {
+export function renderDensityPlot(id: string, spec: FacetedCompositeUnitSpec, data: any[], stages: TransitionAttr[], isTransition: boolean) {
   let svg = selectRootSVG(id);
   let xField = spec.encoding.x['field'];
   let yField = spec.encoding.y['field'];
@@ -587,17 +684,19 @@ export function pointsAsDensityPlot(id: string, spec: FacetedCompositeUnitSpec, 
     .domain([0, d3.max(data, function (d) {return d[yField]})]).nice()
     .range(yBinRange.reverse());
 
+  resizeRootSVG(id, 1, isLegendUsing(spec));
+
   svg.selectAll('.point')
-    .transition().duration(stages[0].duration)
+    .transition().duration(isTransition ? stages[0].duration : 0)
     .attr('rx', 0)
     .attr('ry', 0)
     .attr('fill', '#08519c')
     .attr('stroke-width', 0)
     .attr('width', binWidth)
     .attr('height', binHeight)
-    .transition().duration(stages[1].duration).delay(stages[0].delay)
+    .transition().duration(isTransition ? stages[1].duration : 0).delay(isTransition ? stages[0].delay : 0)
     .attr('opacity', 0.2)
-    .transition().duration(stages[2].duration).delay(stages[1].delay)
+    .transition().duration(isTransition ? stages[2].duration : 0).delay(isTransition ? stages[1].delay : 0)
     .attr('x', function (d) {return (qsx(d[xField]) + (-binWidth / 2.0 + CHART_MARGIN.left));})
     .attr('y', function (d) {return (qsy(d[yField]) + (-binHeight / 2.0 + CHART_MARGIN.top));});
 }

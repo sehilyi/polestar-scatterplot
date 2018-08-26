@@ -111,10 +111,10 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
           chart.style.height = this.size.height + 'px';
           this.updateSpec();
         } else if (prevProps.data !== data) {
-          // TODO: should handle the filter!!!
           if (this.isRenderD3Chart()) {
-            renderD3Chart(this.props.actionId, this.refs[CHART_REF], this.props.fromSpec as FacetedCompositeUnitSpec, spec as FacetedCompositeUnitSpec, this.props.schema, this.props.data.values, this.props.transitionAttrs);
-          } else {
+            renderD3Chart(this.props.actionId, this.refs[CHART_REF], this.props.fromSpec as FacetedCompositeUnitSpec, spec as FacetedCompositeUnitSpec, this.props.schema, this.props.data.values, this.props.transitionAttrs, false);
+          }
+          else {
             this.bindData();
             this.runView();
           }
@@ -175,7 +175,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
       let spec = vl.compile(vlSpec, logger).spec;
       const runtime = vega.parse(spec, vlSpec.config);// vlConfig);
       if (this.isRenderD3Chart()) {
-        renderD3Chart(this.props.actionId, this.refs[CHART_REF], this.props.fromSpec as FacetedCompositeUnitSpec, vlSpec as FacetedCompositeUnitSpec, this.props.schema, this.props.data.values, this.props.transitionAttrs);
+        renderD3Chart(this.props.actionId, this.refs[CHART_REF], this.props.fromSpec as FacetedCompositeUnitSpec, vlSpec as FacetedCompositeUnitSpec, this.props.schema, this.props.data.values, this.props.transitionAttrs, false);
       }
       else {
         this.view = new vega.View(runtime)
