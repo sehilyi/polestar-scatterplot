@@ -459,7 +459,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       aggregate: 'count',
       field: '*',
       type: QUANTITATIVE,
-      scale: {scheme: 'blues'}  //greenblue
+      scale: {scheme: 'blues'}
     };
 
     previewSpec.encoding.x = {

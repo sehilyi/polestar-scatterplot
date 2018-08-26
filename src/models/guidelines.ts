@@ -211,7 +211,7 @@ export function checkGuideline(props: any) {
   // OVER_PLOTTING
   {
     // TODO: only considering scatterplot for now
-    if (isClutteredScatterPlot(spec)) {
+    if (isSimpleScatterplot(spec)) {
       addGuidelineItem(GUIDELINE_OVER_PLOTTING, props.handleAction);
     } else {
       removeGuidelineItem(GUIDELINE_OVER_PLOTTING, props.handleAction);
@@ -306,8 +306,6 @@ export function getGuidedSpec(spec: TopLevelExtendedSpec, guidelines: GuidelineI
     }
   } catch (e) {}
 
-  // console.log("newSpec:");
-  // console.log(newSpec);
   return newSpec;
 }
 
@@ -341,31 +339,27 @@ export function isColorUsed(spec: any) {
   }
 }
 // For D3 chart
-export function isDensityPlot(spec: any) {
-  console.log("Checking If Density Plot:");
-  console.log(spec);
-  const {encoding, mark} = spec;
-  try {
-    if (encoding.x.type === QUANTITATIVE && encoding.y.type === QUANTITATIVE &&
-      typeof encoding.x.bin !== 'undefined' && typeof encoding.y.bin !== 'undefined' &&
-      mark === RECT &&
-      encoding.color.aggregate === 'count') {
-      return true;
-    }
-  } catch (e) {
+export function isAllowedScatterplot(spec: any) {
+  if (isSimpleScatterplot(spec)) {
+    return true;
+  }
+  else if (this.isDensityPlot(spec)) {
+    return true;
+  }
+  else {
     return false;
   }
 }
-export function isClutteredScatterPlot(spec: any) {
-  // console.log("Checking If This Is Scatterplot:");
-  // console.log(spec);
+export function isSimpleScatterplot(spec: any) {
   const {encoding, mark} = spec;
   try {
-    // TODO: any other spec to make this not scatterplot?
-    if (encoding.x.type === QUANTITATIVE && encoding.y.type === QUANTITATIVE &&
+    if (typeof encoding.shape == 'undefined' && typeof encoding.text == 'undefined' &&
+      typeof encoding.row == 'undefined' &&
+      (typeof encoding.size == 'undefined' || typeof encoding.size.field == 'undefined') &&
+      encoding.x.type === QUANTITATIVE && encoding.y.type === QUANTITATIVE &&
       // typeof encoding.x.bin == 'undefined' && typeof encoding.y.bin == 'undefined' &&
-      (mark === POINT || mark === CIRCLE || mark === SQUARE)) { //&&
-      // (typeof encoding.x.aggregate == 'undefined' || typeof encoding.y.aggregate == 'undefined')) {
+      // (typeof encoding.x.aggregate == 'undefined' || typeof encoding.y.aggregate == 'undefined')
+      (mark === POINT || mark === CIRCLE || mark === SQUARE)) {
       return true;
     } else {
       return false;
@@ -374,21 +368,18 @@ export function isClutteredScatterPlot(spec: any) {
     return false;
   }
 }
-export function isSimpleScatterPlot(spec: any) {
-  const {encoding} = spec;
-  if (typeof encoding.shape == 'undefined' &&
-    typeof encoding.text == 'undefined' &&
-    // typeof encoding.x.aggregate == 'undefined' && typeof encoding.y.aggregate == 'undefined' &&
-    typeof encoding.row == 'undefined' &&
-    (typeof encoding.size == 'undefined' || typeof encoding.size.field == 'undefined')) {
-    return true;
-  } else if (this.isDensityPlot(spec)) {
-    return true;
-  }
-  else if (!isClutteredScatterPlot(spec)) {
-    return false;
-  }
-  else {
+export function isDensityPlot(spec: any) {
+  const {encoding, mark} = spec;
+  try {
+    if (encoding.x.type === QUANTITATIVE && encoding.y.type === QUANTITATIVE &&
+      typeof encoding.x.bin !== 'undefined' && typeof encoding.y.bin !== 'undefined' &&
+      mark === RECT && encoding.color.aggregate === 'count') {
+      return true;
+    }
+    else {
+      return false;
+    }
+  } catch (e) {
     return false;
   }
 }

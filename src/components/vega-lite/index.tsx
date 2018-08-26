@@ -8,7 +8,7 @@ import * as vegaTooltip from 'vega-tooltip';
 import {SPINNER_COLOR} from '../../constants';
 import {Logger} from '../util/util.logger';
 import {Themes, themeDict} from '../../models/theme/theme';
-import {Guidelines, GuidelineItemTypes, GuidelineItemActionableCategories, getRange, GuidelineItemOverPlotting, isClutteredScatterPlot, isSimpleScatterPlot, getDefaultCategoryPicks, getGuidedSpec, ActionableID} from '../../models/guidelines';
+import {Guidelines, GuidelineItemTypes, GuidelineItemActionableCategories, getRange, GuidelineItemOverPlotting, isSimpleScatterplot, isAllowedScatterplot, getDefaultCategoryPicks, getGuidedSpec, ActionableID} from '../../models/guidelines';
 import {Schema, ShelfFilter, filterHasField, filterIndexOf} from '../../models';
 import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 import {X} from '../../../node_modules/vega-lite/build/src/channel';
@@ -140,7 +140,7 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
   }
 
   private isRenderD3Chart(): boolean {
-    return this.props.isPreview && isSimpleScatterPlot(this.props.spec);
+    return this.props.isPreview && isAllowedScatterplot(this.props.spec);
   }
   protected updateSpec() {
     // NOTE: spec used to test warning logger

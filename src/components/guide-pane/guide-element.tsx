@@ -6,7 +6,7 @@ import * as warn from '../../../images/warning.png';
 import * as tip from '../../../images/tip.png';
 import * as done from '../../../images/done.png';
 import * as ignore from '../../../images/ignore.png';
-import {GuidelineItemTypes, GuidelineItemActionableCategories, isSimpleScatterPlot, getGuidedSpec, GuidelineItem, Guidelines} from '../../models/guidelines';
+import {GuidelineItemTypes, GuidelineItemActionableCategories, isAllowedScatterplot, getGuidedSpec, GuidelineItem, Guidelines} from '../../models/guidelines';
 import {ActionHandler} from '../../actions';
 import {GuidelineAction, GUIDELINE_SHOW_RECT_INDICATOR, GUIDELINE_HIDE_INDICATOR, GUIDELINE_TOGGLE_IGNORE_ITEM, GUIDELINE_TOGGLE_ISEXPANDED} from '../../actions/guidelines';
 import {ActionableCategory} from './actionable-pane/actionable-category';
@@ -208,7 +208,7 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
   }
 
   private onShowContour() {
-    if (isSimpleScatterPlot(this.props.mainSpec)) {
+    if (isAllowedScatterplot(this.props.mainSpec)) {
       // showContourInD3Chart(this.props.mainSpec, this.props.data.values);
     }
   }
