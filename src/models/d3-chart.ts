@@ -39,10 +39,8 @@ export interface PointAttr {
 }
 
 export function renderD3Chart(id: ActionableID, CHART_REF: any, fromSpec: FacetedCompositeUnitSpec, toSpec: FacetedCompositeUnitSpec, sehcme: Schema, data: any[], transitionAttrs: TransitionAttr[]) {
-  //
   console.log('spec for D3:');
   console.log(toSpec);
-  //
 
   removePrevChart(CHART_REF);
   appendRootSVG(id, CHART_REF);

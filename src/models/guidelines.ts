@@ -6,7 +6,7 @@ import {COLOR, Channel, SHAPE} from "vega-lite/build/src/channel";
 import {GUIDELINE_REMOVE_ITEM, GUIDELINE_ADD_ITEM, GuidelineAction} from "../actions/guidelines";
 import {OneOfFilterShelfProps} from "../components/filter-pane/one-of-filter-shelf";
 import {NOMINAL, QUANTITATIVE} from "../../node_modules/vega-lite/build/src/type";
-import {POINT, CIRCLE, SQUARE} from "vega-lite/build/src/mark";
+import {POINT, CIRCLE, SQUARE, RECT} from "vega-lite/build/src/mark";
 import {FacetedCompositeUnitSpec, TopLevelExtendedSpec} from "vega-lite/build/src/spec";
 import {Schema} from "../api/api";
 
@@ -259,8 +259,8 @@ export function handleTooManyCategories(newSpec: FacetedCompositeUnitSpec, itemD
   return newSpec;
 }
 
-export function getGuidedSpec(spec: TopLevelExtendedSpec, guidelines: GuidelineItemTypes[], schema: Schema, filters?: ShelfFilter[]): any{
-  if(typeof spec == 'undefined') return spec;
+export function getGuidedSpec(spec: TopLevelExtendedSpec, guidelines: GuidelineItemTypes[], schema: Schema, filters?: ShelfFilter[]): any {
+  if (typeof spec == 'undefined') return spec;
   // console.log(spec);
   let newSpec = (JSON.parse(JSON.stringify(spec))) as FacetedCompositeUnitSpec;
   guidelines.forEach(item => {
@@ -311,24 +311,6 @@ export function getGuidedSpec(spec: TopLevelExtendedSpec, guidelines: GuidelineI
   return newSpec;
 }
 
-export function isClutteredScatterPlot(spec: any) {
-  // console.log("Checking If This Is Scatterplot:");
-  // console.log(spec);
-  const {encoding, mark} = spec;
-  try {
-    // TODO: any other spec to make this not scatterplot?
-    if (encoding.x.type === QUANTITATIVE && encoding.y.type === QUANTITATIVE &&
-      typeof encoding.x.bin == 'undefined' && typeof encoding.y.bin == 'undefined' &&
-      (mark === POINT || mark === CIRCLE || mark === SQUARE)) { //&&
-      // (typeof encoding.x.aggregate == 'undefined' || typeof encoding.y.aggregate == 'undefined')) {
-      return true;
-    } else {
-      return false;
-    }
-  } catch (e) { // when some parts of spec are not defined
-    return false;
-  }
-}
 export function isRowOrColumnUsed(spec: any) {
   const {encoding} = spec;
   if (typeof encoding.row != 'undefined' || typeof encoding.column != 'undefined') {
@@ -359,19 +341,53 @@ export function isColorUsed(spec: any) {
   }
 }
 // For D3 chart
-export function isSimpleScatterPlot(spec: any) {
-  if (!isClutteredScatterPlot(spec)) {
-    return;
+export function isDensityPlot(spec: any) {
+  console.log("Checking If Density Plot:");
+  console.log(spec);
+  const {encoding, mark} = spec;
+  try {
+    if (encoding.x.type === QUANTITATIVE && encoding.y.type === QUANTITATIVE &&
+      typeof encoding.x.bin !== 'undefined' && typeof encoding.y.bin !== 'undefined' &&
+      mark === RECT &&
+      encoding.color.aggregate === 'count') {
+      return true;
+    }
+  } catch (e) {
+    return false;
   }
+}
+export function isClutteredScatterPlot(spec: any) {
+  // console.log("Checking If This Is Scatterplot:");
+  // console.log(spec);
+  const {encoding, mark} = spec;
+  try {
+    // TODO: any other spec to make this not scatterplot?
+    if (encoding.x.type === QUANTITATIVE && encoding.y.type === QUANTITATIVE &&
+      // typeof encoding.x.bin == 'undefined' && typeof encoding.y.bin == 'undefined' &&
+      (mark === POINT || mark === CIRCLE || mark === SQUARE)) { //&&
+      // (typeof encoding.x.aggregate == 'undefined' || typeof encoding.y.aggregate == 'undefined')) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (e) { // when some parts of spec are not defined
+    return false;
+  }
+}
+export function isSimpleScatterPlot(spec: any) {
   const {encoding} = spec;
-  if (typeof encoding.color == 'undefined' && typeof encoding.shape == 'undefined' &&
+  if (typeof encoding.shape == 'undefined' &&
     typeof encoding.text == 'undefined' &&
-    typeof encoding.x.aggregate == 'undefined' && typeof encoding.y.aggregate == 'undefined' &&
+    // typeof encoding.x.aggregate == 'undefined' && typeof encoding.y.aggregate == 'undefined' &&
     typeof encoding.row == 'undefined' &&
     (typeof encoding.size == 'undefined' || typeof encoding.size.field == 'undefined')) {
     return true;
+  } else if (this.isDensityPlot(spec)) {
+    return true;
   }
-  //TODO: check density plot
+  else if (!isClutteredScatterPlot(spec)) {
+    return false;
+  }
   else {
     return false;
   }
