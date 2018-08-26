@@ -15,7 +15,7 @@ import {QUANTITATIVE, NOMINAL} from '../../../../node_modules/vega-lite/build/sr
 import {Schema, toTransforms} from '../../../models';
 import {COLOR, COLUMN, SIZE} from '../../../../node_modules/vega-lite/build/src/channel';
 import {FieldPicker} from './actionable-common-ui/field-picker';
-import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN, renderDensityPlot, pointsAsMeanScatterplot, reducePointSize, reducePointOpacity, removeFillColor, resizeRootSVG, COMMON_DELAY, appendTransitionTimeline, TransitionAttr, COMMON_SHORT_DELAY, filterPoint, separateGraph, startTimeline, DensityPlotStages, AggregateStages, renderPoints} from '../../../models/d3-chart';
+import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN, renderDensityPlot, pointsAsMeanScatterplot, reducePointSize, reducePointOpacity, removeFillColor, resizeRootSVG, COMMON_DELAY, appendTransitionTimeline, TransitionAttr, COMMON_SHORT_DELAY, filterPoint, separateGraph, startTimeline, DensityPlotStages, AggregateStages, renderPoints, FilterStages, PointOpacityStages, PointResizeStages, SeperateGraphStages, RemoveFillColorStages} from '../../../models/d3-chart';
 import {OneOfFilter} from 'vega-lite/build/src/filter';
 import {NumberAdjuster} from './actionable-common-ui/number-adjuster';
 
@@ -289,31 +289,27 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       type: SPEC_TO_DENSITY_PLOT
     })
   }
+
   private onFilterTransition() {
     let field = this.getDefaultSmallSizedNominalFieldName(getRowAndColumnField(this.props.mainSpec));
     let oneOf = this.getDefaultOneOf(field);
     let id: ActionableID = "FILTER";
     onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
-    startTimeline(id, this.FilterStages);
-    filterPoint(id, field, oneOf, this.FilterStages);
+    startTimeline(id, FilterStages);
+    filterPoint(id, field, oneOf, FilterStages);
   }
   private onChangeOpacityTransition() {
     let id: ActionableID = "CHANGE_POINT_OPACITY";
-    onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
-    startTimeline(id, this.PointOpacityStages)
-    reducePointOpacity(id, 0.1, this.PointOpacityStages);
+    startTimeline(id, PointOpacityStages);
+    renderPoints(id, this.props.mainSpec, this.getChangeOpacitySpec().spec, this.props.data.values, this.props.schema, true);
+    // reducePointOpacity(id, 0.1, this.PointOpacityStages);
   }
   private onChangePointSizeTransition() {
     let id: ActionableID = "CHANGE_POINT_SIZE";
-    onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
-    startTimeline(id, this.PointResizeStages);
-    reducePointSize(id, this.PointResizeStages);
-  }
-  private onRemoveFillColorTransition() {
-    let id: ActionableID = "REMOVE_FILL_COLOR";
-    onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
-    startTimeline(id, this.RemoveFillColorStages);
-    removeFillColor(id, this.RemoveFillColorStages);
+    // onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
+    startTimeline(id, PointResizeStages);
+    renderPoints(id, this.props.mainSpec, this.getResizePointSpec().spec, this.props.data.values, this.props.schema, true);
+    // reducePointSize(id, this.PointResizeStages);
   }
   private onAggregateTransition() {
     let id: ActionableID = "AGGREGATE_POINTS";
@@ -328,8 +324,14 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   private onSeparateGraphTransition() {
     let id: ActionableID = "SEPARATE_GRAPH";
     onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
-    startTimeline(id, this.SeperateGraphStages);
-    separateGraph(id, this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), this.SeperateGraphStages);
+    startTimeline(id, SeperateGraphStages);
+    separateGraph(id, this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), SeperateGraphStages);
+  }
+  private onRemoveFillColorTransition() {
+    let id: ActionableID = "REMOVE_FILL_COLOR";
+    onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
+    startTimeline(id, RemoveFillColorStages);
+    removeFillColor(id, RemoveFillColorStages);
   }
 
   private getDefaultOneOf(field: string) {
@@ -354,43 +356,51 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         fromSpec={this.props.mainSpec}
         actionId={"FILTER"}
         schema={this.props.schema}
-        transitionAttrs={this.FilterStages} />
+        transitionAttrs={FilterStages} />
     );
   }
-  private renderChangePointSizePreview() {
+  private getResizePointSpec() {
     // TODO: handle a case where size is already used
-    let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
-    previewSpec.encoding = {
-      ...previewSpec.encoding,
+    let spec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
+
+    spec.encoding = {
+      ...spec.encoding,
       size: {value: DEFAULT_CHANGE_POINT_SIZE}
     }
+
+    return {spec};
+  }
+  private renderChangePointSizePreview() {
     return (
-      <VegaLite spec={previewSpec}
+      <VegaLite spec={this.getResizePointSpec().spec}
         logger={this.plotLogger}
         data={this.props.data}
         isPreview={true}
         fromSpec={this.props.mainSpec}
         actionId={"CHANGE_POINT_SIZE"}
         schema={this.props.schema}
-        transitionAttrs={this.PointResizeStages} />
+        transitionAttrs={PointResizeStages} />
     );
   }
-  private renderChangeOpacityPreview() {
-    let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
+  private getChangeOpacitySpec() {
+    let spec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
 
-    previewSpec.encoding = {
-      ...previewSpec.encoding,
+    spec.encoding = {
+      ...spec.encoding,
       opacity: {value: 0.3}
     }
+    return {spec};
+  }
+  private renderChangeOpacityPreview() {
     return (
-      <VegaLite spec={previewSpec}
+      <VegaLite spec={this.getChangeOpacitySpec().spec}
         logger={this.plotLogger}
         data={this.props.data}
         isPreview={true}
         fromSpec={this.props.mainSpec}
         actionId={"CHANGE_POINT_OPACITY"}
         schema={this.props.schema}
-        transitionAttrs={this.PointOpacityStages} />
+        transitionAttrs={PointOpacityStages} />
     );
   }
   private renderRemoveFillColorPreview() {
@@ -407,10 +417,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         fromSpec={this.props.mainSpec}
         actionId={"REMOVE_FILL_COLOR"}
         schema={this.props.schema}
-        transitionAttrs={this.RemoveFillColorStages} />
+        transitionAttrs={RemoveFillColorStages} />
     );
   }
-  private getAggregateSpec(){
+  private getAggregateSpec() {
     let spec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
 
     spec.encoding.x = {
@@ -508,7 +518,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         fromSpec={this.props.mainSpec}
         actionId={"SEPARATE_GRAPH"}
         schema={this.props.schema}
-        transitionAttrs={this.SeperateGraphStages} />
+        transitionAttrs={SeperateGraphStages} />
     );
   }
 
@@ -653,22 +663,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     ];
     return paneData;
   }
-
-  public FilterStages: TransitionAttr[] = [
-    {id: 'COLOR', title: 'Filter By Another Field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
-  ];
-  public PointOpacityStages: TransitionAttr[] = [
-    {id: 'COLOR', title: 'Reduce Point Opacity', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
-  ]
-  public PointResizeStages: TransitionAttr[] = [
-    {id: 'MORPH', title: 'Reduce Point Size', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
-  ]
-  public RemoveFillColorStages: TransitionAttr[] = [
-    {id: 'COLOR', title: 'Remove Fill Color', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
-  ];
-  public SeperateGraphStages: TransitionAttr[] = [
-    {id: 'REPOSITION', title: 'Separate Graph by \'' + this.getDefaultLargeSizedNominalFieldName() + '\' field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
-  ];
 }
 
 export const ActionableOverplotting = (CSSModules(ActionableOverplottingBase, styles));

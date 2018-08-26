@@ -48,6 +48,21 @@ export const DensityPlotStages: TransitionAttr[] = [
   {id: 'COLOR', title: 'Reduce Opacity', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY},
   {id: 'REPOSITION', title: 'Grid Position', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
 ];
+export const PointOpacityStages: TransitionAttr[] = [
+  {id: 'COLOR', title: 'Reduce Point Opacity', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+]
+export const FilterStages: TransitionAttr[] = [
+  {id: 'COLOR', title: 'Filter By Another Field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+];
+export const PointResizeStages: TransitionAttr[] = [
+  {id: 'MORPH', title: 'Reduce Point Size', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+]
+export const RemoveFillColorStages: TransitionAttr[] = [
+  {id: 'COLOR', title: 'Remove Fill Color', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+];
+export const SeperateGraphStages: TransitionAttr[] = [
+  {id: 'REPOSITION', title: 'Separate Graph By Another Field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+];
 
 export function renderD3Chart(id: ActionableID, CHART_REF: any, fromSpec: FacetedCompositeUnitSpec, toSpec: FacetedCompositeUnitSpec, schema: Schema, data: any[], transitionAttrs: TransitionAttr[], isTransition: boolean) {
   // console.log('spec for D3:');
@@ -60,7 +75,7 @@ export function renderD3Chart(id: ActionableID, CHART_REF: any, fromSpec: Facete
   renderPoints(id, fromSpec, toSpec, data, schema, isTransition);
 }
 
-export function renderPoints(id: string, fromSpec: FacetedCompositeUnitSpec, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, isTransition: boolean, duration?: number, delay?: number) {
+export function renderPoints(id: ActionableID, fromSpec: FacetedCompositeUnitSpec, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, isTransition: boolean, duration?: number, delay?: number) {
 
   // from
   if (isTransition) {
@@ -105,7 +120,6 @@ export function appendRootSVG(id: string, CHART_REF: any) {
     .attr('id', 'd3-chart-specified-' + id)
     .style('margin', 'auto')
     .append('svg')
-    // .attr('viewBox', '0 0 ' + (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right) + ' ' + (CHART_SIZE.height + CHART_MARGIN.top + CHART_MARGIN.bottom))
     .attr('width', '100%')
     .attr('height', '100%');
 }
@@ -227,7 +241,7 @@ export function resizeRootSVG(id: string, count: number, isLegend: boolean, isTr
     .transition().delay(isTransition ? delay : 0).duration(isTransition ? duration : 0)
     .attr('viewBox', '0 0 ' + width + ' ' + height);
 }
-export function onPreviewReset(id: string, spec: FacetedCompositeUnitSpec, schema: Schema, values: any[], isTransition?: boolean, duration?: number, delay?: number) {
+export function onPreviewReset(id: ActionableID, spec: FacetedCompositeUnitSpec, schema: Schema, values: any[], isTransition?: boolean, duration?: number, delay?: number) {
   delay += COMMON_DELAY;
   resizeRootSVG(id, 1, false, isTransition, duration, delay);
   selectRootSVG(id)
@@ -387,7 +401,7 @@ export function renderLegend(id: string, attr: PointAttr, field: string, schema:
 export function isLegendUsing(spec: FacetedCompositeUnitSpec) {
   return typeof getColorField(spec).colorField != 'undefined';
 }
-export function renderScatterplot(id: string, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, isTransition: boolean, duration?: number, delay?: number) {
+export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, isTransition: boolean, duration?: number, delay?: number) {
   const {isXMeanFn, isYMeanFn} = isMeanAggregated(spec);
   const {colorField} = getColorField(spec); //TODO: consider when nominal
   const isLegend = isLegendUsing(spec);
@@ -417,14 +431,26 @@ export function renderScatterplot(id: string, spec: FacetedCompositeUnitSpec, da
     .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : (typeof colorScale != 'undefined' ? colorScale(d[colorField]) : attr.fill);})
     .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : (typeof colorScale != 'undefined' ? colorScale(d[colorField]) : attr.stroke);})
     // AGGREGATE_POINTS' REPOSITION
-    .transition().delay(
-      function () {
-        return isTransition ? id == 'AGGREGATE_POINTS' ? AggregateStages[0].delay : 0 : 0;
-      })
-    .duration(
-      function () {
-        return isTransition ? id == 'AGGREGATE_POINTS' ? AggregateStages[1].duration : 0 : 0;
-      })
+    // CHANGE_POINT_SIZE, CHANGE_POINT_OPACITY's ENCODING/COLOR
+    .transition().delay(function () {
+      if (isTransition && id == 'AGGREGATE_POINTS') {
+        return AggregateStages[0].delay;
+      }
+      else {
+        return 0;
+      }
+    })
+    .duration(function () {
+      if (isTransition && id == 'AGGREGATE_POINTS') {
+        return AggregateStages[1].duration;
+      }
+      else if (isTransition && id == 'CHANGE_POINT_OPACITY') {
+        return PointOpacityStages[0].duration;
+      }
+      else if (isTransition && id == 'CHANGE_POINT_SIZE') {
+        return PointResizeStages[0].duration;
+      }
+    })
     //
     .attr('x', function (d) {
       return !isXMeanFn ?
