@@ -317,15 +317,13 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private onAggregateTransition() {
     let id: ActionableID = "AGGREGATE_POINTS";
-    // onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values, false);
     startTimeline(id, AggregateStages);
     renderPoints(id, this.props.mainSpec, this.getAggregateSpec().spec, this.props.data.values, this.props.schema, true);
   }
   private onEncodingDensityTransition() {
     let id: ActionableID = "ENCODING_DENSITY";
-    onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
     startTimeline(id, DensityPlotStages);
-    renderDensityPlot(id, this.props.mainSpec, this.props.data.values, DensityPlotStages, true);
+    renderPoints(id, this.props.mainSpec, this.getDensityPlotSpec().spec, this.props.data.values, this.props.schema, true);
   }
   private onSeparateGraphTransition() {
     let id: ActionableID = "SEPARATE_GRAPH";
@@ -445,31 +443,33 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         transitionAttrs={AggregateStages} />
     );
   }
-  private renderEncodingDensityPreview() {
-    let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
+  private getDensityPlotSpec() {
+    let spec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
 
-    //TODO: What should we do when color have a field?
-    previewSpec.encoding.color = {
+    spec.encoding.color = {
       aggregate: 'count',
       field: '*',
       type: QUANTITATIVE,
       scale: {scheme: 'blues'}
     };
 
-    previewSpec.encoding.x = {
-      ...previewSpec.encoding.x,
+    spec.encoding.x = {
+      ...spec.encoding.x,
       bin: {maxbins: 50}
     };
 
-    previewSpec.encoding.y = {
-      ...previewSpec.encoding.y,
+    spec.encoding.y = {
+      ...spec.encoding.y,
       bin: {maxbins: 50}
     };
 
-    previewSpec.mark = RECT;
+    spec.mark = RECT;
 
+    return {spec};
+  }
+  private renderEncodingDensityPreview() {
     return (
-      <VegaLite spec={previewSpec}
+      <VegaLite spec={this.getDensityPlotSpec().spec}
         logger={this.plotLogger}
         data={this.props.data}
         isPreview={true}

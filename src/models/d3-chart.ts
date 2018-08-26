@@ -417,8 +417,14 @@ export function renderScatterplot(id: string, spec: FacetedCompositeUnitSpec, da
     .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : (typeof colorScale != 'undefined' ? colorScale(d[colorField]) : attr.fill);})
     .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : (typeof colorScale != 'undefined' ? colorScale(d[colorField]) : attr.stroke);})
     // AGGREGATE_POINTS' REPOSITION
-    .transition().delay(isTransition ? id == 'AGGREGATE_POINTS' ? AggregateStages[0].delay : 0 : 0)
-    .duration(isTransition ? id == 'AGGREGATE_POINTS' ? AggregateStages[1].duration : 0 : 0)
+    .transition().delay(
+      function () {
+        return isTransition ? id == 'AGGREGATE_POINTS' ? AggregateStages[0].delay : 0 : 0;
+      })
+    .duration(
+      function () {
+        return isTransition ? id == 'AGGREGATE_POINTS' ? AggregateStages[1].duration : 0 : 0;
+      })
     //
     .attr('x', function (d) {
       return !isXMeanFn ?
