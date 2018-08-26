@@ -365,11 +365,13 @@ export function isSimpleScatterPlot(spec: any) {
   }
   const {encoding} = spec;
   if (typeof encoding.color == 'undefined' && typeof encoding.shape == 'undefined' &&
-    typeof encoding.size == 'undefined' && typeof encoding.text == 'undefined' &&
+    typeof encoding.text == 'undefined' &&
     typeof encoding.x.aggregate == 'undefined' && typeof encoding.y.aggregate == 'undefined' &&
-    typeof encoding.row == 'undefined' && typeof encoding.column == 'undefined') {
+    typeof encoding.row == 'undefined' &&
+    (typeof encoding.size == 'undefined' || typeof encoding.size.field == 'undefined')) {
     return true;
   }
+  //TODO: check density plot
   else {
     return false;
   }

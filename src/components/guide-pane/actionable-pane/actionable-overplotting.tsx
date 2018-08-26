@@ -293,7 +293,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     let field = this.getDefaultSmallSizedNominalFieldName(getRowAndColumnField(this.props.mainSpec));
     let oneOf = this.getDefaultOneOf(field);
     let id: ActionableID = "FILTER";
-    onPreviewReset(id, this.props.mainSpec, this.props.data.values);
+    onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
     // appendTransitionTimeline(id, '', this.FilterStages, true);
     renderTransition(id, this.FilterStages);
     filterPoint(id, field, oneOf, this.FilterStages);
@@ -301,7 +301,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private onChangeOpacityTransition() {
     let id: ActionableID = "CHANGE_POINT_OPACITY";
-    onPreviewReset(id, this.props.mainSpec, this.props.data.values);
+    onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
     // appendTransitionTimeline(id, '', this.PointOpacityStages, true);
     renderTransition(id, this.PointOpacityStages)
     reducePointOpacity(id, 0.1, this.PointOpacityStages);
@@ -309,7 +309,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private onChangePointSizeTransition() {
     let id: ActionableID = "CHANGE_POINT_SIZE";
-    onPreviewReset(id, this.props.mainSpec, this.props.data.values);
+    onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
     // appendTransitionTimeline(id, '', this.PointResizeStages, true);
     renderTransition(id, this.PointResizeStages);
     reducePointSize(id, this.PointResizeStages);
@@ -317,7 +317,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private onRemoveFillColorTransition() {
     let id: ActionableID = "REMOVE_FILL_COLOR";
-    onPreviewReset(id, this.props.mainSpec, this.props.data.values);
+    onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
     // appendTransitionTimeline(id, '', this.RemoveFillColorStages, true);
     renderTransition(id, this.RemoveFillColorStages);
     removeFillColor(id, this.RemoveFillColorStages);
@@ -325,7 +325,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private onAggregateTransition() {
     let id: ActionableID = "AGGREGATE_POINTS";
-    onPreviewReset(id, this.props.mainSpec, this.props.data.values);
+    onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
     // appendTransitionTimeline(id, '', this.AggregateStages, true);
     renderTransition(id, this.AggregateStages);
     pointsAsMeanScatterplot(id, this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), this.AggregateStages);
@@ -333,7 +333,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private onEncodingDensityTransition() {
     let id: ActionableID = "ENCODING_DENSITY";
-    onPreviewReset(id, this.props.mainSpec, this.props.data.values);
+    onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
     // appendTransitionTimeline(id, '', this.DensityPlotStages, true);
     renderTransition(id, this.DensityPlotStages);
     pointsAsDensityPlot(id, this.props.mainSpec, this.props.data.values, this.DensityPlotStages);
@@ -341,7 +341,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private onSeparateGraphTransition() {
     let id: ActionableID = "SEPARATE_GRAPH";
-    onPreviewReset(id, this.props.mainSpec, this.props.data.values);
+    onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
     // appendTransitionTimeline(id, '', this.SeperateGraphStages, true);
     renderTransition(id, this.SeperateGraphStages);
     separateGraph(id, this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), this.SeperateGraphStages);

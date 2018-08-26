@@ -1,7 +1,8 @@
 import * as d3 from 'd3';
 import {FacetedCompositeUnitSpec} from '../../node_modules/vega-lite/build/src/spec';
 import {BaseType, select} from 'd3';
-import {Schema} from '.';
+import {ActionableID} from './guidelines';
+import {Schema} from '../models';
 
 // Basic property for d3-chart
 export const COMMON_DURATION: number = 1000;
@@ -37,7 +38,7 @@ export interface PointAttr {
   ry: number;
 }
 
-export function renderD3Chart(id: string, CHART_REF: any, fromSpec: FacetedCompositeUnitSpec, toSpec: FacetedCompositeUnitSpec, data: any[], transitionAttrs: TransitionAttr[]) {
+export function renderD3Chart(id: ActionableID, CHART_REF: any, fromSpec: FacetedCompositeUnitSpec, toSpec: FacetedCompositeUnitSpec, sehcme: Schema, data: any[], transitionAttrs: TransitionAttr[]) {
   //
   console.log('spec for D3:');
   console.log(toSpec);
@@ -48,7 +49,7 @@ export function renderD3Chart(id: string, CHART_REF: any, fromSpec: FacetedCompo
   appendTransitionTimeline(id, '', transitionAttrs, false);
   appendAxes(id, toSpec, data);
   appendPoints(id, data);
-  pointsAsScatterplot(id, toSpec, data);
+  pointsAsScatterplot(id, toSpec, data, sehcme);
 }
 
 export function isThereD3Chart(id: string) {
@@ -198,14 +199,14 @@ export function resizeRootSVG(id: string, count: number, isLegend: boolean, dura
     .transition().delay(typeof delay == 'undefined' ? 0 : delay).duration(duration)
     .attr('viewBox', '0 0 ' + width + ' ' + height);
 }
-export function onPreviewReset(id: string, spec: FacetedCompositeUnitSpec, values: any[], duration?: number, delay?: number) {
+export function onPreviewReset(id: string, spec: FacetedCompositeUnitSpec, schema: Schema, values: any[], duration?: number, delay?: number) {
   delay += COMMON_DELAY;
   resizeRootSVG(id, 1, false, duration, delay);
   selectRootSVG(id)
     .selectAll('.remove-when-reset')
     .transition().delay(typeof delay == 'undefined' ? 0 : delay).duration(duration)
     .attr('opacity', 0).remove();
-  pointsAsScatterplot(id, spec, values);//, duration, delay);
+  pointsAsScatterplot(id, spec, values, schema);//, duration, delay);
 }
 
 export function appendAxes(id: string, spec: FacetedCompositeUnitSpec, data: any[]) {
@@ -289,10 +290,10 @@ export function removeFillColor(id: string, stages: TransitionAttr[]) {
     .attr('stroke', function () {return d3.select(this).attr('fill');})
     .attr('fill', 'transparent');
 }
-export function filterPoint(id: string, field: string, oneOf: any[], stages: TransitionAttr[]) {
+export function filterPoint(id: string, field: string, oneOf: any[], stages?: TransitionAttr[]) {
   selectRootSVG(id).selectAll('.point')
     .filter(function (d) {return oneOf.indexOf(d[field]) == -1;})
-    .transition().duration(stages[0].duration)
+    .transition().duration(typeof stages != 'undefined' ? stages[0].duration : 0)
     .attr('opacity', 0);
 }
 export function reducePointOpacity(id: string, opacity: number, stages: TransitionAttr[]) {
@@ -314,7 +315,7 @@ export function reducePointSize(id: string, stages: TransitionAttr[]) {
       return parseFloat(d3.select(this).attr('y')) + parseFloat(d3.select(this).attr('height')) / 4.0;
     });
 }
-export function pointsAsScatterplot(id: string, spec: FacetedCompositeUnitSpec, data: any[], duration?: number, delay?: number) {
+export function pointsAsScatterplot(id: string, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, duration?: number, delay?: number) {
   let xField = spec.encoding.x['field'];
   let yField = spec.encoding.y['field'];
 
@@ -342,6 +343,15 @@ export function pointsAsScatterplot(id: string, spec: FacetedCompositeUnitSpec, 
     .attr('y', function (d) {return (y(d[yField]) + (-attr.height / 2.0 + CHART_MARGIN.top));})
     .attr('rx', attr.rx)
     .attr('ry', attr.ry);
+
+  if (typeof spec.encoding.column != 'undefined') {
+    let field = spec.encoding.column.field as string;
+    separateGraph(id, spec, data, schema, field,
+      [{
+        id: 'REPOSITION', title: 'Separate Graph by \'' + field + '\' field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY
+      }]
+    );
+  }
 }
 
 export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
