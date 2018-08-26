@@ -15,7 +15,7 @@ import {QUANTITATIVE, NOMINAL} from '../../../../node_modules/vega-lite/build/sr
 import {Schema, toTransforms} from '../../../models';
 import {COLOR, COLUMN, SIZE} from '../../../../node_modules/vega-lite/build/src/channel';
 import {FieldPicker} from './actionable-common-ui/field-picker';
-import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN, pointsAsDensityPlot, pointsAsMeanScatterplot, reducePointSize, reducePointOpacity, removeFillColor, resizeRootSVG, COMMON_DELAY, renderTransitionTimeline, TransitionAttr, COMMON_SHORT_DELAY, filterPoint, separateGraph} from '../../../models/d3-chart';
+import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN, pointsAsDensityPlot, pointsAsMeanScatterplot, reducePointSize, reducePointOpacity, removeFillColor, resizeRootSVG, COMMON_DELAY, appendTransitionTimeline, TransitionAttr, COMMON_SHORT_DELAY, filterPoint, separateGraph, renderTransition} from '../../../models/d3-chart';
 import {OneOfFilter} from 'vega-lite/build/src/filter';
 import {NumberAdjuster} from './actionable-common-ui/number-adjuster';
 
@@ -294,49 +294,56 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     let oneOf = this.getDefaultOneOf(field);
     let id: ActionableID = "FILTER";
     onPreviewReset(id, this.props.mainSpec, this.props.data.values);
-    renderTransitionTimeline(id, '', this.FilterStages, true);
+    // appendTransitionTimeline(id, '', this.FilterStages, true);
+    renderTransition(id, this.FilterStages);
     filterPoint(id, field, oneOf, this.FilterStages);
     // onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.FilterStages.map(x => x.duration + x.delay)));
   }
   private onChangeOpacityTransition() {
     let id: ActionableID = "CHANGE_POINT_OPACITY";
     onPreviewReset(id, this.props.mainSpec, this.props.data.values);
-    renderTransitionTimeline(id, '', this.PointOpacityStages, true);
-    reducePointOpacity(id, 0.3, this.PointOpacityStages);
+    // appendTransitionTimeline(id, '', this.PointOpacityStages, true);
+    renderTransition(id, this.PointOpacityStages)
+    reducePointOpacity(id, 0.1, this.PointOpacityStages);
     // onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.PointOpacityStages.map(x => x.duration + x.delay)));
   }
   private onChangePointSizeTransition() {
     let id: ActionableID = "CHANGE_POINT_SIZE";
     onPreviewReset(id, this.props.mainSpec, this.props.data.values);
-    renderTransitionTimeline(id, '', this.PointResizeStages, true);
+    // appendTransitionTimeline(id, '', this.PointResizeStages, true);
+    renderTransition(id, this.PointResizeStages);
     reducePointSize(id, this.PointResizeStages);
     // onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.PointResizeStages.map(x => x.duration + x.delay)));
   }
   private onRemoveFillColorTransition() {
     let id: ActionableID = "REMOVE_FILL_COLOR";
     onPreviewReset(id, this.props.mainSpec, this.props.data.values);
-    renderTransitionTimeline(id, '', this.RemoveFillColorStages, true);
+    // appendTransitionTimeline(id, '', this.RemoveFillColorStages, true);
+    renderTransition(id, this.RemoveFillColorStages);
     removeFillColor(id, this.RemoveFillColorStages);
     // onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.RemoveFillColorStages.map(x => x.duration + x.delay)));
   }
   private onAggregateTransition() {
     let id: ActionableID = "AGGREGATE_POINTS";
     onPreviewReset(id, this.props.mainSpec, this.props.data.values);
-    renderTransitionTimeline(id, '', this.AggregateStages, true);
+    // appendTransitionTimeline(id, '', this.AggregateStages, true);
+    renderTransition(id, this.AggregateStages);
     pointsAsMeanScatterplot(id, this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), this.AggregateStages);
     // onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.AggregateStages.map(x => x.duration + x.delay)));
   }
   private onEncodingDensityTransition() {
     let id: ActionableID = "ENCODING_DENSITY";
     onPreviewReset(id, this.props.mainSpec, this.props.data.values);
-    renderTransitionTimeline(id, '', this.DensityPlotStages, true);
+    // appendTransitionTimeline(id, '', this.DensityPlotStages, true);
+    renderTransition(id, this.DensityPlotStages);
     pointsAsDensityPlot(id, this.props.mainSpec, this.props.data.values, this.DensityPlotStages);
     // onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.DensityPlotStages.map(x => x.duration + x.delay)));
   }
   private onSeparateGraphTransition() {
     let id: ActionableID = "SEPARATE_GRAPH";
     onPreviewReset(id, this.props.mainSpec, this.props.data.values);
-    renderTransitionTimeline(id, '', this.SeperateGraphStages, true);
+    // appendTransitionTimeline(id, '', this.SeperateGraphStages, true);
+    renderTransition(id, this.SeperateGraphStages);
     separateGraph(id, this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), this.SeperateGraphStages);
     // onPreviewReset(id, this.props.mainSpec, this.props.data.values, COMMON_DURATION, d3.sum(this.SeperateGraphStages.map(x => x.duration + x.delay)));
   }
@@ -356,7 +363,13 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     const newTransform = (transform || []).concat(toTransforms([newFilter]));
     previewSpec.transform = newTransform;
     return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true} actionId={"FILTER"} />
+      <VegaLite spec={previewSpec}
+        logger={this.plotLogger}
+        data={this.props.data}
+        isPreview={true}
+        fromSpec={this.props.mainSpec}
+        actionId={"FILTER"}
+        transitionAttrs={this.FilterStages} />
     );
   }
   private renderChangePointSizePreview() {
@@ -367,7 +380,13 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       size: {value: DEFAULT_CHANGE_POINT_SIZE}
     }
     return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true} actionId={"CHANGE_POINT_SIZE"} />
+      <VegaLite spec={previewSpec}
+        logger={this.plotLogger}
+        data={this.props.data}
+        isPreview={true}
+        fromSpec={this.props.mainSpec}
+        actionId={"CHANGE_POINT_SIZE"}
+        transitionAttrs={this.PointResizeStages} />
     );
   }
   private renderChangeOpacityPreview() {
@@ -378,7 +397,13 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       opacity: {value: 0.3}
     }
     return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true} actionId={"CHANGE_POINT_OPACITY"} />
+      <VegaLite spec={previewSpec}
+        logger={this.plotLogger}
+        data={this.props.data}
+        isPreview={true}
+        fromSpec={this.props.mainSpec}
+        actionId={"CHANGE_POINT_OPACITY"}
+        transitionAttrs={this.PointOpacityStages} />
     );
   }
   private renderRemoveFillColorPreview() {
@@ -388,7 +413,13 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       filled: false
     };
     return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true} actionId={"REMOVE_FILL_COLOR"} />
+      <VegaLite spec={previewSpec}
+        logger={this.plotLogger}
+        data={this.props.data}
+        isPreview={true}
+        fromSpec={this.props.mainSpec}
+        actionId={"REMOVE_FILL_COLOR"}
+        transitionAttrs={this.RemoveFillColorStages} />
     );
   }
   private renderAggregatePreview() {
@@ -411,7 +442,13 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     };
 
     return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true} actionId={"AGGREGATE_POINTS"} />
+      <VegaLite spec={previewSpec}
+        logger={this.plotLogger}
+        data={this.props.data}
+        isPreview={true}
+        fromSpec={this.props.mainSpec}
+        actionId={"AGGREGATE_POINTS"}
+        transitionAttrs={this.AggregateStages} />
     );
   }
   private renderEncodingDensityPreview() {
@@ -438,7 +475,13 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     previewSpec.mark = RECT;
 
     return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true} actionId={"ENCODING_DENSITY"} />
+      <VegaLite spec={previewSpec}
+        logger={this.plotLogger}
+        data={this.props.data}
+        isPreview={true}
+        fromSpec={this.props.mainSpec}
+        actionId={"ENCODING_DENSITY"}
+        transitionAttrs={this.DensityPlotStages} />
     );
   }
   private renderSeparateGraphPreview() {
@@ -463,7 +506,13 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       }
     }
     return (
-      <VegaLite spec={previewSpec} logger={this.plotLogger} data={this.props.data} isPreview={true} actionId={"SEPARATE_GRAPH"} />
+      <VegaLite spec={previewSpec}
+        logger={this.plotLogger}
+        data={this.props.data}
+        isPreview={true}
+        fromSpec={this.props.mainSpec}
+        actionId={"SEPARATE_GRAPH"}
+        transitionAttrs={this.SeperateGraphStages} />
     );
   }
 

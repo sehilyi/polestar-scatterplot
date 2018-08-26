@@ -37,17 +37,18 @@ export interface PointAttr {
   ry: number;
 }
 
-export function renderD3Chart(id: string, CHART_REF: any, spec: FacetedCompositeUnitSpec, data: any[]) {
+export function renderD3Chart(id: string, CHART_REF: any, fromSpec: FacetedCompositeUnitSpec, toSpec: FacetedCompositeUnitSpec, data: any[], transitionAttrs: TransitionAttr[]) {
   //
   console.log('spec for D3:');
-  console.log(spec);
+  console.log(toSpec);
   //
 
   removePrevChart(CHART_REF);
   appendRootSVG(id, CHART_REF);
-  appendAxes(id, spec, data);
+  appendTransitionTimeline(id, '', transitionAttrs, false);
+  appendAxes(id, toSpec, data);
   appendPoints(id, data);
-  pointsAsScatterplot(id, spec, data);
+  pointsAsScatterplot(id, toSpec, data);
 }
 
 export function isThereD3Chart(id: string) {
@@ -80,8 +81,24 @@ export function appendRootSVG(id: string, CHART_REF: any) {
     .attr('height', '100%');
 }
 
-export function renderTransitionTimeline(id: string, title: string, stages: TransitionAttr[], isTransition: boolean) {
-  this.removeTransitionTimeline(id, 0);
+export function renderTransition(id: string, stages: TransitionAttr[]) {
+  let totalDuration = d3.sum(stages.map(x => x.duration + x.delay));
+  d3.select('#d3-timeline-' + id).selectAll('.timeline-pb')
+    .attr('x', TIMELINE_MARGIN.left)
+    .attr('y', TIMELINE_MARGIN.top)
+    .attr('height', TIMELINE_SIZE.height)
+    .attr('width', TIMELINE_SIZE.width)
+    .attr('fill', 'white')
+    .attr('opacity', 0.6)
+    .transition().duration(totalDuration).ease(d3.easeLinear)
+    .attr('x', TIMELINE_MARGIN.left + TIMELINE_SIZE.width)
+    .attr('y', TIMELINE_MARGIN.top)
+    .attr('height', TIMELINE_SIZE.height)
+    .attr('width', 0);
+  // .attr('opacity', 1);
+}
+export function appendTransitionTimeline(id: string, title: string, stages: TransitionAttr[], isTransition: boolean) {
+  // removeTransitionTimeline(id, 0);
   let svg = d3.select('#d3-timeline-' + id).select('svg');
 
   // append title
@@ -127,7 +144,7 @@ export function renderTransitionTimeline(id: string, title: string, stages: Tran
     .classed('stage-label', true)
     .text(function (d) {return d.title;})
     .attr('x', function (d, i) {return TIMELINE_MARGIN.left + accumDurationPlusDelay[i] / totalDuration * TIMELINE_SIZE.width + (d.duration + d.delay) / totalDuration * TIMELINE_SIZE.width / 2.0 + 4;})
-    .attr('y', TIMELINE_MARGIN.top - 6)
+    .attr('y', TIMELINE_MARGIN.top + 20)
     .style('font-family', 'Roboto Condensed')
     .style('text-anchor', 'middle')
     .style('fill', '#2e2e2e')
@@ -188,7 +205,7 @@ export function onPreviewReset(id: string, spec: FacetedCompositeUnitSpec, value
     .selectAll('.remove-when-reset')
     .transition().delay(typeof delay == 'undefined' ? 0 : delay).duration(duration)
     .attr('opacity', 0).remove();
-  pointsAsScatterplot(id, spec, values, duration, delay);
+  pointsAsScatterplot(id, spec, values);//, duration, delay);
 }
 
 export function appendAxes(id: string, spec: FacetedCompositeUnitSpec, data: any[]) {
