@@ -47,10 +47,10 @@ export function renderD3Preview(id: ActionableID, CHART_REF: any, fromSpec: Face
   appendRootSVG(id, CHART_REF, isNoTimeline);
   if (!isNoTimeline) appendTransitionTimeline(id, '', transitionAttrs, false);
   appendPoints(id, data);
-  renderPoints(id, fromSpec, toSpec, data, schema, isTransition);
+  renderPoints(id, fromSpec, toSpec, data, schema, isTransition, isNoTimeline);
 }
 
-export function renderPoints(id: ActionableID, fromSpec: FacetedCompositeUnitSpec, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, isTransition: boolean) {
+export function renderPoints(id: ActionableID, fromSpec: FacetedCompositeUnitSpec, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, isTransition: boolean, isSpecifiedView: boolean) {
 
   // from
   if (isTransition) {
@@ -58,7 +58,7 @@ export function renderPoints(id: ActionableID, fromSpec: FacetedCompositeUnitSpe
   }
 
   // to
-  let diffOneof = isTransition ? getFilterForTransition(fromSpec.transform, spec.transform) : null;
+  let diffOneof = !isSpecifiedView ? getFilterForTransition(fromSpec.transform, spec.transform) : null;
   renderScatterplot(id, spec, data, schema, isTransition, diffOneof);
 }
 
@@ -179,17 +179,18 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
     .attr('height', attr.height)
     .attr('stroke-width', attr.stroke_width);
 
-  if (isTransition && id === 'AGGREGATE_POINTS') {
-    points = points.transition().duration(AggregateStages[1].duration).delay(AggregateStages[0].delay);
-  }
-  else if (isTransition && id === 'ENCODING_DENSITY') {
+  if (isTransition && id === 'ENCODING_DENSITY') {
     points = points.transition().duration(DensityPlotStages[1].duration).delay(DensityPlotStages[0].delay);
   }
 
-  points.attr('opacity', attr.opacity);
+  points
+    .attr('opacity', attr.opacity);
 
   if (isTransition && id === 'ENCODING_DENSITY') {
     points = points.transition().duration(DensityPlotStages[2].duration).delay(DensityPlotStages[1].delay);
+  }
+  else if (isTransition && id === 'AGGREGATE_POINTS') {
+    points = points.transition().duration(AggregateStages[1].duration).delay(AggregateStages[0].delay);
   }
 
   points
@@ -207,10 +208,27 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
         y(d[yField]) + (-attr.height / 2.0 + CHART_MARGIN.top);
     });
 
-  if (typeof filter != 'undefined' && filter != null) {
+  // console.log(filter);
+  if (typeof filter != 'undefined' && filter != null && id === 'FILTER') {
     selectRootSVG(id).selectAll('.point')
       .filter(function (d) {return (filter.oneOf as string[]).indexOf(d[filter.field]) == -1;})
-      .transition().duration(isTransition && id == 'FILTER' ? FilterStages[0].duration : 0)
+      .transition().duration(isTransition ? FilterStages[0].duration : 0)
+      .attr('opacity', 0);
+  }
+  else if (id === 'AGGREGATE_POINTS' && typeof colorField != 'undefined') {
+    const categoryDomain = schema.domain({field: colorField});
+    let categoryPointUsed = categoryDomain.slice();
+    //Leave only one point for each category
+    //rather than update data
+    selectRootSVG(id).selectAll('.point')
+      .filter(function (d) {
+        if (categoryPointUsed.indexOf(d[colorField]) != -1) {
+          categoryPointUsed.splice(categoryPointUsed.indexOf(d[colorField]), 1);
+          return false;
+        }
+        return true;
+      })
+      .transition().duration(0).delay(isTransition ? d3.sum(AggregateStages.map(x => x.duration + x.delay)) : 0)
       .attr('opacity', 0);
   }
 }
@@ -484,28 +502,35 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, s
     .attr('x', 10)
     .attr('y', 10)
     .text(function (d) {return d as string;})
-    // .classed('textselected', true)
     .style('text-anchor', 'start')
     .style('font-size', 15);
 
-  legend
-    .attr('opacity', 0)
-    .transition().duration(isTransition && id === 'AGGREGATE_POINTS' ? AggregateStages[0].duration : 0)
-    .attr('opacity', 1);
-
-  legend
-    .transition().duration(isTransition && id === 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
-    .attr('transform', function (d, i) {
-      return 'translate(' +
-        ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right) + ',' +
-        (CHART_MARGIN.top + LEGEND_MARGIN.top + i * 20) + ')';
-    });
-  console.log(((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right));
+  if (id === 'AGGREGATE_POINTS') {
+    selectRootSVG(id).selectAll('.legend')
+      .attr('transform', function (d, i) {
+        return 'translate(' +
+          ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right) + ',' +
+          (CHART_MARGIN.top + LEGEND_MARGIN.top + i * 20) + ')';
+      })
+      .attr('opacity', 0)
+      .transition().duration(isTransition ? AggregateStages[0].duration : 0)
+      .attr('opacity', 1);
+  }
+  if (id === 'SEPARATE_GRAPH') {
+    selectRootSVG(id).selectAll('.legend')
+      .transition().duration(isTransition && id === 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
+      .attr('transform', function (d, i) {
+        return 'translate(' +
+          ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right) + ',' +
+          (CHART_MARGIN.top + LEGEND_MARGIN.top + i * 20) + ')';
+      });
+  }
 
   return colorScale;
 }
 
 export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
+
   const isDensity = isDensityPlot(spec);
   let isRemoveFill = false;
   if (typeof spec.mark['filled'] != 'undefined') {

@@ -292,37 +292,37 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   private onFilterTransition() {
     let id: ActionableID = "FILTER";
     startTimeline(id, FilterStages);
-    renderPoints(id, this.props.mainSpec, this.getFilterSpec().spec, this.props.data.values, this.props.schema, true);
+    renderPoints(id, this.props.mainSpec, this.getFilterSpec().spec, this.props.data.values, this.props.schema, true, false);
   }
   private onChangeOpacityTransition() {
     let id: ActionableID = "CHANGE_POINT_OPACITY";
     startTimeline(id, PointOpacityStages);
-    renderPoints(id, this.props.mainSpec, this.getChangeOpacitySpec().spec, this.props.data.values, this.props.schema, true);
+    renderPoints(id, this.props.mainSpec, this.getChangeOpacitySpec().spec, this.props.data.values, this.props.schema, true, false);
   }
   private onChangePointSizeTransition() {
     let id: ActionableID = "CHANGE_POINT_SIZE";
     startTimeline(id, PointResizeStages);
-    renderPoints(id, this.props.mainSpec, this.getResizePointSpec().spec, this.props.data.values, this.props.schema, true);
+    renderPoints(id, this.props.mainSpec, this.getResizePointSpec().spec, this.props.data.values, this.props.schema, true, false);
   }
   private onAggregateTransition() {
     let id: ActionableID = "AGGREGATE_POINTS";
     startTimeline(id, AggregateStages);
-    renderPoints(id, this.props.mainSpec, this.getAggregateSpec().spec, this.props.data.values, this.props.schema, true);
+    renderPoints(id, this.props.mainSpec, this.getAggregateSpec().spec, this.props.data.values, this.props.schema, true, false);
   }
   private onEncodingDensityTransition() {
     let id: ActionableID = "ENCODING_DENSITY";
     startTimeline(id, DensityPlotStages);
-    renderPoints(id, this.props.mainSpec, this.getDensityPlotSpec().spec, this.props.data.values, this.props.schema, true);
+    renderPoints(id, this.props.mainSpec, this.getDensityPlotSpec().spec, this.props.data.values, this.props.schema, true, false);
   }
   private onSeparateGraphTransition() {
     let id: ActionableID = "SEPARATE_GRAPH";
     startTimeline(id, SeperateGraphStages);
-    renderPoints(id, this.props.mainSpec, this.getSeparateGraphSpec().spec, this.props.data.values, this.props.schema, true);
+    renderPoints(id, this.props.mainSpec, this.getSeparateGraphSpec().spec, this.props.data.values, this.props.schema, true, false);
   }
   private onRemoveFillColorTransition() {
     let id: ActionableID = "REMOVE_FILL_COLOR";
     startTimeline(id, RemoveFillColorStages);
-    renderPoints(id, this.props.mainSpec, this.getRemoveFillColorSpec().spec, this.props.data.values, this.props.schema, true);
+    renderPoints(id, this.props.mainSpec, this.getRemoveFillColorSpec().spec, this.props.data.values, this.props.schema, true, false);
   }
 
   private getDefaultOneOf(field: string) {
