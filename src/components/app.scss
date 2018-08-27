@@ -135,7 +135,7 @@
 
   .chart {
     margin: auto;
-    min-height: 320px;
+    // min-height: 320px;
   }
 
   // split-pane css
@@ -258,7 +258,7 @@
   }
 
   // to differenciate with normal vl chart
-  .d3-chart {
+  .preview .d3-chart, .preview-expand .d3-chart {
     // border-left: dotted 1px transparent;
     position: relative;
     top: 40%;

@@ -10,6 +10,7 @@ import { POINT, CIRCLE, SQUARE, RECT } from "vega-lite/build/src/mark";
 import { FacetedCompositeUnitSpec, TopLevelExtendedSpec } from "vega-lite/build/src/spec";
 import { Schema } from "../api/api";
 import { encoding } from "../../node_modules/vega-lite";
+import { TransitionAttr, COMMON_DURATION, COMMON_SHORT_DELAY } from "./d3-chart";
 
 export type GuideState = "WARN" | "TIP" | "DONE" | "IGNORE";
 export type guidelineIds = "NEW_CHART_BINNED_SCATTERPLOT" | "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" | "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES" |
@@ -180,6 +181,31 @@ export const ACTIONABLE_SEPARATE_GRAPH: GuideActionItem = {
   pros: 'Retain data. Can show point attrubute (color/shape)',
   cons: 'Not scalable to large data. Cannot see overlap density.'
 }
+
+export const AggregateStages: TransitionAttr[] = [
+  {id: 'COLOR', title: 'Color By Another Field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY},
+  {id: 'REPOSITION', title: 'Aggregate To Average', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+];
+export const DensityPlotStages: TransitionAttr[] = [
+  {id: 'MORPH', title: 'Rect Shape', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY},
+  {id: 'COLOR', title: 'Reduce Opacity', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY},
+  {id: 'REPOSITION', title: 'Grid Position', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+];
+export const PointOpacityStages: TransitionAttr[] = [
+  {id: 'COLOR', title: 'Reduce Point Opacity', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+]
+export const FilterStages: TransitionAttr[] = [
+  {id: 'COLOR', title: 'Filter By Another Field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+];
+export const PointResizeStages: TransitionAttr[] = [
+  {id: 'MORPH', title: 'Reduce Point Size', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+]
+export const RemoveFillColorStages: TransitionAttr[] = [
+  {id: 'COLOR', title: 'Remove Fill Color', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+];
+export const SeperateGraphStages: TransitionAttr[] = [
+  {id: 'REPOSITION', title: 'Separate Graph By Another Field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+];
 
 //TODO: Be more smart for picking defaults by perhaps considering metadata
 export function getDefaultCategoryPicks(domain: string[] | number[] | boolean[] | DateTime[]): any[] {
