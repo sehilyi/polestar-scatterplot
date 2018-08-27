@@ -82,21 +82,11 @@ export function renderPoints(id: ActionableID, fromSpec: FacetedCompositeUnitSpe
 
   // from
   if (isTransition) {
-    if (isDensityPlot(fromSpec)) {
-      renderDensityPlot(id, fromSpec, data, DensityPlotStages, false);
-    }
-    else {
-      renderScatterplot(id, fromSpec, data, schema, false);
-    }
+    renderScatterplot(id, fromSpec, data, schema, false);
   }
 
   // to
-  if (isDensityPlot(spec)) {
-    renderDensityPlot(id, spec, data, DensityPlotStages, isTransition);
-  }
-  else {
-    renderScatterplot(id, spec, data, schema, isTransition, diffOneof);
-  }
+  renderScatterplot(id, spec, data, schema, isTransition, diffOneof);
 }
 
 export function getFilterForTransition(a1: any[], a2: any[]) {
@@ -139,6 +129,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   const {colorField} = getColorField(spec); //TODO: consider when quantitative
   const {columnField} = getColumnField(spec);
   const isColumnUsing = isColumnFieldUsing(spec);
+  const isDensity = isDensityPlot(spec);
   // console.log(columnField);
   // console.log(schema);
   const numOfColumnCategory = getNumberOfGraphs(spec, schema);
@@ -147,87 +138,101 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   const xField = spec.encoding.x['field'], yField = spec.encoding.y['field'];
   const attr = getPointAttrs(spec);
 
-  const x = d3.scaleLinear()
-    .domain([0, d3.max(data.map(d => d[xField]))]).nice()
-    .rangeRound([0, CHART_SIZE.width]);
-  const y = d3.scaleLinear()
-    .domain([0, d3.max(data.map(d => d[yField]))]).nice()
-    .rangeRound([CHART_SIZE.height, 0]);
+  // for density plot
+  let xBinRange = [], yBinRange = [];
+  const numOfBin = 35, binWidth = CHART_SIZE.width / numOfBin, binHeight = CHART_SIZE.height / numOfBin;
+  for (let i = 0; i < numOfBin; i++) {
+    xBinRange.push(i * binWidth + binWidth / 2.0);
+  }
+  for (let i = 0; i < numOfBin; i++) {
+    yBinRange.push(i * binHeight + binHeight / 2.0);
+  }
+
+  const x = !isDensity ?
+    d3.scaleLinear()
+      .domain([0, d3.max(data.map(d => d[xField]))]).nice()
+      .rangeRound([0, CHART_SIZE.width]) :
+    d3.scaleQuantize()
+      .domain([0, d3.max(data, function (d) {return d[xField]})]).nice()
+      .range(xBinRange);
+  const y = !isDensity ?
+    d3.scaleLinear()
+      .domain([0, d3.max(data.map(d => d[yField]))]).nice()
+      .rangeRound([CHART_SIZE.height, 0]) :
+    d3.scaleQuantize()
+      .domain([0, d3.max(data, function (d) {return d[yField]})]).nice()
+      .range(yBinRange.reverse());;
 
   resizeRootSVG(id, numOfColumnCategory, isLegend, false);
   appendAxes(id, spec, schema, data, isTransition);
+  selectRootSVG(id).selectAll('.point').raise();
 
   // render legend
   let colorScale: d3.ScaleOrdinal<string, string>;
-  if (isLegend) {
+  if (isLegend && !isDensity) { //TODO: implement legend for density plot
     colorScale = renderLegend(id, attr, colorField, schema, isTransition);
   }
 
-  selectRootSVG(id)
-    .selectAll('.point')
-    // AGGREGATE_POINTS' COLORING
-    // REMOVE_FILL_COLOR's ENCODING
-    .transition().duration(function () {
-      if (isTransition && id == 'AGGREGATE_POINTS') {
-        return AggregateStages[0].duration;
-      }
-      else if (isTransition && id == 'REMOVE_FILL_COLOR') {
-        return RemoveFillColorStages[0].duration;
-      }
-      else {
-        return 0;
-      }
-    })
-    //
+  let points; // either seleciton or transition
+
+  points = selectRootSVG(id).selectAll('.point');
+
+  // also include all of the one stage transitions
+  if (isTransition && id === 'AGGREGATE_POINTS') {
+    points = points.transition().duration(AggregateStages[0].duration);
+  }
+  else if (isTransition && id === 'REMOVE_FILL_COLOR') {
+    points = points.transition().duration(RemoveFillColorStages[0].duration);
+  }
+  else if (isTransition && id === 'ENCODING_DENSITY') {
+    points = points.transition().duration(DensityPlotStages[0].duration);
+  }
+  else if (isTransition && id === 'CHANGE_POINT_SIZE') {
+    points = points.transition().duration(PointResizeStages[0].duration);
+  }
+  else if (isTransition && id === 'CHANGE_POINT_OPACITY') {
+    points = points.transition().duration(PointOpacityStages[0].duration);
+  }
+  else if (isTransition && id === 'SEPARATE_GRAPH') {
+    points = points.transition().duration(SeperateGraphStages[0].duration);
+  }
+
+  points
     .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : (typeof colorScale != 'undefined' ? colorScale(d[colorField]) : attr.fill);})
     .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : (typeof colorScale != 'undefined' ? colorScale(d[colorField]) : attr.stroke);})
-    // AGGREGATE_POINTS' REPOSITION
-    // CHANGE_POINT_SIZE, CHANGE_POINT_OPACITY's ENCODING/COLOR
-    .transition().delay(function () {
-      if (isTransition && id == 'AGGREGATE_POINTS') {
-        return AggregateStages[0].delay;
-      }
-      else {
-        return 0;
-      }
-    })
-    .duration(function () {
-      if (isTransition && id == 'AGGREGATE_POINTS') {
-        return AggregateStages[1].duration;
-      }
-      else if (isTransition && id == 'CHANGE_POINT_OPACITY') {
-        return PointOpacityStages[0].duration;
-      }
-      else if (isTransition && id == 'CHANGE_POINT_SIZE') {
-        return PointResizeStages[0].duration;
-      }
-      else if (isTransition && id == 'SEPARATE_GRAPH') {
-        return SeperateGraphStages[0].duration;
-      }
-      else {
-        return 0;
-      }
-    })
-    //
-    .attr('transform', function (d) {
-      return 'translate(' + (isColumnUsing ? (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.left) * categories.indexOf(d[columnField]) : 0) + ', 0)';
-    })
-    .attr('x', function (d) {
-      return !isXMeanFn ?
-        CHART_MARGIN.left + x(d[xField]) + (-attr.width / 2.0) :
-        CHART_MARGIN.left + x(d3.mean(data.map(function (_d) {return _d[colorField] == d[colorField] ? _d[xField] : null;}))) + (-attr.width / 2.0);
-    })
-    .attr('y', function (d) {
-      return !isYMeanFn ?
-        y(d[yField]) + (-attr.height / 2.0 + CHART_MARGIN.top) :
-        y(d3.mean(data.map(function (_d) {return _d[colorField] == d[colorField] ? _d[yField] : null;}))) + (-attr.height / 2.0 + CHART_MARGIN.top);
-    })
     .attr('rx', attr.rx)  // to draw either circle or rect
     .attr('ry', attr.ry)
     .attr('width', attr.width)
     .attr('height', attr.height)
-    .attr('stroke-width', attr.stroke_width)
-    .attr('opacity', attr.opacity);
+    .attr('stroke-width', attr.stroke_width);
+
+  if (isTransition && id === 'AGGREGATE_POINTS') {
+    points = points.transition().duration(AggregateStages[1].duration).delay(AggregateStages[0].delay);
+  }
+  else if (isTransition && id === 'ENCODING_DENSITY') {
+    points = points.transition().duration(DensityPlotStages[1].duration).delay(DensityPlotStages[0].delay);
+  }
+
+  points.attr('opacity', attr.opacity);
+
+  if (isTransition && id === 'ENCODING_DENSITY') {
+    points = points.transition().duration(DensityPlotStages[2].duration).delay(DensityPlotStages[1].delay);
+  }
+
+  points
+    .attr('transform', function (d) {
+      return 'translate(' + (isColumnUsing ? (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.left) * categories.indexOf(d[columnField]) : 0) + ', 0)';
+    })
+    .attr('x', function (d) {
+      return isXMeanFn ?
+        CHART_MARGIN.left + x(d3.mean(data.map(function (_d) {return _d[colorField] == d[colorField] ? _d[xField] : null;}))) + (-attr.width / 2.0) :
+        CHART_MARGIN.left + x(d[xField]) + (-attr.width / 2.0);
+    })
+    .attr('y', function (d) {
+      return isYMeanFn ?
+        y(d3.mean(data.map(function (_d) {return _d[colorField] == d[colorField] ? _d[yField] : null;}))) + (-attr.height / 2.0 + CHART_MARGIN.top) :
+        y(d[yField]) + (-attr.height / 2.0 + CHART_MARGIN.top);
+    });
 
   if (typeof filter != 'undefined' && filter != null) {
     selectRootSVG(id).selectAll('.point')
@@ -235,14 +240,6 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
       .transition().duration(isTransition && id == 'FILTER' ? FilterStages[0].duration : 0)
       .attr('opacity', 0);
   }
-  // if (typeof spec.encoding.column != 'undefined') {
-  //   let field = spec.encoding.column.field as string;
-  //   separateGraph(id, spec, data, schema, field,
-  //     [{
-  //       id: 'REPOSITION', title: 'Separate Graph by \'' + field + '\' field', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY
-  //     }]
-  //   );
-  // }
 }
 export function separateGraph(id: string, spec: FacetedCompositeUnitSpec, values: any[], schema: Schema, field: string, stages: TransitionAttr[]) {
   let svg = selectRootSVG(id);
@@ -495,7 +492,6 @@ export function onPreviewReset(id: ActionableID, spec: FacetedCompositeUnitSpec,
 export function removeAxes(id: ActionableID) {
   selectRootSVG(id).selectAll('.axis').remove();
   selectRootSVG(id).selectAll('.grid').remove();
-  selectRootSVG(id).selectAll('.point').raise();
 }
 export function appendAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, schema: Schema, data: any[], isTransition: boolean) {
   removeAxes(id);
@@ -519,7 +515,6 @@ export function appendAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, sch
 
   for (let i = 0; i < numOfCategory; i++) {
 
-    console.log(isTransition + '/' + id);
     svg.append('g')
       .classed('grid', true)
       .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
@@ -666,6 +661,7 @@ export function renderLegend(id: string, attr: PointAttr, field: string, schema:
 }
 
 export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
+  const isDensity = isDensityPlot(spec);
   let isRemoveFill = false;
   if (typeof spec.mark['filled'] != 'undefined') {
     isRemoveFill = !spec.mark['filled'];
@@ -674,19 +670,20 @@ export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
   // Notice: If filled === false? then, spec.mark is Object {type, filled} rather than string
   const mark = !isRemoveFill ? spec.mark : spec.mark['type'];
   let size = mark == 'square' ? 5 : 6;
+  if (isDensity) size = CHART_SIZE.width / 35;
   let opacity = 0.7;
   try {size = spec.encoding.size['value'] / 10.0;} catch (e) {}
   try {opacity = spec.encoding.opacity['value'];} catch (e) {}
-
+  if (isDensity) opacity = 0.1;
   return {
-    fill: (mark == 'point' || isRemoveFill) ? 'transparent' : '#4c78a8',
+    fill: isDensity ? '#08519c' : (mark == 'point' || isRemoveFill) ? 'transparent' : '#4c78a8',
     opacity,
     stroke: '#4c78a8',
-    stroke_width: mark == 'point' ? 2 : 2,  //TODO: do we have to handle this?
+    stroke_width: isDensity ? 0 : 2,
     width: size,
     height: size,
-    rx: mark == 'square' ? 0 : size,
-    ry: mark == 'square' ? 0 : size,
+    rx: mark == 'square' || isDensity ? 0 : size,
+    ry: mark == 'square' || isDensity ? 0 : size,
   };
 }
 // https://bl.ocks.org/mbostock/7f5f22524bd1d824dd53c535eda0187f
