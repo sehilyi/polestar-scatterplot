@@ -222,28 +222,28 @@
     text-align: left;
   }
 
+  // .preview .chart, .preview .marks {
+  //   width: 100px !important;
+  //   height: 100px !important;
+  //   min-height: 100px;
+  // }
   .preview .chart, .preview .marks {
-    width: 100px !important;
-    height: 100px !important;
-    min-height: 100px;
-  }
-  .preview .chart, .preview .marks {
-    width: 125px !important;
-    height: 125px !important;
-    min-height: 125px;
+    width: 160px !important;
+    height: 160px !important;
+    min-height: 160px;
   }
   .preview .timeline {
     display: none;
   }
   .preview-expand .chart {
-    width: 300px !important;
-    height: 348px !important;
-    min-height: 348px;
+    width: 350px !important;
+    height: 398px !important;
+    min-height: 398px;
   }
   .preview-expand .marks {
-    width: 300px !important;
-    height: 300px !important;
-    min-height: 300px;
+    width: 350px !important;
+    height: 350px !important;
+    min-height: 350px;
   }
 
   .preview .react-spinners--clip, .preview-large .react-spinners--clip {

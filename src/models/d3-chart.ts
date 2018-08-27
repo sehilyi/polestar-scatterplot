@@ -12,9 +12,9 @@ export const COMMON_DELAY: number = 2000;
 export const COMMON_SHORT_DELAY: number = 300;
 export const CHART_SIZE = {width: 200, height: 200};
 export const CHART_MARGIN = {top: 20, right: 20, bottom: 50, left: 50};
-export const CHART_PADDING = {left: 20};
+export const CHART_PADDING = {right: 20};
+export const LEGEND_MARGIN = {top: 20};
 export const LEGEND_WIDTH = 50;
-export const LEGEND_LT_MARGIN = 20;
 export const NOMINAL_COLOR_SCHEME = ['#4c78a8', '#f58518', '#e45756', '#72b7b2', '#54a24b', '#eeca3b', '#b279a2', '#ff9da6', '#9d755d', '#bab0ac'];
 
 export const TIMELINE_SIZE = {width: 250, height: 8};
@@ -116,7 +116,7 @@ export function getFilterForTransition(a1: any[], a2: any[]) {
 }
 
 export function resizeRootSVG(id: string, count: number, isLegend: boolean, isTransition?: boolean, duration?: number, delay?: number) {
-  let width = (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right) * count + (isLegend ? LEGEND_WIDTH : 0);
+  let width = (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * count - CHART_PADDING.right + (isLegend ? LEGEND_WIDTH : 0);
   let height = CHART_MARGIN.top + CHART_SIZE.height + CHART_MARGIN.bottom;
   selectRootSVG(id)
     .transition().delay(isTransition ? delay : 0).duration(isTransition ? duration : 0)
@@ -160,7 +160,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
       .rangeRound([CHART_SIZE.height, 0]) :
     d3.scaleQuantize()
       .domain([0, d3.max(data, function (d) {return d[yField]})]).nice()
-      .range(yBinRange.reverse());;
+      .range(yBinRange.reverse());
 
   resizeRootSVG(id, numOfColumnCategory, isLegend, false);
   appendAxes(id, spec, schema, data, isTransition);
@@ -169,7 +169,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   // render legend
   let colorScale: d3.ScaleOrdinal<string, string>;
   if (isLegend && !isDensity) { //TODO: implement legend for density plot
-    colorScale = renderLegend(id, attr, colorField, schema, isTransition);
+    colorScale = renderLegend(id, attr, colorField, schema, getNumberOfGraphs(spec, schema), isTransition);
   }
 
   let points; // either seleciton or transition
@@ -220,7 +220,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
 
   points
     .attr('transform', function (d) {
-      return 'translate(' + (isColumnUsing ? (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.left) * categories.indexOf(d[columnField]) : 0) + ', 0)';
+      return 'translate(' + (isColumnUsing ? (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * categories.indexOf(d[columnField]) : 0) + ', 0)';
     })
     .attr('x', function (d) {
       return isXMeanFn ?
@@ -410,14 +410,14 @@ export function appendAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, sch
       .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
       .call(xGrid)
       .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
-      .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.left) * i + CHART_MARGIN.left) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')');
+      .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * i + CHART_MARGIN.left) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')');
 
     svg.append('g')
       .classed('grid', true)
       .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + (CHART_MARGIN.top) + ')')
       .call(yGrid)
       .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
-      .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.left) * i + CHART_MARGIN.left) + ',' + CHART_MARGIN.top + ')')
+      .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * i + CHART_MARGIN.left) + ',' + CHART_MARGIN.top + ')')
 
     let xaxis = svg.append('g')
       .classed('axis', true)
@@ -428,7 +428,7 @@ export function appendAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, sch
 
     xaxis
       .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
-      .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.left) * i + CHART_MARGIN.left) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')');
+      .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * i + CHART_MARGIN.left) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')');
 
     xaxis.append('text')
       .classed('label', true)
@@ -450,7 +450,7 @@ export function appendAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, sch
 
     yaxis
       .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
-      .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.left) * i + CHART_MARGIN.left) + ',' + CHART_MARGIN.top + ')');
+      .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * i + CHART_MARGIN.left) + ',' + CHART_MARGIN.top + ')');
 
     yaxis.append('text')
       .classed('label', true)
@@ -473,7 +473,7 @@ export function appendPoints(id: string, data: any[]) {
     .enter().append('rect')
     .classed('point', true);
 }
-export function renderLegend(id: string, attr: PointAttr, field: string, schema: Schema, isTransition: boolean): d3.ScaleOrdinal<string, string> {
+export function renderLegend(id: string, attr: PointAttr, field: string, schema: Schema, numOfChart: number, isTransition: boolean): d3.ScaleOrdinal<string, string> {
   const categoryDomain = schema.domain({field});
   const colorScale = d3.scaleOrdinal(NOMINAL_COLOR_SCHEME)
     .domain(categoryDomain);
@@ -483,8 +483,8 @@ export function renderLegend(id: string, attr: PointAttr, field: string, schema:
     .classed('legend remove-when-reset', true)
     .attr('transform', function (d, i) {
       return 'translate(' +
-        (CHART_MARGIN.left + CHART_SIZE.width + LEGEND_LT_MARGIN) + ',' +
-        (CHART_MARGIN.top + LEGEND_LT_MARGIN + i * 20) + ')';
+        ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right) + ',' +
+        (CHART_MARGIN.top + LEGEND_MARGIN.top + i * 20) + ')';
     });
   legend.append('rect')
     .attr('x', 0)
