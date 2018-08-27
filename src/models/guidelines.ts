@@ -336,6 +336,9 @@ export function getGuidedSpec(spec: TopLevelExtendedSpec, guidelines: GuidelineI
   return newSpec;
 }
 
+export function isSkipColorOfAggregatePoints(id: ActionableID, spec: any){
+  return id === 'AGGREGATE_POINTS' && typeof getColorField(spec).colorField != 'undefined';
+}
 export function isRowOrColumnUsed(spec: any) {
   const { encoding } = spec;
   if (typeof encoding.row != 'undefined' || typeof encoding.column != 'undefined') {
@@ -379,13 +382,14 @@ export function isAllowedScatterplot(spec: any) {
   if (isSimpleScatterplot(spec)) {
     return true;
   }
-  else if (this.isDensityPlot(spec)) {
+  else if (isDensityPlot(spec)) {
     return true;
   }
   else {
     return false;
   }
 }
+
 export function isSimpleScatterplot(spec: any) {
   const { encoding, mark } = spec;
   try {

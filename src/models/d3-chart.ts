@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import {FacetedCompositeUnitSpec} from '../../node_modules/vega-lite/build/src/spec';
 import {BaseType, select} from 'd3';
-import {isDensityPlot, isMeanAggregated, getColorField, ActionableID, getColumnField, isLegendUsing, isColumnFieldUsing, getNumberOfGraphs, AggregateStages, RemoveFillColorStages, DensityPlotStages, PointResizeStages, PointOpacityStages, SeperateGraphStages, FilterStages} from './guidelines';
+import {isDensityPlot, isMeanAggregated, getColorField, ActionableID, getColumnField, isLegendUsing, isColumnFieldUsing, getNumberOfGraphs, AggregateStages, RemoveFillColorStages, DensityPlotStages, PointResizeStages, PointOpacityStages, SeperateGraphStages, FilterStages, isSkipColorOfAggregatePoints} from './guidelines';
 import {Schema} from '../models';
 import {OneOfFilter} from '../../node_modules/vega-lite/build/src/filter';
 
@@ -45,7 +45,13 @@ export function renderD3Preview(id: ActionableID, CHART_REF: any, fromSpec: Face
   // console.log(toSpec);
   removePrevChart(CHART_REF);
   appendRootSVG(id, CHART_REF, isNoTimeline);
-  if (!isNoTimeline) appendTransitionTimeline(id, '', transitionAttrs, false);
+  if (!isNoTimeline) {
+    let newAttrs = transitionAttrs.slice();
+    if (isSkipColorOfAggregatePoints(id, fromSpec)) {  // For the only exception, remove first stage for Aggregate Points when color is already used
+      newAttrs.splice(0, 1);
+    }
+    appendTransitionTimeline(id, '', newAttrs, false);
+  }
   appendPoints(id, data);
   renderPoints(id, fromSpec, toSpec, data, schema, isTransition, isNoTimeline);
 }
@@ -59,7 +65,7 @@ export function renderPoints(id: ActionableID, fromSpec: FacetedCompositeUnitSpe
 
   // to
   let diffOneof = !isSpecifiedView ? getFilterForTransition(fromSpec.transform, spec.transform) : null;
-  renderScatterplot(id, spec, data, schema, isTransition, diffOneof);
+  renderScatterplot(id, spec, data, schema, isTransition, diffOneof, isSkipColorOfAggregatePoints(id, fromSpec));
 }
 
 export function getFilterForTransition(a1: any[], a2: any[]) {
@@ -97,12 +103,13 @@ export function resizeRootSVG(id: string, count: number, isLegend: boolean, isTr
     .attr('viewBox', '0 0 ' + width + ' ' + height);
 }
 
-export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, isTransition: boolean, filter?: OneOfFilter) {
+export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, isTransition: boolean, filter?: OneOfFilter, isSkip1APStage?: boolean) {
   const {isXMeanFn, isYMeanFn} = isMeanAggregated(spec);
   const {colorField} = getColorField(spec); //TODO: consider when quantitative
   const {columnField} = getColumnField(spec);
   const isColumnUsing = isColumnFieldUsing(spec);
   const isDensity = isDensityPlot(spec);
+  isSkip1APStage = typeof isSkip1APStage == 'undefined' ? false : isSkip1APStage;
   // console.log(columnField);
   // console.log(schema);
   const numOfColumnCategory = getNumberOfGraphs(spec, schema);
@@ -139,11 +146,12 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   resizeRootSVG(id, numOfColumnCategory, isLegend, false);
   renderAxes(id, spec, schema, data, isTransition);
   selectRootSVG(id).selectAll('.point').raise();
+  // startTimelineWithId(id);
 
   // render legend
   let colorScale: d3.ScaleOrdinal<string, string>;
   if (isLegend && !isDensity) { //TODO: implement legend for density plot
-    colorScale = renderLegend(id, attr, colorField, schema, getNumberOfGraphs(spec, schema), isTransition);
+    colorScale = renderLegend(id, attr, colorField, schema, getNumberOfGraphs(spec, schema), isTransition && !isSkip1APStage);
   }
 
   let points; // either seleciton or transition
@@ -152,7 +160,10 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
 
   // also include all of the one stage transitions
   if (isTransition && id === 'AGGREGATE_POINTS') {
-    points = points.transition().duration(AggregateStages[0].duration);
+    points.style('opacity', attr.opacity);
+    if (!isSkip1APStage) {
+      points = points.transition().duration(AggregateStages[0].duration);
+    }
   }
   else if (isTransition && id === 'REMOVE_FILL_COLOR') {
     points = points.transition().duration(RemoveFillColorStages[0].duration);
@@ -184,13 +195,13 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   }
 
   points
-    .attr('opacity', attr.opacity);
+    .style('opacity', attr.opacity);
 
   if (isTransition && id === 'ENCODING_DENSITY') {
     points = points.transition().duration(DensityPlotStages[2].duration).delay(DensityPlotStages[1].delay);
   }
   else if (isTransition && id === 'AGGREGATE_POINTS') {
-    points = points.transition().duration(AggregateStages[1].duration).delay(AggregateStages[0].delay);
+    points = points.transition().duration(AggregateStages[1].duration).delay(!isSkipColorOfAggregatePoints(id, spec) ? AggregateStages[0].delay : 0);
   }
 
   points
@@ -213,7 +224,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
     selectRootSVG(id).selectAll('.point')
       .filter(function (d) {return (filter.oneOf as string[]).indexOf(d[filter.field]) == -1;})
       .transition().duration(isTransition ? FilterStages[0].duration : 0)
-      .attr('opacity', 0);
+      .style('opacity', 0);
   }
   else if (id === 'AGGREGATE_POINTS' && typeof colorField != 'undefined') {
     const categoryDomain = schema.domain({field: colorField});
@@ -221,6 +232,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
     //Leave only one point for each category
     //rather than update data
     selectRootSVG(id).selectAll('.point')
+      .transition().duration(0).delay(isTransition ? d3.sum(AggregateStages.map(x => x.duration + x.delay)) : 0)
       .filter(function (d) {
         if (categoryPointUsed.indexOf(d[colorField]) != -1) {
           categoryPointUsed.splice(categoryPointUsed.indexOf(d[colorField]), 1);
@@ -228,8 +240,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
         }
         return true;
       })
-      .transition().duration(0).delay(isTransition ? d3.sum(AggregateStages.map(x => x.duration + x.delay)) : 0)
-      .attr('opacity', 0);
+      .style('opacity', 0);
   }
 }
 
@@ -264,6 +275,21 @@ export function appendRootSVG(id: string, CHART_REF: any, isSpecifiedView: boole
     .attr('height', isSpecifiedView ? '350px' : '100%');
 }
 
+export function startTimelineWithId(id: ActionableID){
+  let stages: TransitionAttr[];
+  switch(id){
+    case 'FILTER': stages = FilterStages; break;
+    case 'CHANGE_POINT_OPACITY': stages = PointOpacityStages; break;
+    case 'CHANGE_POINT_SIZE': stages = PointResizeStages; break;
+    case 'AGGREGATE_POINTS': stages = AggregateStages; break;
+    case 'ENCODING_DENSITY': stages = DensityPlotStages; break;
+    case 'SEPARATE_GRAPH': stages = SeperateGraphStages; break;
+    case 'REMOVE_FILL_COLOR': stages = RemoveFillColorStages; break;
+    default: stages = FilterStages; break;
+  }
+  startTimeline(id, stages);
+}
+
 export function startTimeline(id: string, stages: TransitionAttr[]) {
   let totalDuration = d3.sum(stages.map(x => x.duration + x.delay));
   d3.select('#d3-timeline-' + id).selectAll('.timeline-pb')
@@ -278,10 +304,9 @@ export function startTimeline(id: string, stages: TransitionAttr[]) {
     .attr('y', TIMELINE_MARGIN.top)
     .attr('height', TIMELINE_SIZE.height)
     .attr('width', 0);
-  // .attr('opacity', 1);
 }
 export function appendTransitionTimeline(id: string, title: string, stages: TransitionAttr[], isTransition: boolean) {
-  // removeTransitionTimeline(id, 0);
+
   let svg = d3.select('#d3-timeline-' + id).select('svg');
 
   // append title
