@@ -320,9 +320,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private onSeparateGraphTransition() {
     let id: ActionableID = "SEPARATE_GRAPH";
-    onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
+    // onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
     startTimeline(id, SeperateGraphStages);
-    separateGraph(id, this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), SeperateGraphStages);
+    renderPoints(id, this.props.mainSpec, this.getSeparateGraphSpec().spec, this.props.data.values, this.props.schema, true);
+    // separateGraph(id, this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), SeperateGraphStages);
   }
   private onRemoveFillColorTransition() {
     let id: ActionableID = "REMOVE_FILL_COLOR";
@@ -498,11 +499,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         transitionAttrs={DensityPlotStages} />
     );
   }
-  private renderSeparateGraphPreview() {
-    let previewSpec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
-
-    // Select nominal field by default
-    let field = this.getDefaultSmallSizedNominalFieldName();
+  private getSeparateGraphSpec(){
+    let spec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
 
     // If a nominal field used, use it for separation
     // try {
@@ -512,15 +510,20 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     //     field = previewSpec.encoding.shape['field'];
     // } catch (e) {}
 
-    previewSpec.encoding = {
-      ...previewSpec.encoding,
+    let field = this.getDefaultSmallSizedNominalFieldName();
+    spec.encoding = {
+      ...spec.encoding,
       column: {
         field,
         type: NOMINAL
       }
     }
+
+    return {spec};
+  }
+  private renderSeparateGraphPreview() {
     return (
-      <VegaLite spec={previewSpec}
+      <VegaLite spec={this.getSeparateGraphSpec().spec}
         logger={this.plotLogger}
         data={this.props.data}
         isPreview={true}
