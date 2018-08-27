@@ -160,7 +160,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
 
   // also include all of the one stage transitions
   if (isTransition && id === 'AGGREGATE_POINTS') {
-    points.style('opacity', attr.opacity);
+    points.attr('opacity', attr.opacity); // TODO: why not working?
     if (!isSkip1APStage) {
       points = points.transition().duration(AggregateStages[0].duration);
     }
@@ -195,7 +195,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   }
 
   points
-    .style('opacity', attr.opacity);
+    .attr('opacity', attr.opacity);
 
   if (isTransition && id === 'ENCODING_DENSITY') {
     points = points.transition().duration(DensityPlotStages[2].duration).delay(DensityPlotStages[1].delay);
@@ -221,18 +221,17 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
 
   // console.log(filter);
   if (typeof filter != 'undefined' && filter != null && id === 'FILTER') {
-    selectRootSVG(id).selectAll('.point')
+    points
       .filter(function (d) {return (filter.oneOf as string[]).indexOf(d[filter.field]) == -1;})
       .transition().duration(isTransition ? FilterStages[0].duration : 0)
-      .style('opacity', 0);
+      .attr('opacity', 0);
   }
   else if (id === 'AGGREGATE_POINTS' && typeof colorField != 'undefined') {
     const categoryDomain = schema.domain({field: colorField});
     let categoryPointUsed = categoryDomain.slice();
     //Leave only one point for each category
     //rather than update data
-    selectRootSVG(id).selectAll('.point')
-      .transition().duration(0).delay(isTransition ? d3.sum(AggregateStages.map(x => x.duration + x.delay)) : 0)
+    points
       .filter(function (d) {
         if (categoryPointUsed.indexOf(d[colorField]) != -1) {
           categoryPointUsed.splice(categoryPointUsed.indexOf(d[colorField]), 1);
@@ -240,7 +239,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
         }
         return true;
       })
-      .style('opacity', 0);
+      .attr('opacity', 0);
   }
 }
 
@@ -275,9 +274,9 @@ export function appendRootSVG(id: string, CHART_REF: any, isSpecifiedView: boole
     .attr('height', isSpecifiedView ? '350px' : '100%');
 }
 
-export function startTimelineWithId(id: ActionableID){
+export function startTimelineWithId(id: ActionableID) {
   let stages: TransitionAttr[];
-  switch(id){
+  switch (id) {
     case 'FILTER': stages = FilterStages; break;
     case 'CHANGE_POINT_OPACITY': stages = PointOpacityStages; break;
     case 'CHANGE_POINT_SIZE': stages = PointResizeStages; break;
