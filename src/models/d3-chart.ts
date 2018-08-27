@@ -540,9 +540,17 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, s
       .transition().duration(isTransition ? AggregateStages[0].duration : 0)
       .attr('opacity', 1);
   }
-  if (id === 'SEPARATE_GRAPH') {
+  else if (id === 'SEPARATE_GRAPH') {
     selectRootSVG(id).selectAll('.legend')
       .transition().duration(isTransition && id === 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
+      .attr('transform', function (d, i) {
+        return 'translate(' +
+          ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right) + ',' +
+          (CHART_MARGIN.top + LEGEND_MARGIN.top + i * 20) + ')';
+      });
+  }
+  else {
+    selectRootSVG(id).selectAll('.legend')
       .attr('transform', function (d, i) {
         return 'translate(' +
           ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right) + ',' +
