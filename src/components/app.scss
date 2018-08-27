@@ -237,8 +237,8 @@
   }
   .preview-expand .chart {
     width: 350px !important;
-    height: 398px !important;
-    min-height: 398px;
+    height: 408px !important;
+    min-height: 408px;
   }
   .preview-expand .marks {
     width: 350px !important;
@@ -259,7 +259,10 @@
 
   // to differenciate with normal vl chart
   .d3-chart {
-    border-left: dotted 1px transparent;
+    // border-left: dotted 1px transparent;
+    position: relative;
+    top: 40%;
+    transform: translateY(-40%);
   }
   .d3-chart .grid line, .d3-chart .grid path {
     stroke: rgb(221, 221, 221);
