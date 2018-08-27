@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as CSSModules from 'react-css-modules';
 import * as styles from './actionable-overplotting.scss';
 
-import {ActionableID, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting, GuideActionItem, isRowOrColumnUsed, isColorUsed, getRowAndColumnField, DEFAULT_CHANGE_POINT_SIZE, FilterStages, PointOpacityStages, PointResizeStages, AggregateStages, DensityPlotStages, SeperateGraphStages, RemoveFillColorStages} from '../../../models/guidelines';
+import {ActionableID, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting, GuideActionItem, isRowOrColumnUsed, isColorUsed, getRowAndColumnField, DEFAULT_CHANGE_POINT_SIZE, FilterStages, PointOpacityStages, PointResizeStages, AggregateStages, DensityPlotStages, SeperateGraphStages, RemoveFillColorStages, isDensityPlot, isRowUsed} from '../../../models/guidelines';
 import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_FIELD_ADD, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR, ACTIONABLE_ADJUST_POINT_SIZE, ACTIONABLE_ADJUST_POINT_OPACITY} from '../../../actions';
 import {Logger} from '../../util/util.logger';
 import {Themes} from '../../../models/theme/theme';
@@ -179,13 +179,18 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
 
   private isChangePointSizeUsing() {
+    if (typeof this.props.mainSpec == 'undefined') return false;
+    if(isDensityPlot(this.props.mainSpec)) return false;
     return true;
   }
   private isChangeOpacityUsing() {
+    if (typeof this.props.mainSpec == 'undefined') return false;
+    if(isDensityPlot(this.props.mainSpec)) return false;
     return true;
   }
   private isRemoveFillColorUsing() {
     if (typeof this.props.mainSpec == 'undefined') return false;
+    if(isDensityPlot(this.props.mainSpec)) return false;
     const {mainSpec} = this.props;
     const {mark} = mainSpec;
     try {
@@ -200,6 +205,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     }
   }
   private isAggregateUsing() {
+    if (typeof this.props.mainSpec == 'undefined') return false;
+    if(isDensityPlot(this.props.mainSpec)) return false;
     return this.isThereNominalField();
   }
   private isEncodingDensityUsing() {
@@ -208,7 +215,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private isSeparateGraphUsing() {
     if (typeof this.props.mainSpec == 'undefined') return false;
-    return !isRowOrColumnUsed(this.props.mainSpec) && this.isThereSmallSizedNominalField();
+    return !isRowUsed(this.props.mainSpec) && this.isThereSmallSizedNominalField();
   }
 
   private onFilterClick() {

@@ -238,7 +238,7 @@ export function checkGuideline(props: any) {
   // OVER_PLOTTING
   {
     // TODO: only considering scatterplot for now
-    if (isSimpleScatterplot(spec)) {
+    if (isAllowedScatterplot(spec)) {
       addGuidelineItem(GUIDELINE_OVER_PLOTTING, props.handleAction);
     } else {
       removeGuidelineItem(GUIDELINE_OVER_PLOTTING, props.handleAction);
@@ -339,6 +339,15 @@ export function getGuidedSpec(spec: TopLevelExtendedSpec, guidelines: GuidelineI
 export function isRowOrColumnUsed(spec: any) {
   const { encoding } = spec;
   if (typeof encoding.row != 'undefined' || typeof encoding.column != 'undefined') {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+export function isRowUsed(spec: any){
+  const { encoding } = spec;
+  if (typeof encoding.row != 'undefined') {
     return true;
   }
   else {
