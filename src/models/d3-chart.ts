@@ -71,7 +71,6 @@ export function renderD3Preview(id: ActionableID, CHART_REF: any, fromSpec: Face
   removePrevChart(CHART_REF);
   appendRootSVG(id, CHART_REF);
   appendTransitionTimeline(id, '', transitionAttrs, false);
-  // appendAxes(id, toSpec, schema, data, isTransition);
   appendPoints(id, data);
   renderPoints(id, fromSpec, toSpec, data, schema, isTransition);
 }
@@ -241,106 +240,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
       .attr('opacity', 0);
   }
 }
-export function separateGraph(id: string, spec: FacetedCompositeUnitSpec, values: any[], schema: Schema, field: string, stages: TransitionAttr[]) {
-  let svg = selectRootSVG(id);
-  const xField = spec.encoding.x['field'],
-    yField = spec.encoding.y['field'];
 
-  let categoryField = field;
-  let numOfCategory = schema.domain({field: categoryField}).length;
-  const width = 200;
-  //TODO: use resizeRootSVG function
-  let widthPlusMargin = width + CHART_MARGIN.left + CHART_MARGIN.right;
-  svg.transition().duration(stages[0].duration).attr('width', function () {
-    return widthPlusMargin * numOfCategory;
-  });
-
-  for (let i = 0; i < numOfCategory; i++) {
-    if (i == 0) continue;
-
-    let x = d3.scaleLinear()
-      .domain([0, d3.max(values, function (d) {return d[xField]})]).nice()
-      .rangeRound([0, width]);
-    let y = d3.scaleLinear()
-      .domain([0, d3.max(values, function (d) {return d[yField]})]).nice()
-      .rangeRound([CHART_SIZE.height, 0]);
-
-    let xAxis = d3.axisBottom(x).ticks(Math.ceil(width / 40));
-    let yAxis = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40));
-    let xGrid = d3.axisBottom(x).ticks(Math.ceil(width / 40)).tickFormat(null).tickSize(-width);
-    let yGrid = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40)).tickFormat(null).tickSize(-CHART_SIZE.height);
-
-    svg.append('g')
-      .classed('grid remove-when-reset', true)
-      .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
-      .call(xGrid)
-      .transition().duration(stages[0].duration)
-      .attr('transform', 'translate(' + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')');
-
-    svg.append('g')
-      .classed('grid remove-when-reset', true)
-      .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + CHART_MARGIN.top + ')')
-      .call(yGrid)
-      .transition().duration(stages[0].duration)
-      .attr('transform', 'translate(' + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + CHART_MARGIN.top + ')');
-
-    let xaxis = svg.append('g')
-      .classed('axis remove-when-reset', true)
-      .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
-      .attr('stroke', '#888888')
-      .attr('stroke-width', 0.5)
-      .call(xAxis);
-
-    xaxis
-      .transition().duration(stages[0].duration)
-      .attr('transform', 'translate(' + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')');
-
-    xaxis
-      .append('text')
-      .classed('label', true)
-      .attr('x', width / 2)
-      .attr('y', CHART_MARGIN.bottom - 10)
-      .style('fill', 'black')
-      .style('font-weight', 'bold')
-      .style('font-family', 'sans-serif')
-      .style('font-size', 11)
-      .style('text-anchor', 'middle')
-      .text(xField);
-
-    let yaxis = svg.append('g')
-      .classed('axis remove-when-reset', true)
-      .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + CHART_MARGIN.top + ')')
-      .attr('stroke', '#888888')
-      .attr('stroke-width', 0.5)
-      .call(yAxis);
-
-    yaxis
-      .transition().duration(stages[0].duration)
-      .attr('transform', 'translate(' + (CHART_MARGIN.left + widthPlusMargin * i) + ',' + CHART_MARGIN.top + ')');
-
-    yaxis.append('text')
-      .classed('label', true)
-      .attr('transform', 'rotate(-90)')
-      .attr('x', -width / 2)
-      .attr('y', -50)
-      .attr('dy', '.71em')
-      .style('font-weight', 'bold')
-      .style('font-family', 'sans-serif')
-      .style('font-size', 11)
-      .style('fill', 'black')
-      .style('text-anchor', 'middle')
-      .text(yField);
-
-    let category = schema.domain({field: categoryField})[i];
-    svg.selectAll('.point')
-      .filter(function (d) {return d[categoryField] == category;})
-      .transition().duration(stages[0].duration)
-      .attr('x', function () {
-        return parseFloat(d3.select(this).attr('x')) + widthPlusMargin * i;
-      });
-  }
-  svg.selectAll('.point').raise();
-}
 export function isThereD3Chart(id: string) {
   return selectRootSVG(id) != null;
 }
@@ -479,16 +379,6 @@ export function removePrevChart(CHART_REF: any) {
     .remove();
 }
 
-export function onPreviewReset(id: ActionableID, spec: FacetedCompositeUnitSpec, schema: Schema, values: any[], isTransition?: boolean, duration?: number, delay?: number) {
-  delay += COMMON_DELAY;
-  resizeRootSVG(id, 1, false, isTransition, duration, delay);
-  selectRootSVG(id)
-    .selectAll('.remove-when-reset')
-    .transition().delay(typeof delay == 'undefined' ? 0 : delay).duration(duration)
-    .attr('opacity', 0).remove();
-  renderScatterplot(id, spec, values, schema, false);//, duration, delay);
-}
-
 export function removeAxes(id: ActionableID) {
   selectRootSVG(id).selectAll('.axis').remove();
   selectRootSVG(id).selectAll('.grid').remove();
@@ -582,42 +472,6 @@ export function appendPoints(id: string, data: any[]) {
     .data(data)
     .enter().append('rect')
     .classed('point', true);
-}
-export function updatePoints(id: string, data: any[]) {
-  selectRootSVG(id).selectAll('.point')
-    .data(data)
-    .exit().remove();
-}
-export function removeFillColor(id: string, stages: TransitionAttr[]) {
-  selectRootSVG(id).selectAll('.point')
-    .transition().duration(stages[0].duration)
-    .attr('stroke', function () {return d3.select(this).attr('fill');})
-    .attr('fill', 'transparent');
-}
-export function filterPoint(id: string, field: string, oneOf: any[], stages?: TransitionAttr[]) {
-  selectRootSVG(id).selectAll('.point')
-    .filter(function (d) {return oneOf.indexOf(d[field]) == -1;})
-    .transition().duration(typeof stages != 'undefined' ? stages[0].duration : 0)
-    .attr('opacity', 0);
-}
-export function reducePointOpacity(id: string, opacity: number, stages: TransitionAttr[]) {
-  selectRootSVG(id).selectAll('.point')
-    .transition().duration(stages[0].duration)
-    .attr('opacity', opacity);
-}
-
-export function reducePointSize(id: string, stages: TransitionAttr[]) {
-  selectRootSVG(id).selectAll('.point')
-    .transition().duration(stages[0].duration)
-    //TODO: DEFAULT_CHANGE_POINT_SIZE is not used
-    .attr('width', function () {return parseFloat(d3.select(this).attr('width')) / 2.0;})
-    .attr('height', function () {return parseFloat(d3.select(this).attr('height')) / 2.0;})
-    .attr('x', function () {
-      return parseFloat(d3.select(this).attr('x')) + parseFloat(d3.select(this).attr('width')) / 4.0;
-    })
-    .attr('y', function () {
-      return parseFloat(d3.select(this).attr('y')) + parseFloat(d3.select(this).attr('height')) / 4.0;
-    });
 }
 export function renderLegend(id: string, attr: PointAttr, field: string, schema: Schema, isTransition: boolean): d3.ScaleOrdinal<string, string> {
   const categoryDomain = schema.domain({field});
@@ -718,114 +572,4 @@ export function showContourInD3Chart(id: string, spec: FacetedCompositeUnitSpec,
 }
 export function hideContourInD3Chart(id: string) {
   selectRootSVG(id).selectAll('.contour').remove();
-}
-export function pointsAsMeanScatterplot(id: string, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, field: string, stages: TransitionAttr[], isTransition: boolean) {
-  resizeRootSVG(id, 1, true, isTransition, stages[0].duration);
-  let svg = selectRootSVG(id);
-  let xField = spec.encoding.x['field'];
-  let yField = spec.encoding.y['field'];
-
-  let x = d3.scaleLinear()
-    .domain([0, d3.max(data, function (d) {return d[xField]})]).nice()
-    .rangeRound([0, CHART_SIZE.width]);
-  let y = d3.scaleLinear()
-    .domain([0, d3.max(data, function (d) {return d[yField]})]).nice()
-    .rangeRound([CHART_SIZE.height, 0]);
-
-  let categoryDomain = schema.domain({field});
-  let ordinalColor = d3.scaleOrdinal(NOMINAL_COLOR_SCHEME)
-    .domain(categoryDomain);
-  let attr = getPointAttrs(spec);
-
-  svg.selectAll('.point')
-    .transition().duration(stages[0].duration)
-    .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : ordinalColor(d[field]);})
-    .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : ordinalColor(d[field]);})
-    .transition().duration(stages[1].duration).delay(stages[0].delay)
-    .attr('x', function (d) {return (x(d3.mean(data.map(function (d1) {return d1[field] == d[field] ? d1[xField] : null;})))) + (-attr.width / 2.0 + CHART_MARGIN.left);})
-    .attr('y', function (d) {return (y(d3.mean(data.map(function (d1) {return d1[field] == d[field] ? d1[yField] : null;})))) + (-attr.height / 2.0 + CHART_MARGIN.top);})
-
-  // legend
-  let legend = svg.selectAll('.legend')
-    .data(categoryDomain)
-    .enter().append('g')
-    .classed('legend remove-when-reset', true)
-    .attr('transform', function (d, i) {
-      return 'translate(' +
-        (CHART_MARGIN.left + CHART_SIZE.width + LEGEND_LT_MARGIN) + ',' +
-        (CHART_MARGIN.top + LEGEND_LT_MARGIN + i * 20) + ')';
-    });
-
-  legend.append('rect')
-    .attr('x', 0)
-    .attr('y', 0)
-    .attr('stroke-width', attr.stroke_width)
-    .attr('opacity', attr.opacity)
-    .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : ordinalColor(d);})
-    //circle vs rect
-    .attr('width', attr.width)
-    .attr('height', attr.height)
-    .attr('rx', attr.rx)
-    .attr('ry', attr.ry)
-    .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : ordinalColor(d);});
-
-  legend.append('text')
-    .attr('x', 10)
-    .attr('y', 10)
-    .text(function (d) {return d as string;})
-    .classed('textselected', true)
-    .style('text-anchor', 'start')
-    .style('font-size', 15);
-
-  legend
-    .attr('opacity', 0)
-    .transition().duration(stages[0].duration)
-    .attr('opacity', 1);
-}
-export function renderDensityPlot(id: string, spec: FacetedCompositeUnitSpec, data: any[], stages: TransitionAttr[], isTransition: boolean) {
-  let svg = selectRootSVG(id);
-  let xField = spec.encoding.x['field'];
-  let yField = spec.encoding.y['field'];
-
-  let xBinRange = [],
-    yBinRange = [],
-    numOfBin = 35,
-    binWidth = CHART_SIZE.width / numOfBin,
-    binHeight = CHART_SIZE.height / numOfBin;
-
-  for (let i = 0; i < numOfBin; i++) {
-    xBinRange.push(i * binWidth + binWidth / 2.0);
-  }
-  for (let i = 0; i < numOfBin; i++) {
-    yBinRange.push(i * binHeight + binHeight / 2.0);
-  }
-  let qsx = d3.scaleQuantize()
-    .domain([0, d3.max(data, function (d) {return d[xField]})]).nice()
-    .range(xBinRange);
-  let qsy = d3.scaleQuantize()
-    .domain([0, d3.max(data, function (d) {return d[yField]})]).nice()
-    .range(yBinRange.reverse());
-
-  resizeRootSVG(id, 1, isLegendUsing(spec));
-
-  svg.selectAll('.point')
-    .transition().duration(isTransition ? stages[0].duration : 0)
-    .attr('rx', 0)
-    .attr('ry', 0)
-    .attr('fill', '#08519c')
-    .attr('stroke-width', 0)
-    .attr('width', binWidth)
-    .attr('height', binHeight)
-    .transition().duration(isTransition ? stages[1].duration : 0).delay(isTransition ? stages[0].delay : 0)
-    .attr('opacity', 0.2)
-    .transition().duration(isTransition ? stages[2].duration : 0).delay(isTransition ? stages[1].delay : 0)
-    .attr('x', function (d) {return (qsx(d[xField]) + (-binWidth / 2.0 + CHART_MARGIN.left));})
-    .attr('y', function (d) {return (qsy(d[yField]) + (-binHeight / 2.0 + CHART_MARGIN.top));});
-}
-export function removeTransitionTimeline(id: string, duration?: number) {
-  duration += COMMON_DELAY;
-  d3.select('#d3-timeline-' + id).select('svg').selectAll('*')
-    .transition().delay(duration).duration(COMMON_DURATION)
-    .attr('opacity', 0)
-    .remove();
 }
