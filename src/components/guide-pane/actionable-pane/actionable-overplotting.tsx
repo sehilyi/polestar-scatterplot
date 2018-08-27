@@ -2,9 +2,8 @@ import * as React from 'react';
 import * as CSSModules from 'react-css-modules';
 import * as styles from './actionable-overplotting.scss';
 
-import * as d3 from 'd3';
 import {ActionableID, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting, GuideActionItem, isRowOrColumnUsed, isColorUsed, getRowAndColumnField, DEFAULT_CHANGE_POINT_SIZE} from '../../../models/guidelines';
-import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_FIELD_ADD, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR, SPEC_POINT_SIZE_SPECIFIED, ACTIONABLE_ADJUST_POINT_SIZE, ACTIONABLE_ADJUST_POINT_OPACITY} from '../../../actions';
+import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_FIELD_ADD, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR, ACTIONABLE_ADJUST_POINT_SIZE, ACTIONABLE_ADJUST_POINT_OPACITY} from '../../../actions';
 import {Logger} from '../../util/util.logger';
 import {Themes} from '../../../models/theme/theme';
 import {FacetedCompositeUnitSpec} from '../../../../node_modules/vega-lite/build/src/spec';
@@ -13,9 +12,9 @@ import {CIRCLE, SQUARE, Mark, RECT} from '../../../../node_modules/vega-lite/bui
 import {VegaLite} from '../../vega-lite';
 import {QUANTITATIVE, NOMINAL} from '../../../../node_modules/vega-lite/build/src/type';
 import {Schema, toTransforms} from '../../../models';
-import {COLOR, COLUMN, SIZE} from '../../../../node_modules/vega-lite/build/src/channel';
+import {COLOR, COLUMN} from '../../../../node_modules/vega-lite/build/src/channel';
 import {FieldPicker} from './actionable-common-ui/field-picker';
-import {selectRootSVG, onPreviewReset, COMMON_DURATION, CHART_SIZE, CHART_MARGIN, renderDensityPlot, pointsAsMeanScatterplot, reducePointSize, reducePointOpacity, removeFillColor, resizeRootSVG, COMMON_DELAY, appendTransitionTimeline, TransitionAttr, COMMON_SHORT_DELAY, filterPoint, separateGraph, startTimeline, DensityPlotStages, AggregateStages, renderPoints, FilterStages, PointOpacityStages, PointResizeStages, SeperateGraphStages, RemoveFillColorStages} from '../../../models/d3-chart';
+import {startTimeline, DensityPlotStages, AggregateStages, renderPoints, FilterStages, PointOpacityStages, PointResizeStages, SeperateGraphStages, RemoveFillColorStages} from '../../../models/d3-chart';
 import {OneOfFilter} from 'vega-lite/build/src/filter';
 import {NumberAdjuster} from './actionable-common-ui/number-adjuster';
 
@@ -291,12 +290,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
 
   private onFilterTransition() {
-    // let field = this.getDefaultSmallSizedNominalFieldName(getRowAndColumnField(this.props.mainSpec));
-    // let oneOf = this.getDefaultOneOf(field);
     let id: ActionableID = "FILTER";
     startTimeline(id, FilterStages);
     renderPoints(id, this.props.mainSpec, this.getFilterSpec().spec, this.props.data.values, this.props.schema, true);
-    // filterPoint(id, field, oneOf, FilterStages);
   }
   private onChangeOpacityTransition() {
     let id: ActionableID = "CHANGE_POINT_OPACITY";
@@ -320,10 +316,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private onSeparateGraphTransition() {
     let id: ActionableID = "SEPARATE_GRAPH";
-    // onPreviewReset(id, this.props.mainSpec, this.props.schema, this.props.data.values);
     startTimeline(id, SeperateGraphStages);
     renderPoints(id, this.props.mainSpec, this.getSeparateGraphSpec().spec, this.props.data.values, this.props.schema, true);
-    // separateGraph(id, this.props.mainSpec, this.props.data.values, this.props.schema, this.getDefaultSmallSizedNominalFieldName(), SeperateGraphStages);
   }
   private onRemoveFillColorTransition() {
     let id: ActionableID = "REMOVE_FILL_COLOR";
@@ -534,18 +528,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     );
   }
 
-  //TODO: should move to guideline model
-  private getDefaultLargeSizedNominalFieldName() {
-    let maxSize = 0, field = '';
-    const {schema} = this.props;
-    for (let f of schema.fieldSchemas) {
-      if (f.vlType == NOMINAL && schema.domain({field: f.name}).length > maxSize) {
-        field = f.name;
-        maxSize = schema.domain({field: f.name}).length;
-      }
-    }
-    return field;
-  }
   private getDefaultSmallSizedNominalFieldName(exceptField?: string[]) {
     // console.log(exceptField);
     if (typeof exceptField == 'undefined') exceptField = [];
@@ -587,19 +569,12 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     return false;
   }
 
-  private onIgnore() {
-    const {item} = this.props;
-    this.props.handleAction({
-      type: GUIDELINE_TOGGLE_IGNORE_ITEM,
-      payload: {item}
-    });
-  }
 
   private onBackButton() {
     this.setState({triggeredAction: 'NONE'});
   }
 
-  private vegaLiteWrapperRefHandler = (ref: any) => {
+  private vegaLiteWrapperRefHandler = () => {
   }
 
   private onExpand(expandedAction: ActionableID) {

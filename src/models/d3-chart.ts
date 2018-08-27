@@ -1,10 +1,9 @@
 import * as d3 from 'd3';
 import {FacetedCompositeUnitSpec} from '../../node_modules/vega-lite/build/src/spec';
-import {BaseType, select, transition} from 'd3';
-import {isDensityPlot, isMeanAggregated, getColorField, ActionableID, getColumnField, isLegendUsing, isColumnFieldUsing} from './guidelines';
+import {BaseType, select} from 'd3';
+import {isDensityPlot, isMeanAggregated, getColorField, ActionableID, getColumnField, isLegendUsing, isColumnFieldUsing, getNumberOfGraphs} from './guidelines';
 import {Schema} from '../models';
-import {NOMINAL} from '../../node_modules/vega-lite/build/src/type';
-import {Filter, OneOfFilter} from '../../node_modules/vega-lite/build/src/filter';
+import {OneOfFilter} from '../../node_modules/vega-lite/build/src/filter';
 
 // Basic property for d3-chart
 export const COMMON_DURATION: number = 1000;
@@ -72,12 +71,12 @@ export function renderD3Preview(id: ActionableID, CHART_REF: any, fromSpec: Face
   removePrevChart(CHART_REF);
   appendRootSVG(id, CHART_REF);
   appendTransitionTimeline(id, '', transitionAttrs, false);
-  appendAxes(id, toSpec, data);
+  // appendAxes(id, toSpec, schema, data, isTransition);
   appendPoints(id, data);
   renderPoints(id, fromSpec, toSpec, data, schema, isTransition);
 }
 
-export function renderPoints(id: ActionableID, fromSpec: FacetedCompositeUnitSpec, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, isTransition: boolean, duration?: number, delay?: number) {
+export function renderPoints(id: ActionableID, fromSpec: FacetedCompositeUnitSpec, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, isTransition: boolean) {
 
   let diffOneof = getFilterForTransition(fromSpec.transform, spec.transform);
 
@@ -142,7 +141,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   const isColumnUsing = isColumnFieldUsing(spec);
   // console.log(columnField);
   // console.log(schema);
-  const numOfColumnCategory = isColumnUsing ? schema.domain({field: columnField}).length : 1;
+  const numOfColumnCategory = getNumberOfGraphs(spec, schema);
   const categories = isColumnUsing ? schema.domain({field: columnField}) : null;
   const isLegend = isLegendUsing(spec);
   const xField = spec.encoding.x['field'], yField = spec.encoding.y['field'];
@@ -156,7 +155,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
     .rangeRound([CHART_SIZE.height, 0]);
 
   resizeRootSVG(id, numOfColumnCategory, isLegend, false);
-  appendAxes(id, spec, data);
+  appendAxes(id, spec, schema, data, isTransition);
 
   // render legend
   let colorScale: d3.ScaleOrdinal<string, string>;
@@ -493,7 +492,14 @@ export function onPreviewReset(id: ActionableID, spec: FacetedCompositeUnitSpec,
   renderScatterplot(id, spec, values, schema, false);//, duration, delay);
 }
 
-export function appendAxes(id: string, spec: FacetedCompositeUnitSpec, data: any[]) {
+export function removeAxes(id: ActionableID) {
+  selectRootSVG(id).selectAll('.axis').remove();
+  selectRootSVG(id).selectAll('.grid').remove();
+  selectRootSVG(id).selectAll('.point').raise();
+}
+export function appendAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, schema: Schema, data: any[], isTransition: boolean) {
+  removeAxes(id);
+
   let svg = selectRootSVG(id);
   const xField = spec.encoding.x['field'], yField = spec.encoding.y['field'];
 
@@ -509,51 +515,71 @@ export function appendAxes(id: string, spec: FacetedCompositeUnitSpec, data: any
   let xGrid = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(null).tickSize(-CHART_SIZE.width);
   let yGrid = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40)).tickFormat(null).tickSize(-CHART_SIZE.height);
 
-  svg.append('g')
-    .classed('grid', true)
-    .attr('transform', 'translate(' + CHART_MARGIN.left + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
-    .call(xGrid);
+  const numOfCategory = getNumberOfGraphs(spec, schema);
 
-  svg.append('g')
-    .classed('grid', true)
-    .attr('transform', 'translate(' + CHART_MARGIN.left + ',' + CHART_MARGIN.top + ')')
-    .call(yGrid);
+  for (let i = 0; i < numOfCategory; i++) {
 
-  svg.append('g')
-    .classed('axis', true)
-    .attr('transform', 'translate(' + CHART_MARGIN.left + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
-    .attr('stroke', '#888888')
-    .attr('stroke-width', 0.5)
-    .call(xAxis)
-    .append('text')
-    .classed('label', true)
-    .attr('x', CHART_SIZE.width / 2)
-    .attr('y', CHART_MARGIN.bottom - 10)
-    .style('fill', 'black')
-    .style('font-weight', 'bold')
-    .style('font-family', 'sans-serif')
-    .style('font-size', 11)
-    .style('text-anchor', 'middle')
-    .text(xField);
+    console.log(isTransition + '/' + id);
+    svg.append('g')
+      .classed('grid', true)
+      .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
+      .call(xGrid)
+      .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
+      .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.left) * i + CHART_MARGIN.left) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')');
 
-  svg.append('g')
-    .classed('axis', true)
-    .attr('transform', 'translate(' + CHART_MARGIN.left + ',' + CHART_MARGIN.top + ')')
-    .attr('stroke', '#888888')
-    .attr('stroke-width', 0.5)
-    .call(yAxis)
-    .append('text')
-    .classed('label', true)
-    .attr('transform', 'rotate(-90)')
-    .attr('x', -CHART_SIZE.width / 2)
-    .attr('y', -50)
-    .attr('dy', '.71em')
-    .style('font-weight', 'bold')
-    .style('font-family', 'sans-serif')
-    .style('font-size', 11)
-    .style('fill', 'black')
-    .style('text-anchor', 'middle')
-    .text(yField);
+    svg.append('g')
+      .classed('grid', true)
+      .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + (CHART_MARGIN.top) + ')')
+      .call(yGrid)
+      .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
+      .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.left) * i + CHART_MARGIN.left) + ',' + CHART_MARGIN.top + ')')
+
+    let xaxis = svg.append('g')
+      .classed('axis', true)
+      .attr('stroke', '#888888')
+      .attr('stroke-width', 0.5)
+      .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
+      .call(xAxis);
+
+    xaxis
+      .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
+      .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.left) * i + CHART_MARGIN.left) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')');
+
+    xaxis.append('text')
+      .classed('label', true)
+      .attr('x', CHART_SIZE.width / 2)
+      .attr('y', CHART_MARGIN.bottom - 10)
+      .style('fill', 'black')
+      .style('font-weight', 'bold')
+      .style('font-family', 'sans-serif')
+      .style('font-size', 11)
+      .style('text-anchor', 'middle')
+      .text(xField);
+
+    let yaxis = svg.append('g')
+      .classed('axis', true)
+      .attr('stroke', '#888888')
+      .attr('stroke-width', 0.5)
+      .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + (CHART_MARGIN.top) + ')')
+      .call(yAxis);
+
+    yaxis
+      .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
+      .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.left) * i + CHART_MARGIN.left) + ',' + CHART_MARGIN.top + ')');
+
+    yaxis.append('text')
+      .classed('label', true)
+      .attr('transform', 'rotate(-90)')
+      .attr('x', -CHART_SIZE.width / 2)
+      .attr('y', -50)
+      .attr('dy', '.71em')
+      .style('font-weight', 'bold')
+      .style('font-family', 'sans-serif')
+      .style('font-size', 11)
+      .style('fill', 'black')
+      .style('text-anchor', 'middle')
+      .text(yField);
+  }
 }
 
 export function appendPoints(id: string, data: any[]) {
@@ -589,16 +615,16 @@ export function reducePointSize(id: string, stages: TransitionAttr[]) {
   selectRootSVG(id).selectAll('.point')
     .transition().duration(stages[0].duration)
     //TODO: DEFAULT_CHANGE_POINT_SIZE is not used
-    .attr('width', function (d) {return parseFloat(d3.select(this).attr('width')) / 2.0;})
-    .attr('height', function (d) {return parseFloat(d3.select(this).attr('height')) / 2.0;})
-    .attr('x', function (d) {
+    .attr('width', function () {return parseFloat(d3.select(this).attr('width')) / 2.0;})
+    .attr('height', function () {return parseFloat(d3.select(this).attr('height')) / 2.0;})
+    .attr('x', function () {
       return parseFloat(d3.select(this).attr('x')) + parseFloat(d3.select(this).attr('width')) / 4.0;
     })
-    .attr('y', function (d) {
+    .attr('y', function () {
       return parseFloat(d3.select(this).attr('y')) + parseFloat(d3.select(this).attr('height')) / 4.0;
     });
 }
-export function renderLegend(id: string, attr: PointAttr, field: string, schema: Schema, isTransition: boolean, duration?: number, delay?: number): d3.ScaleOrdinal<string, string> {
+export function renderLegend(id: string, attr: PointAttr, field: string, schema: Schema, isTransition: boolean): d3.ScaleOrdinal<string, string> {
   const categoryDomain = schema.domain({field});
   const colorScale = d3.scaleOrdinal(NOMINAL_COLOR_SCHEME)
     .domain(categoryDomain);

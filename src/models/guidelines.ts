@@ -414,6 +414,9 @@ export function getColumnField(spec: any) {
   } catch (e) { }
   return { columnField };
 }
+export function getNumberOfGraphs(spec: any, schema: Schema){
+  return isColumnFieldUsing(spec) ? schema.domain({field: getColumnField(spec).columnField}).length : 1;
+}
 export function isColumnFieldUsing(spec: any) {
   return typeof getColumnField(spec).columnField != 'undefined';
 }
