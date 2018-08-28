@@ -4,9 +4,9 @@ import {connect} from 'react-redux';
 
 import Modal from 'react-modal';
 // import {default as modal} from 'react-modal';
-import { Tab, TabList, TabPanel, Tabs } from 'react-tabs';
+import {Tab, TabList, TabPanel, Tabs} from 'react-tabs';
 import * as vega from 'vega';
-import { NamedData } from 'vega-lite/build/src/data';
+import {NamedData} from 'vega-lite/build/src/data';
 
 import * as styles from './data-selector.scss';
 
@@ -54,6 +54,7 @@ export class DataSelectorBase extends React.PureComponent<DataSelectorProps, Dat
     this.handleTextChange = this.handleTextChange.bind(this);
     this.handleFileTypeChange = this.handleFileTypeChange.bind(this);
     this.onDataUrlSubmit = this.onDataUrlSubmit.bind(this);
+
   }
 
   public render() {
@@ -63,12 +64,12 @@ export class DataSelectorBase extends React.PureComponent<DataSelectorProps, Dat
       <span styleName='data-selector'>
         <button onClick={this.openModal}>{title}</button>
         <Modal
-         isOpen={this.state.modalIsOpen}
-         onRequestClose={this.closeModal}
-         contentLabel="Data Selector"
-         styleName="modal"
-         className="voyager"
-       >
+          isOpen={this.state.modalIsOpen}
+          onRequestClose={this.closeModal}
+          contentLabel="Data Selector"
+          styleName="modal"
+          className="voyager"
+        >
           <div className='modal-header'>
             <a styleName='modal-close' onClick={this.closeModal}>close</a>
             <h3>Add Dataset</h3>
@@ -93,7 +94,7 @@ export class DataSelectorBase extends React.PureComponent<DataSelectorProps, Dat
               {this.renderUrlPanel()}
             </TabPanel>
           </Tabs>
-       </Modal>
+        </Modal>
       </span>
     );
   }
@@ -209,7 +210,7 @@ export class DataSelectorBase extends React.PureComponent<DataSelectorProps, Dat
   }
 
   private onFileChange(event: any) {
-    const { handleAction } = this.props;
+    const {handleAction} = this.props;
     const reader = new FileReader();
 
     const file = event.target.files[0];

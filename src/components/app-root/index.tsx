@@ -5,7 +5,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import {connect} from 'react-redux';
 import {ClipLoader} from 'react-spinners';
 import * as SplitPane from 'react-split-pane';
-import {SPINNER_COLOR} from '../../constants';
+import {SPINNER_COLOR, DEFAULT_DATASETS} from '../../constants';
 import {VoyagerConfig} from '../../models/config';
 import {Dataset} from '../../models/dataset';
 import {State} from '../../models/index';
@@ -21,20 +21,25 @@ import {LogPane} from '../log-pane/index';
 import {ViewPane} from '../view-pane/index';
 import {GuidePane} from '../guide-pane';
 import {Preview} from '../preview';
+import {DatasetAsyncAction, ActionHandler, datasetLoad, createDispatchHandler} from '../../actions';
 
-export interface AppRootProps {
+export interface AppRootProps extends ActionHandler<DatasetAsyncAction> {
   dataset: Dataset;
   config: VoyagerConfig;
 }
 
 class AppRootBase extends React.PureComponent<AppRootProps, {}> {
   public render() {
+    const IS_DEBUG: boolean = true;
     const {dataset, config} = this.props;
     const {hideHeader, hideFooter} = config;
     let bottomPane, footer;
     if (!dataset.isLoading) {
       if (!dataset.data) {
         bottomPane = <LoadData />;
+        if (IS_DEBUG) {
+          this.props.handleAction(datasetLoad(DEFAULT_DATASETS[1].name, DEFAULT_DATASETS[1]));
+        }
       } else {
         bottomPane = (
           <SplitPane split="vertical" defaultSize={200} minSize={175} maxSize={350}>
@@ -74,5 +79,6 @@ export const AppRoot = connect(
       dataset: selectDataset(state),
       config: selectConfig(state)
     };
-  }
+  },
+  createDispatchHandler<DatasetAsyncAction>()
 )(DragDropContext(HTML5Backend)(AppRootBase));
