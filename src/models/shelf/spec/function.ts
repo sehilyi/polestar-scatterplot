@@ -10,9 +10,9 @@ export type ShelfFunction = AggregateOp | 'bin' | TimeUnit | undefined;
 
 const QUANTITATIVE_FUNCTIONS: ShelfFunction[] = [
   undefined, 'bin',
-  'min', 'max',
-  'mean', 'median',
-  'sum'
+  // 'min', 'max',
+  'mean', //'median',
+  // 'sum'
 ];
 
 const TEMPORAL_FUNCTIONS = [

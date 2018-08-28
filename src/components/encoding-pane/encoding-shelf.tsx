@@ -97,13 +97,14 @@ class EncodingShelfBase extends React.PureComponent<
             attachment="top left"
             targetAttachment="bottom left"
           >
-            {(fieldDef && !isWildcardChannelId(id) && contains(CUSTOMIZABLE_ENCODING_CHANNELS, id.channel)) ?
-              <span onClick={this.toggleCustomizer} ref={this.fieldHandler}>
-                {channelName}{' '} <i className={'fa fa-caret-down'} />
-              </span> :
-              <span>
-                {channelName}
-              </span>
+            {
+              // (fieldDef && !isWildcardChannelId(id) && contains(CUSTOMIZABLE_ENCODING_CHANNELS, id.channel)) ?
+              //   <span onClick={this.toggleCustomizer} ref={this.fieldHandler}>
+              //     {channelName}{' '} <i className={'fa fa-caret-down'} />
+              //   </span> :
+                <span>
+                  {channelName}
+                </span>
             }
 
             {this.state.customizerIsOpened &&

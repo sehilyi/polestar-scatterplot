@@ -51,13 +51,13 @@ class EncodingPanelBase extends React.PureComponent<EncodingPanelProps, {}> {
     const {anyEncodings} = specPreview || spec;
 
     const positionShelves = ['x', 'y'].map(this.encodingShelf, this);
-    const facetShelves = ['row', 'column'].map(this.encodingShelf, this);
-    const nonPositionShelves = ['size', 'color', 'shape', 'detail', 'text'].map(this.encodingShelf, this);
+    const facetShelves = ['row', 'column'].slice(1, 2).map(this.encodingShelf, this);
+    const nonPositionShelves = ['size', 'color', 'shape', 'detail', 'text'].slice(1, 2).map(this.encodingShelf, this);
     const wildcardShelvesGroup = wildcards !== 'disabled' && (
       <div styleName="shelf-group">
         <h3>Wildcard Shelves</h3>
         {[...anyEncodings.map((_, i) => i),
-          -1 // map the empty placeholder to -1
+        -1 // map the empty placeholder to -1
         ].map(this.wildcardShelf, this)}
       </div>
     );
@@ -65,7 +65,7 @@ class EncodingPanelBase extends React.PureComponent<EncodingPanelProps, {}> {
     return (
       <div className="pane" styleName="encoding-pane">
         <a className="right" onClick={this.onClear}>
-          <i className="fa fa-eraser"/>
+          <i className="fa fa-eraser" />
           {' '}
           Clear
         </a>

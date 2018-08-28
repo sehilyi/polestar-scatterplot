@@ -1,14 +1,14 @@
 import {isWildcard, SHORT_WILDCARD} from 'compassql/build/src/wildcard';
 import * as React from 'react';
 import * as CSSModules from 'react-css-modules';
-import {PRIMITIVE_MARKS} from 'vega-lite/build/src/mark';
+import {PRIMITIVE_MARKS, SQUARE, POINT, CIRCLE, RECT} from 'vega-lite/build/src/mark';
 
 import * as styles from './mark-picker.scss';
 
 import {ActionHandler, SPEC_MARK_CHANGE_TYPE, SpecMarkChangeType} from '../../actions';
 import {ShelfMark} from '../../models';
 
-const ALL_MARKS = [SHORT_WILDCARD, ...PRIMITIVE_MARKS];
+const ALL_MARKS = [SHORT_WILDCARD, POINT, CIRCLE, SQUARE, RECT];//...PRIMITIVE_MARKS];
 
 const options = ALL_MARKS.map(mark => (
   <option key={mark} value={mark}>

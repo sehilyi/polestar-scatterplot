@@ -1,16 +1,16 @@
-import { DateTime } from "vega-lite/build/src/datetime";
-import { filterHasField, filterIndexOf, ShelfFilter } from "./shelf";
-import { OneOfFilter, RangeFilter } from "vega-lite/build/src/filter";
-import { SPEC_FIELD_REMOVE, SPEC_FIELD_ADD, SPEC_FIELD_MOVE, FILTER_MODIFY_ONE_OF, FilterAction, SpecAction } from "../actions";
-import { COLOR, Channel, SHAPE } from "vega-lite/build/src/channel";
-import { GUIDELINE_REMOVE_ITEM, GUIDELINE_ADD_ITEM, GuidelineAction } from "../actions/guidelines";
-import { OneOfFilterShelfProps } from "../components/filter-pane/one-of-filter-shelf";
-import { NOMINAL, QUANTITATIVE } from "../../node_modules/vega-lite/build/src/type";
-import { POINT, CIRCLE, SQUARE, RECT } from "vega-lite/build/src/mark";
-import { FacetedCompositeUnitSpec, TopLevelExtendedSpec } from "vega-lite/build/src/spec";
-import { Schema } from "../api/api";
-import { encoding } from "../../node_modules/vega-lite";
-import { TransitionAttr, COMMON_DURATION, COMMON_SHORT_DELAY } from "./d3-chart";
+import {DateTime} from "vega-lite/build/src/datetime";
+import {filterHasField, filterIndexOf, ShelfFilter} from "./shelf";
+import {OneOfFilter, RangeFilter} from "vega-lite/build/src/filter";
+import {SPEC_FIELD_REMOVE, SPEC_FIELD_ADD, SPEC_FIELD_MOVE, FILTER_MODIFY_ONE_OF, FilterAction, SpecAction} from "../actions";
+import {COLOR, Channel, SHAPE} from "vega-lite/build/src/channel";
+import {GUIDELINE_REMOVE_ITEM, GUIDELINE_ADD_ITEM, GuidelineAction} from "../actions/guidelines";
+import {OneOfFilterShelfProps} from "../components/filter-pane/one-of-filter-shelf";
+import {NOMINAL, QUANTITATIVE} from "../../node_modules/vega-lite/build/src/type";
+import {POINT, CIRCLE, SQUARE, RECT} from "vega-lite/build/src/mark";
+import {FacetedCompositeUnitSpec, TopLevelExtendedSpec} from "vega-lite/build/src/spec";
+import {Schema} from "../api/api";
+import {encoding} from "../../node_modules/vega-lite";
+import {TransitionAttr, COMMON_DURATION, COMMON_SHORT_DELAY} from "./d3-chart";
 
 export type GuideState = "WARN" | "TIP" | "DONE" | "IGNORE";
 export type guidelineIds = "NEW_CHART_BINNED_SCATTERPLOT" | "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" | "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES" |
@@ -25,8 +25,8 @@ export interface Guidelines {
   list: GuidelineItemTypes[];
 
   showHighlight: boolean;
-  size: { width: number, height: number },
-  position: { x: number, y: number }
+  size: {width: number, height: number},
+  position: {x: number, y: number}
 }
 
 export interface GuidelineItem {
@@ -55,8 +55,8 @@ export const DEFAULT_GUIDELINES: Guidelines = {
   list: [],
 
   showHighlight: false,
-  size: { width: 0, height: 0 },
-  position: { x: 0, y: 0 }
+  size: {width: 0, height: 0},
+  position: {x: 0, y: 0}
 }
 
 // TODO: should we consider too many categories?
@@ -233,7 +233,7 @@ export function checkGuideline(props: any) {
 
   if (typeof props.spec == "undefined") return; // vega spec is not ready
 
-  const { spec } = props;
+  const {spec} = props;
 
   // OVER_PLOTTING
   {
@@ -264,7 +264,7 @@ export function handleTooManyCategories(newSpec: FacetedCompositeUnitSpec, itemD
   let field = newSpec.encoding.color["field"].toString();
   const domainWithFilter = (filterHasField(filters, field) ?
     (filters[filterIndexOf(filters, field)] as OneOfFilter).oneOf :
-    schema.domain({ field }));
+    schema.domain({field}));
   let selected = itemDetail.selectedCategories;
   if (isColor) {
     newSpec.encoding.color = {
@@ -291,7 +291,7 @@ export function getGuidedSpec(spec: TopLevelExtendedSpec, guidelines: GuidelineI
   // console.log(spec);
   let newSpec = (JSON.parse(JSON.stringify(spec))) as FacetedCompositeUnitSpec;
   guidelines.forEach(item => {
-    const { id } = item;
+    const {id} = item;
     switch (id) {
       case "GUIDELINE_TOO_MANY_COLOR_CATEGORIES":
       case "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES": {
@@ -305,13 +305,13 @@ export function getGuidedSpec(spec: TopLevelExtendedSpec, guidelines: GuidelineI
         if (typeof itemDetail.pointSize != 'undefined') {
           newSpec.encoding = {
             ...newSpec.encoding,
-            size: { value: itemDetail.pointSize }
+            size: {value: itemDetail.pointSize}
           }
         }
         if (typeof itemDetail.pointOpacity != 'undefined') {
           newSpec.encoding = {
             ...newSpec.encoding,
-            opacity: { value: itemDetail.pointOpacity }
+            opacity: {value: itemDetail.pointOpacity}
           }
         }
         break;
@@ -324,23 +324,23 @@ export function getGuidedSpec(spec: TopLevelExtendedSpec, guidelines: GuidelineI
   // HACK to put maxbins if binned for better look and feel
   try {
     if (newSpec.encoding.x['bin'] === true) {
-      newSpec.encoding.x['bin'] = { maxbins: 60 };
+      newSpec.encoding.x['bin'] = {maxbins: 60};
     }
-  } catch (e) { }
+  } catch (e) {}
   try {
     if (newSpec.encoding.y['bin'] === true) {
-      newSpec.encoding.y['bin'] = { maxbins: 60 };
+      newSpec.encoding.y['bin'] = {maxbins: 60};
     }
-  } catch (e) { }
+  } catch (e) {}
 
   return newSpec;
 }
 
-export function isSkipColorOfAggregatePoints(id: ActionableID, spec: any){
+export function isSkipColorOfAggregatePoints(id: ActionableID, spec: any) {
   return id === 'AGGREGATE_POINTS' && typeof getColorField(spec).colorField != 'undefined';
 }
 export function isRowOrColumnUsed(spec: any) {
-  const { encoding } = spec;
+  const {encoding} = spec;
   if (typeof encoding.row != 'undefined' || typeof encoding.column != 'undefined') {
     return true;
   }
@@ -348,8 +348,8 @@ export function isRowOrColumnUsed(spec: any) {
     return false;
   }
 }
-export function isRowUsed(spec: any){
-  const { encoding } = spec;
+export function isRowUsed(spec: any) {
+  const {encoding} = spec;
   if (typeof encoding.row != 'undefined') {
     return true;
   }
@@ -358,7 +358,7 @@ export function isRowUsed(spec: any){
   }
 }
 export function getRowAndColumnField(spec: any) {
-  const { encoding } = spec;
+  const {encoding} = spec;
   let fields: string[] = [];
   if (typeof encoding.row != 'undefined') {
     fields.push(encoding.row.field);
@@ -369,7 +369,7 @@ export function getRowAndColumnField(spec: any) {
   return fields;
 }
 export function isColorUsed(spec: any) {
-  const { encoding } = spec;
+  const {encoding} = spec;
   if (typeof encoding.color != 'undefined') {
     return true;
   }
@@ -391,7 +391,7 @@ export function isAllowedScatterplot(spec: any) {
 }
 
 export function isSimpleScatterplot(spec: any) {
-  const { encoding, mark } = spec;
+  const {encoding, mark} = spec;
   try {
     if (typeof encoding.shape == 'undefined' && typeof encoding.text == 'undefined' &&
       typeof encoding.row == 'undefined' &&
@@ -410,7 +410,7 @@ export function isSimpleScatterplot(spec: any) {
   }
 }
 export function isDensityPlot(spec: any) {
-  const { encoding, mark } = spec;
+  const {encoding, mark} = spec;
   try {
     if (encoding.x.type === QUANTITATIVE && encoding.y.type === QUANTITATIVE &&
       typeof encoding.x.bin !== 'undefined' && typeof encoding.y.bin !== 'undefined' &&
@@ -425,7 +425,7 @@ export function isDensityPlot(spec: any) {
   }
 }
 export function isMeanAggregated(spec: any) {
-  const { encoding } = spec;
+  const {encoding} = spec;
   let isXMeanFn = false, isYMeanFn = false;
   if (typeof encoding.x.aggregate != 'undefined') {
     isXMeanFn = true;
@@ -433,34 +433,39 @@ export function isMeanAggregated(spec: any) {
   if (typeof encoding.y.aggregate != 'undefined') {
     isYMeanFn = true;
   }
-  return { isXMeanFn, isYMeanFn };
+  return {isXMeanFn, isYMeanFn};
 }
 export function getColorField(spec: any) {
-  const { encoding } = spec;
-  let colorField;
+  const {encoding} = spec;
+  let field, type;
   try {
     if (typeof encoding.color['field'] != 'undefined') {
-      colorField = encoding.color['field'];
+      field = encoding.color['field'];
+      type = encoding.color['type'];
     }
-  } catch (e) { }
-  return { colorField };
+  } catch (e) {}
+  return {
+    colorField: {
+      field, type
+    }
+  };
 }
 export function getColumnField(spec: any) {
-  const { encoding } = spec;
+  const {encoding} = spec;
   let columnField;
   try {
     columnField = encoding.column.field;
-  } catch (e) { }
-  return { columnField };
+  } catch (e) {}
+  return {columnField};
 }
-export function getNumberOfGraphs(spec: any, schema: Schema){
+export function getNumberOfGraphs(spec: any, schema: Schema) {
   return isColumnFieldUsing(spec) ? schema.domain({field: getColumnField(spec).columnField}).length : 1;
 }
 export function isColumnFieldUsing(spec: any) {
   return typeof getColumnField(spec).columnField != 'undefined';
 }
 export function isLegendUsing(spec: FacetedCompositeUnitSpec) {
-  return typeof getColorField(spec).colorField != 'undefined';
+  return typeof getColorField(spec).colorField.field != 'undefined';
 }
 /**
  * USED BY)
@@ -503,7 +508,7 @@ export function guideActionShelf(
  * GUIDELINE_TOO_MANY_SHAPE_CATEGORIES
  */
 export function guideActionFilter(props: OneOfFilterShelfProps, oneOf: string[] | number[] | boolean[] | DateTime[], type: string) {
-  const { spec, filter } = props;
+  const {spec, filter} = props;
   switch (type) {
     case FILTER_MODIFY_ONE_OF: {
       //TODO: Should check if nominal
@@ -517,7 +522,7 @@ export function guideActionFilter(props: OneOfFilterShelfProps, oneOf: string[] 
         if (oneOf.length > 10) addGuidelineItem(GUIDELINE_TOO_MANY_SHAPE_CATEGORIES, props.handleAction);
         else removeGuidelineItem(GUIDELINE_TOO_MANY_SHAPE_CATEGORIES, props.handleAction);
       }
-      else { } // do nothing
+      else {} // do nothing
       break;
     }
   }
@@ -526,13 +531,13 @@ export function guideActionFilter(props: OneOfFilterShelfProps, oneOf: string[] 
 export function addGuidelineItem(item: GuidelineItemTypes, handleAction?: (action: GuidelineAction) => void) {
   handleAction({
     type: GUIDELINE_ADD_ITEM,
-    payload: { item }
+    payload: {item}
   });
 }
 export function removeGuidelineItem(item: GuidelineItemTypes, handleAction?: (action: GuidelineAction) => void) {
   handleAction({
     type: GUIDELINE_REMOVE_ITEM,
-    payload: { item }
+    payload: {item}
   });
 }
 
