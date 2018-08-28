@@ -61,7 +61,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     const actionPanes = paneData.map(this.previewPane, this);
 
     return (
-      <div styleName='ac-root'>
+      <div styleName='ac-root' className='styled-scroll'>
         <div styleName={triggeredAction == 'NONE' ? 'guide-previews' : 'guide-previews-hidden'}>
           {actionPanes}
         </div>

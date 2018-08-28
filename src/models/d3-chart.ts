@@ -1,24 +1,24 @@
 import * as d3 from 'd3';
-import {FacetedCompositeUnitSpec} from '../../node_modules/vega-lite/build/src/spec';
-import {BaseType, select} from 'd3';
-import {isDensityPlot, isMeanAggregated, getColorField, ActionableID, getColumnField, isLegendUsing, isColumnFieldUsing, getNumberOfGraphs, AggregateStages, RemoveFillColorStages, DensityPlotStages, PointResizeStages, PointOpacityStages, SeperateGraphStages, FilterStages, isSkipColorOfAggregatePoints} from './guidelines';
-import {Schema} from '../models';
-import {OneOfFilter} from '../../node_modules/vega-lite/build/src/filter';
+import { FacetedCompositeUnitSpec } from '../../node_modules/vega-lite/build/src/spec';
+import { BaseType, select } from 'd3';
+import { isDensityPlot, isMeanAggregated, getColorField, ActionableID, getColumnField, isLegendUsing, isColumnFieldUsing, getNumberOfGraphs, AggregateStages, RemoveFillColorStages, DensityPlotStages, PointResizeStages, PointOpacityStages, SeperateGraphStages, FilterStages, isSkipColorOfAggregatePoints } from './guidelines';
+import { Schema } from '../models';
+import { OneOfFilter } from '../../node_modules/vega-lite/build/src/filter';
 
 // Basic property for d3-chart
 export const COMMON_DURATION: number = 1000;
 export const COMMON_FAST_DURATION: number = 100;
 export const COMMON_DELAY: number = 2000;
 export const COMMON_SHORT_DELAY: number = 300;
-export const CHART_SIZE = {width: 200, height: 200};
-export const CHART_MARGIN = {top: 20, right: 20, bottom: 50, left: 50};
-export const CHART_PADDING = {right: 20};
-export const LEGEND_MARGIN = {top: 20};
+export const CHART_SIZE = { width: 200, height: 200 };
+export const CHART_MARGIN = { top: 20, right: 20, bottom: 50, left: 50 };
+export const CHART_PADDING = { right: 20 };
+export const LEGEND_MARGIN = { top: 20 };
 export const LEGEND_WIDTH = 50;
 export const NOMINAL_COLOR_SCHEME = ['#4c78a8', '#f58518', '#e45756', '#72b7b2', '#54a24b', '#eeca3b', '#b279a2', '#ff9da6', '#9d755d', '#bab0ac'];
 
-export const TIMELINE_SIZE = {width: 250, height: 8};
-export const TIMELINE_MARGIN = {top: 15, right: 10, bottom: 25, left: 10};
+export const TIMELINE_SIZE = { width: 250, height: 8 };
+export const TIMELINE_MARGIN = { top: 15, right: 10, bottom: 25, left: 10 };
 export const TIMELINE_COLOR_SCHEME = ['#3CA9C4', '#FAAB49', '#E56548', '#7A8C8F'];
 export const TIMELINE_CATEGORIES = ['MORPH', 'REPOSITION', 'COLOR', 'DELAY'];
 export type TIMELINE_CATEGORY = 'MORPH' | 'REPOSITION' | 'COLOR' | 'DELAY';
@@ -80,7 +80,7 @@ export function getFilterForTransition(a1: any[], a2: any[]) {
         if (typeof a2[i].filter.oneOf != 'undefined') {
           return a2[i].filter;
         }
-      } catch (e) {}
+      } catch (e) { }
     }
   }
   else {
@@ -89,7 +89,7 @@ export function getFilterForTransition(a1: any[], a2: any[]) {
         if (a1.indexOf(a2[i]) == -1 && typeof a2[i].filter.oneOf != 'undefined') {
           return a2[i].filter;
         }
-      } catch (e) {}
+      } catch (e) { }
     }
   }
   return null;
@@ -104,16 +104,16 @@ export function resizeRootSVG(id: string, count: number, isLegend: boolean, isTr
 }
 
 export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSpec, data: any[], schema: Schema, isTransition: boolean, filter?: OneOfFilter, isSkip1APStage?: boolean) {
-  const {isXMeanFn, isYMeanFn} = isMeanAggregated(spec);
-  const {colorField} = getColorField(spec); //TODO: consider when quantitative
-  const {columnField} = getColumnField(spec);
+  const { isXMeanFn, isYMeanFn } = isMeanAggregated(spec);
+  const { colorField } = getColorField(spec); //TODO: consider when quantitative
+  const { columnField } = getColumnField(spec);
   const isColumnUsing = isColumnFieldUsing(spec);
   const isDensity = isDensityPlot(spec);
   isSkip1APStage = typeof isSkip1APStage == 'undefined' ? false : isSkip1APStage;
   // console.log(columnField);
   // console.log(schema);
   const numOfColumnCategory = getNumberOfGraphs(spec, schema);
-  const categories = isColumnUsing ? schema.domain({field: columnField}) : null;
+  const categories = isColumnUsing ? schema.domain({ field: columnField }) : null;
   const isLegend = isLegendUsing(spec);
   const xField = spec.encoding.x['field'], yField = spec.encoding.y['field'];
   const attr = getPointAttrs(spec);
@@ -133,14 +133,14 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
       .domain([0, d3.max(data.map(d => d[xField]))]).nice()
       .rangeRound([0, CHART_SIZE.width]) :
     d3.scaleQuantize()
-      .domain([0, d3.max(data, function (d) {return d[xField]})]).nice()
+      .domain([0, d3.max(data, function (d) { return d[xField] })]).nice()
       .range(xBinRange);
   const y = !isDensity ?
     d3.scaleLinear()
       .domain([0, d3.max(data.map(d => d[yField]))]).nice()
       .rangeRound([CHART_SIZE.height, 0]) :
     d3.scaleQuantize()
-      .domain([0, d3.max(data, function (d) {return d[yField]})]).nice()
+      .domain([0, d3.max(data, function (d) { return d[yField] })]).nice()
       .range(yBinRange.reverse());
 
   resizeRootSVG(id, numOfColumnCategory, isLegend, false);
@@ -182,8 +182,8 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   }
 
   points
-    .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : (typeof colorScale != 'undefined' ? colorScale(d[colorField]) : attr.fill);})
-    .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : (typeof colorScale != 'undefined' ? colorScale(d[colorField]) : attr.stroke);})
+    .attr('fill', function (d) { return attr.fill == 'transparent' ? 'transparent' : (typeof colorScale != 'undefined' ? colorScale(d[colorField]) : attr.fill); })
+    .attr('stroke', function (d) { return attr.stroke == 'transparent' ? 'transparent' : (typeof colorScale != 'undefined' ? colorScale(d[colorField]) : attr.stroke); })
     .attr('rx', attr.rx)  // to draw either circle or rect
     .attr('ry', attr.ry)
     .attr('width', attr.width)
@@ -210,24 +210,24 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
     })
     .attr('x', function (d) {
       return isXMeanFn ?
-        CHART_MARGIN.left + x(d3.mean(data.map(function (_d) {return _d[colorField] == d[colorField] ? _d[xField] : null;}))) + (-attr.width / 2.0) :
+        CHART_MARGIN.left + x(d3.mean(data.map(function (_d) { return _d[colorField] == d[colorField] ? _d[xField] : null; }))) + (-attr.width / 2.0) :
         CHART_MARGIN.left + x(d[xField]) + (-attr.width / 2.0);
     })
     .attr('y', function (d) {
       return isYMeanFn ?
-        y(d3.mean(data.map(function (_d) {return _d[colorField] == d[colorField] ? _d[yField] : null;}))) + (-attr.height / 2.0 + CHART_MARGIN.top) :
+        y(d3.mean(data.map(function (_d) { return _d[colorField] == d[colorField] ? _d[yField] : null; }))) + (-attr.height / 2.0 + CHART_MARGIN.top) :
         y(d[yField]) + (-attr.height / 2.0 + CHART_MARGIN.top);
     });
 
   // console.log(filter);
   if (typeof filter != 'undefined' && filter != null && id === 'FILTER') {
     points
-      .filter(function (d) {return (filter.oneOf as string[]).indexOf(d[filter.field]) == -1;})
+      .filter(function (d) { return (filter.oneOf as string[]).indexOf(d[filter.field]) == -1; })
       .transition().duration(isTransition ? FilterStages[0].duration : 0)
       .attr('opacity', 0);
   }
   else if (id === 'AGGREGATE_POINTS' && typeof colorField != 'undefined') {
-    const categoryDomain = schema.domain({field: colorField});
+    const categoryDomain = schema.domain({ field: colorField });
     let categoryPointUsed = categoryDomain.slice();
     //Leave only one point for each category
     //rather than update data
@@ -337,9 +337,9 @@ export function appendTransitionTimeline(id: string, title: string, stages: Tran
     .data(stages)
     .enter().append('rect')
     .classed('timeline-stage', true)
-    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + accumDurationPlusDelay[i] / totalDuration * TIMELINE_SIZE.width;})
-    .attr('width', function (d) {return (d.duration + d.delay) / totalDuration * TIMELINE_SIZE.width;})
-    .attr('fill', function (d) {return timelineColor(d.id);})
+    .attr('x', function (d, i) { return TIMELINE_MARGIN.left + accumDurationPlusDelay[i] / totalDuration * TIMELINE_SIZE.width; })
+    .attr('width', function (d) { return (d.duration + d.delay) / totalDuration * TIMELINE_SIZE.width; })
+    .attr('fill', function (d) { return timelineColor(d.id); })
     .attr('y', TIMELINE_MARGIN.top)
     .attr('height', TIMELINE_SIZE.height)
     .attr('opacity', 1);
@@ -349,8 +349,8 @@ export function appendTransitionTimeline(id: string, title: string, stages: Tran
     .data(stages)
     .enter().append('text')
     .classed('stage-label', true)
-    .text(function (d) {return d.title;})
-    .attr('x', function (d, i) {return TIMELINE_MARGIN.left + accumDurationPlusDelay[i] / totalDuration * TIMELINE_SIZE.width + (d.duration + d.delay) / totalDuration * TIMELINE_SIZE.width / 2.0;}) // + 4
+    .text(function (d) { return d.title; })
+    .attr('x', function (d, i) { return TIMELINE_MARGIN.left + accumDurationPlusDelay[i] / totalDuration * TIMELINE_SIZE.width + (d.duration + d.delay) / totalDuration * TIMELINE_SIZE.width / 2.0; }) // + 4
     .attr('y', TIMELINE_MARGIN.top + 25)
     .style('font-family', 'Roboto Condensed')
     .style('text-anchor', 'middle')
@@ -381,13 +381,13 @@ export function appendTransitionTimeline(id: string, title: string, stages: Tran
     .data(accumDurationPlusDelay)
     .enter().append('line')
     .classed('stage-between', true)
-    .attr('x1', function (d, i) {return TIMELINE_MARGIN.left + accumDurationPlusDelay[i] / totalDuration * TIMELINE_SIZE.width;})
-    .attr('x2', function (d, i) {return TIMELINE_MARGIN.left + accumDurationPlusDelay[i] / totalDuration * TIMELINE_SIZE.width;})
+    .attr('x1', function (d, i) { return TIMELINE_MARGIN.left + accumDurationPlusDelay[i] / totalDuration * TIMELINE_SIZE.width; })
+    .attr('x2', function (d, i) { return TIMELINE_MARGIN.left + accumDurationPlusDelay[i] / totalDuration * TIMELINE_SIZE.width; })
     .attr('y1', TIMELINE_MARGIN.top - 3)
     .attr('y2', TIMELINE_MARGIN.top + TIMELINE_SIZE.height + 3)
     .attr('stroke', '#2e2e2e')
     .attr('stroke-width', 1)
-    .attr('opacity', function (d, i) {return (stages.length <= i || stages[i].id != 'DELAY') ? 1 : 0})
+    .attr('opacity', function (d, i) { return (stages.length <= i || stages[i].id != 'DELAY') ? 1 : 0 })
 }
 
 export function removePrevChart(CHART_REF: any) {
@@ -497,9 +497,10 @@ export function removeLegend(id: ActionableID) {
 export function renderLegend(id: ActionableID, attr: PointAttr, field: string, schema: Schema, numOfChart: number, isTransition: boolean): d3.ScaleOrdinal<string, string> {
   removeLegend(id);
 
-  const categoryDomain = schema.domain({field});
+  const categoryDomain = schema.domain({ field });
   const colorScale = d3.scaleOrdinal(NOMINAL_COLOR_SCHEME)
     .domain(categoryDomain);
+
   let legend = selectRootSVG(id).selectAll('.legend')
     .data(categoryDomain)
     .enter().append('g')
@@ -517,19 +518,40 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, s
     .attr('ry', attr.ry)
     .attr('width', attr.width)
     .attr('height', attr.height)
-    .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : colorScale(d);})
+    .attr('stroke', function (d) { return attr.stroke == 'transparent' ? 'transparent' : colorScale(d); })
     .attr('stroke-width', attr.stroke_width)
-    .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : colorScale(d);})
+    .attr('fill', function (d) { return attr.fill == 'transparent' ? 'transparent' : colorScale(d); })
     .attr('opacity', attr.opacity);
 
   legend.append('text')
     .attr('x', 10)
     .attr('y', 10)
-    .text(function (d) {return d as string;})
+    .text(function (d) { return d as string; })
     .style('text-anchor', 'start')
     .style('font-size', 15);
 
+  // title
+  selectRootSVG(id).selectAll('.legend-title')
+    .data([field])
+    .enter().append('text')
+    .classed('legend-title', true)
+    .attr('x', 0)
+    .attr('y', 0)
+    .style('text-anchor', 'start')
+    .style('font-size', 15)
+    .style('font-weight', 'bold')
+    .text(function (d) { return d; })
+    .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) - CHART_PADDING.right) + ',' + (CHART_MARGIN.top) + ')');
+
   if (id === 'AGGREGATE_POINTS') {
+    //title
+    selectRootSVG(id).selectAll('.legend-title')
+      .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right) + ',' + (CHART_MARGIN.top) + ')')
+      .attr('opacity', 0)
+      .transition().duration(isTransition ? AggregateStages[0].duration : 0)
+      .attr('opacity', 1);
+
+    //marks
     selectRootSVG(id).selectAll('.legend')
       .attr('transform', function (d, i) {
         return 'translate(' +
@@ -541,6 +563,12 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, s
       .attr('opacity', 1);
   }
   else if (id === 'SEPARATE_GRAPH') {
+    //title
+    selectRootSVG(id).selectAll('.legend-title')
+      .transition().duration(isTransition && id === 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
+      .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right) + ',' + (CHART_MARGIN.top) + ')');
+
+    //marks
     selectRootSVG(id).selectAll('.legend')
       .transition().duration(isTransition && id === 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
       .attr('transform', function (d, i) {
@@ -550,6 +578,11 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, s
       });
   }
   else {
+    //title
+    selectRootSVG(id).selectAll('.legend-title')
+      .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right) + ',' + (CHART_MARGIN.top) + ')');
+
+    //marks
     selectRootSVG(id).selectAll('.legend')
       .attr('transform', function (d, i) {
         return 'translate(' +
@@ -574,8 +607,8 @@ export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
   let size = mark == 'square' ? 5 : 6;
   if (isDensity) size = CHART_SIZE.width / 35;
   let opacity = 0.7;
-  try {size = spec.encoding.size['value'] / 10.0;} catch (e) {}
-  try {opacity = spec.encoding.opacity['value'];} catch (e) {}
+  try { size = spec.encoding.size['value'] / 10.0; } catch (e) { }
+  try { opacity = spec.encoding.opacity['value']; } catch (e) { }
   if (isDensity) opacity = 0.1;
   return {
     fill: isDensity ? '#08519c' : (mark == 'point' || isRemoveFill) ? 'transparent' : '#4c78a8',
@@ -596,16 +629,16 @@ export function showContourInD3Chart(id: string, spec: FacetedCompositeUnitSpec,
   let yField = spec.encoding.y['field'];
 
   let x = d3.scaleLinear()
-    .domain([0, d3.max(data, function (d) {return d[xField]})] as number[]).nice()
+    .domain([0, d3.max(data, function (d) { return d[xField] })] as number[]).nice()
     .range([0, CHART_SIZE.width]);
   let y = d3.scaleLinear()
-    .domain([0, d3.max(data, function (d) {return d[yField]})] as number[]).nice()
+    .domain([0, d3.max(data, function (d) { return d[yField] })] as number[]).nice()
     .range([CHART_SIZE.height, 0]);
 
   svg.selectAll('.contour')
     .data(d3.contourDensity()
-      .x(function (d) {return CHART_MARGIN.left + x(d[xField]);})
-      .y(function (d) {return CHART_MARGIN.top + y(d[yField]);})
+      .x(function (d) { return CHART_MARGIN.left + x(d[xField]); })
+      .y(function (d) { return CHART_MARGIN.top + y(d[yField]); })
       .size([CHART_SIZE.width, CHART_SIZE.height])
       .bandwidth(10)
       (data))
