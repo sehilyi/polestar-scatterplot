@@ -98,9 +98,9 @@ class ViewPaneBase extends React.PureComponent<ViewPaneProps, {}> {
         <div styleName="view-pane">
           <div className="pane" id="specified-view" styleName={collapseRelatedViews ? 'view-pane-specific-stretch' : 'view-pane-specific'}>
             <h2>Specified View</h2>
-            <div styleName='transition-progress-bg'>
+            {/* <div styleName='transition-progress-bg'>
               <div styleName='transition-progress'></div>
-            </div>
+            </div> */}
             {this.renderSpecifiedView()}
             <div styleName={showHighlight ? 'highlighter-show' : 'highlighter'}
               style={{

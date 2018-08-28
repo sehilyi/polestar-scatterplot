@@ -1,0 +1,30 @@
+.preview-pane {
+  height: 100%;
+  background: #f3f6fa;
+  padding: 8px;
+}
+.preview-chart {
+  background: white;
+  padding: 8px;
+  height: calc(100% - 65px);
+  border-radius: 20px;
+  // border: dotted 2px #bfbfbfb3;
+}
+.preview-apply-button {
+  margin: auto;
+  margin-top: auto;
+  width: 100px;
+  text-align: center;
+  height: 18px;
+  padding-top: 3px;
+  position: absolute;
+  right: 0;
+  left: 0;
+  color: #1f77b4;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 13px;
+  &:hover{
+    color: #4195d1;
+  }
+}
