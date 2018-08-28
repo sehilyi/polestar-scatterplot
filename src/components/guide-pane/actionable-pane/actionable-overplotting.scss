@@ -5,12 +5,12 @@ $grid-margin-double: 4px;
 
 .ac-root {
   position: relative;
-  background: #f0efef;
+  // background: #f0efef;
   padding: $grid-margin;
   // padding-bottom: 0px;
-  border-top: 1px solid #D4D4D4;
-  max-height: 800px;
-  overflow: auto;
+  // border-top: 1px solid #D4D4D4;
+  // max-height: 800px;
+  // overflow: auto;
 }
 
 .guide-previews {
@@ -18,6 +18,7 @@ $grid-margin-double: 4px;
   display: flex;
   flex-wrap: wrap;
   display: grid;
+  grid-gap: 2px;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
 }
 
@@ -55,7 +56,7 @@ $grid-margin-double: 4px;
 
 .transition-progress-bg {
   height: 3px;
-  background: #e8e8e8;
+  // background: #e8e8e8;
 }
 .transition-progress {
   height: 100%;

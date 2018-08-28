@@ -65,11 +65,10 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
 
     return (
       <div styleName={this.state.isExpanded ? "expanded" : "guideline"}>
-        <div styleName="guide-header">
+        {/* <div styleName="guide-header">
           <img styleName={guideState == "WARN" ? 'icon-show' : 'icon-hide'} src={warn} />
           <img styleName={guideState == "TIP" ? 'icon-show' : 'icon-hide'} src={tip} />
           <img styleName={guideState == "DONE" ? 'icon-show' : 'icon-hide'} src={done} />
-          {/* <img styleName={guideState == "IGNORE" ? 'icon-show' : 'icon-hide'} src={ignore} /> */}
           <div styleName="guide-label" className="hover-background">
             <span styleName={guideState == "WARN" || guideState == "TIP" ? "guide-category" : guideState == "DONE" ? "guide-category-done" : "guide-category-ignore"}
               onMouseEnter={this.onShowIndicator}
@@ -97,7 +96,6 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
         {content != '' ?
           <div styleName={'guide-content'}>
             <h2>Why Is This Matter?</h2>
-            {/* <span styleName="guide-content-text">{content}</span> */}
             <span styleName="guide-content-text">
               In some graphs, especially those that use data points or lines to encode data, multiple objects can end up <span
                 styleName='guide-content-text-hl'
@@ -109,7 +107,7 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
             </span>
           </div>
           : null
-        }
+        } */}
         <div styleName="actionable-pane">
           {this.renderActionablePane()}
         </div>

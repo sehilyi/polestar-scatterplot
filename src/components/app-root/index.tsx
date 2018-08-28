@@ -41,7 +41,11 @@ class AppRootBase extends React.PureComponent<AppRootProps, {}> {
             <SplitPane split="vertical" defaultSize={235} minSize={200} maxSize={350}>
               <EncodingPane />
               <SplitPane split="vertical" defaultSize={683} minSize={300} maxSize={1000} primary="second">
-                <ViewPane />
+                <SplitPane split="horizontal" defaultSize={'50%'} primary='first' >
+                  <ViewPane />
+                  <div className='preview-chart'/>
+                  {/* TODO: test */}
+                </SplitPane>
                 <GuidePane />
               </SplitPane>
             </SplitPane>
@@ -72,4 +76,3 @@ export const AppRoot = connect(
     };
   }
 )(DragDropContext(HTML5Backend)(AppRootBase));
-

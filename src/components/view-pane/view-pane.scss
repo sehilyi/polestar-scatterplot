@@ -1,5 +1,5 @@
 .view-pane {
-  overflow: scroll;
+  overflow-y: scroll;
 
   // Absolute positon relative to Pane wrapper from `react-split-pane`
   position: absolute;
@@ -32,9 +32,10 @@
 }
 
 // Removed to hide related views
-// .view-pane-specific-stretch {
-// height: 90%;
-// }
+.view-pane-specific-stretch {
+  // height: 90%;
+  height: calc(100% - 16px);
+}
 
 .view-pane-related-views {
   margin-top: 20px;
