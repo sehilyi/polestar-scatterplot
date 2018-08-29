@@ -521,11 +521,14 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
     .enter().append('text')
     .classed('legend-title', true)
     .attr('x', 0)
-    .attr('y', 0)
+    .attr('y', 10)
     .style('text-anchor', 'start')
-    .style('font-size', 15)
+    .style('font-size', d => ((d as string).length > 7 ? 9 : 12) + 'px')
+    .style('font-family', 'Roboto Condensed')
     .style('font-weight', 'bold')
-    .text(function (d) {return d;})
+    .text(d => d)
+
+    console.log(field.length);
 
   if (type == NOMINAL) {
 
@@ -533,7 +536,7 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
       .data(fieldDomain)
       .enter().append('g')
       .classed('nlegend', true)
-      .attr('transform', function (d, i) {return translate(0, (i + 1) * LEGEND_MARK_SIZE.height)});
+      .attr('transform', (d, i) => translate(0, (i + 1) * LEGEND_MARK_SIZE.height))
 
     //marks
     nominalLegend.append('rect')
@@ -541,9 +544,9 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
       .attr('y', 0)
       .attr('rx', attr.rx)
       .attr('ry', attr.ry)
-      .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : colorScale(d);})
+      .attr('stroke', d => attr.stroke == 'transparent' ? 'transparent' : colorScale(d))
       .attr('stroke-width', attr.stroke_width)
-      .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : colorScale(d);})
+      .attr('fill', d => attr.fill == 'transparent' ? 'transparent' : colorScale(d))
       // use constant attr
       .attr('width', 5)
       .attr('height', 5)
@@ -551,27 +554,13 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
 
     nominalLegend.append('text')
       .attr('x', 10)
-      .attr('y', 10)
+      .attr('y', 5)
       .text(function (d) {return d as string;})
       .style('text-anchor', 'start')
-      .style('font-size', 15);
-
-
-    if (id === 'SEPARATE_GRAPH') {
-      legendRoot
-        .transition().duration(isTransition ? SeperateGraphStages[0].duration : 0)
-        .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right, CHART_MARGIN.top))
-    }
-    else {
-      legendRoot
-        .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right, CHART_MARGIN.top))
-        .attr('opacity', 0)
-        .transition().duration(isTransition && id === 'AGGREGATE_POINTS' ? AggregateStages[0].duration : 0)
-        .attr('opacity', 1)
-    }
+      .style('font-family', 'Roboto Condensed')
+      .style('font-size', 12 + 'px');
   }
   else if (type == QUANTITATIVE) {
-
 
     const defs = legendRoot.append("defs");
     const linearGradient = defs.append("linearGradient")
@@ -589,37 +578,47 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
 
     legendRoot.append('g')
       .append("rect")
-      .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right, CHART_MARGIN.top + LEGEND_MARK_SIZE.height))
       .attr("width", 15)
       .attr("height", CHART_SIZE.height - LEGEND_MARK_SIZE.height)
+      .attr('transform', translate(0, LEGEND_MARK_SIZE.height))
       .style("fill", "url(#linear-gradient)")
 
+    // min
     legendRoot.append('g').selectAll('.qlegend-minmax')
       .data([d3.extent(fieldDomain)[0]])
       .enter().append('text')
-      .attr('x', 0)
-      .attr('y', 10)
+      .attr('x', 17)
+      .attr('y', LEGEND_MARK_SIZE.height + 10)
       .text(function (d) {return d as string;})
       .style('text-anchor', 'start')
-      .style('font-size', 15)
-      .attr('transform', translate(
-        (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right + 15 + 2,
-        CHART_MARGIN.top + LEGEND_MARK_SIZE.height)
-      )
+      .style('font-family', 'Roboto Condensed')
+      // .style('font-size', 15)
 
+    // max
     legendRoot.append('g').selectAll('.qlegend-minmax')
       .data([d3.extent(fieldDomain)[1]])
       .enter().append('text')
-      .attr('x', 0)
-      .attr('y', 10)
+      .attr('x', 17)
+      .attr('y', CHART_MARGIN.top + CHART_SIZE.height - 25)
       .text(function (d) {return d as string;})
       .style('text-anchor', 'start')
-      .style('font-size', 15)
-      .attr('transform', translate(
-        (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right + 15 + 2,
-        CHART_MARGIN.top + CHART_SIZE.height - 15)
-      )
+      // .style('font-size', 15)
+      .style('font-family', 'Roboto Condensed')
   }
+
+  if (id === 'SEPARATE_GRAPH') {
+    legendRoot
+      .transition().duration(isTransition ? SeperateGraphStages[0].duration : 0)
+      .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right, CHART_MARGIN.top))
+  }
+  else {
+    legendRoot
+      .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right, CHART_MARGIN.top))
+      .attr('opacity', 0)
+      .transition().duration(isTransition && id === 'AGGREGATE_POINTS' ? AggregateStages[0].duration : 0)
+      .attr('opacity', 1)
+  }
+
   return colorScale;
 }
 
