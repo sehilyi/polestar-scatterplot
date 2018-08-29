@@ -336,8 +336,8 @@ export function getGuidedSpec(spec: TopLevelExtendedSpec, guidelines: GuidelineI
   return newSpec;
 }
 
-export function isSkipColorOfAggregatePoints(id: ActionableID, spec: any) {
-  return id === 'AGGREGATE_POINTS' && typeof getColorField(spec).colorField != 'undefined';
+export function isSkipColorOfAggregatePoints(id: ActionableID, fromSpec: any) {
+  return id === 'AGGREGATE_POINTS' && isLegendUsing(fromSpec);
 }
 export function isRowOrColumnUsed(spec: any) {
   const {encoding} = spec;

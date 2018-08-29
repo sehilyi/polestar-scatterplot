@@ -230,7 +230,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
       .transition().duration(isTransition ? FilterStages[0].duration : 0)
       .attr('opacity', 0);
   }
-  else if (id === 'AGGREGATE_POINTS' && typeof colorField != 'undefined') {
+  else if (id === 'AGGREGATE_POINTS' && isLegendUsing(spec)) {
     const categoryDomain = schema.domain({field: colorField.field});
     let categoryPointUsed = categoryDomain.slice();
     //Leave only one point for each category

@@ -208,7 +208,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     if (typeof this.props.mainSpec == 'undefined') return false;
     if (isDensityPlot(this.props.mainSpec)) return false;
     try {
-      if (getColorField(this.props.mainSpec).colorField.type != 'NOMINAL') return false;
+      if (getColorField(this.props.mainSpec).colorField.type == 'QUANTITATIVE') return false;
     } catch (e) {}
     return this.isThereNominalField();
   }
