@@ -8,6 +8,7 @@ import {FieldDef} from 'vega-lite/build/src/fielddef';
 import {QUANTITATIVE, NOMINAL} from 'vega-lite/build/src/type';
 import {translate} from '../d3-util';
 import {isNullOrUndefined} from '../util';
+import {filterHasField} from './shelf';
 
 // Basic property for d3-chart
 export const COMMON_DURATION: number = 1000;
@@ -69,12 +70,13 @@ export function renderPoints(id: ActionableID, fromSpec: FacetedCompositeUnitSpe
 
   // to
   let diffOneof = !isSpecifiedView ? getFilterForTransition(fromSpec.transform, spec.transform) : null;
+  console.log(diffOneof);
   renderScatterplot(id, spec, data, schema, isTransition, diffOneof, isSkipColorOfAggregatePoints(id, fromSpec));
 }
 
 export function getFilterForTransition(a1: any[], a2: any[]) {
-  // console.log(a1);
-  // console.log(a2);
+  console.log(a1);
+  console.log(a2);
   if (typeof a2 == 'undefined') {
     return null;
   }
@@ -90,7 +92,7 @@ export function getFilterForTransition(a1: any[], a2: any[]) {
   else {
     for (let i = 0; i < a2.length; i++) {
       try {
-        if (a1.indexOf(a2[i]) == -1 && typeof a2[i].filter.oneOf != 'undefined') {
+        if (!filterHasField(a1.filter(t => !isNullOrUndefined(t['filter'])).map(t => t.filter), a2[i].filter.field) && typeof a2[i].filter.oneOf != 'undefined') {
           return a2[i].filter;
         }
       } catch (e) {}
@@ -243,6 +245,8 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
 
   // console.log(filter);
   if (!isNullOrUndefined(filter) && id === 'FILTER') {
+    // console.log('FILTER:');
+    // console.log(filter.oneOf);
     points
       .filter(function (d) {return (filter.oneOf as string[]).indexOf(d[filter.field]) == -1;})
       .transition().duration(isTransition ? FilterStages[0].duration : 0)

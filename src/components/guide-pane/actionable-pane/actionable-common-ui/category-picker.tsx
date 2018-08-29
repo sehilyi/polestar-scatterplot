@@ -112,6 +112,9 @@ export class CategoryPickerBase extends React.PureComponent<CategoryPickerProps,
 
   private toggleCheckbox(option: string | number | boolean | DateTime) {
     const {selected, pickedCategoryAction} = this.props;
+    // console.log(option);
+    // console.log(selected);
+    // console.log(pickedCategoryAction);
     const valueIndex = (selected as any[]).indexOf(option);
     let changedSelectedValues;
     if (valueIndex === -1) {

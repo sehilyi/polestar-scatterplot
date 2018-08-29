@@ -491,25 +491,25 @@ export function guideActionShelf(
   actionType: string,
   handleAction: (action: GuidelineAction | FilterAction | SpecAction) => void) {
 
-  const domainWithFilter = (filterHasField(filters, field) ?
-    (filters[filterIndexOf(filters, field)] as OneOfFilter).oneOf : domain);
+  // const domainWithFilter = (filterHasField(filters, field) ?
+  //   (filters[filterIndexOf(filters, field)] as OneOfFilter).oneOf : domain);
 
-  switch (actionType) {
-    case SPEC_FIELD_REMOVE:
-      if (channel == COLOR) removeGuidelineItem(GUIDELINE_TOO_MANY_COLOR_CATEGORIES, handleAction);
-      else if (channel == SHAPE) removeGuidelineItem(GUIDELINE_TOO_MANY_SHAPE_CATEGORIES, handleAction);
-      break;
-    case SPEC_FIELD_ADD:
-    case SPEC_FIELD_MOVE:
-      if (domainWithFilter.length > 10 && fieldType == NOMINAL) {
-        if (channel == COLOR) addGuidelineItem(GUIDELINE_TOO_MANY_COLOR_CATEGORIES, handleAction);
-        else if (channel == SHAPE) addGuidelineItem(GUIDELINE_TOO_MANY_SHAPE_CATEGORIES, handleAction);
-      } else {
-        if (channel == COLOR) removeGuidelineItem(GUIDELINE_TOO_MANY_COLOR_CATEGORIES, handleAction);
-        else if (channel == SHAPE) removeGuidelineItem(GUIDELINE_TOO_MANY_SHAPE_CATEGORIES, handleAction);
-      }
-      break;
-  }
+  // switch (actionType) {
+  //   case SPEC_FIELD_REMOVE:
+  //     if (channel == COLOR) removeGuidelineItem(GUIDELINE_TOO_MANY_COLOR_CATEGORIES, handleAction);
+  //     else if (channel == SHAPE) removeGuidelineItem(GUIDELINE_TOO_MANY_SHAPE_CATEGORIES, handleAction);
+  //     break;
+  //   case SPEC_FIELD_ADD:
+  //   case SPEC_FIELD_MOVE:
+  //     if (domainWithFilter.length > 10 && fieldType == NOMINAL) {
+  //       if (channel == COLOR) addGuidelineItem(GUIDELINE_TOO_MANY_COLOR_CATEGORIES, handleAction);
+  //       else if (channel == SHAPE) addGuidelineItem(GUIDELINE_TOO_MANY_SHAPE_CATEGORIES, handleAction);
+  //     } else {
+  //       if (channel == COLOR) removeGuidelineItem(GUIDELINE_TOO_MANY_COLOR_CATEGORIES, handleAction);
+  //       else if (channel == SHAPE) removeGuidelineItem(GUIDELINE_TOO_MANY_SHAPE_CATEGORIES, handleAction);
+  //     }
+  //     break;
+  // }
 }
 
 /**
@@ -519,23 +519,23 @@ export function guideActionShelf(
  */
 export function guideActionFilter(props: OneOfFilterShelfProps, oneOf: string[] | number[] | boolean[] | DateTime[], type: string) {
   const {spec, filter} = props;
-  switch (type) {
-    case FILTER_MODIFY_ONE_OF: {
-      //TODO: Should check if nominal
-      if (typeof spec.encoding != 'undefined' && typeof spec.encoding.color != 'undefined' &&
-        spec.encoding.color.field == filter.field) {
-        if (oneOf.length > 10) addGuidelineItem(GUIDELINE_TOO_MANY_COLOR_CATEGORIES, props.handleAction);
-        else removeGuidelineItem(GUIDELINE_TOO_MANY_COLOR_CATEGORIES, props.handleAction);
-      }
-      else if (typeof spec.encoding != 'undefined' && typeof spec.encoding.shape != 'undefined' &&
-        spec.encoding.shape.field == filter.field) {
-        if (oneOf.length > 10) addGuidelineItem(GUIDELINE_TOO_MANY_SHAPE_CATEGORIES, props.handleAction);
-        else removeGuidelineItem(GUIDELINE_TOO_MANY_SHAPE_CATEGORIES, props.handleAction);
-      }
-      else {} // do nothing
-      break;
-    }
-  }
+  // switch (type) {
+  //   case FILTER_MODIFY_ONE_OF: {
+  //     //TODO: Should check if nominal
+  //     if (typeof spec.encoding != 'undefined' && typeof spec.encoding.color != 'undefined' &&
+  //       spec.encoding.color.field == filter.field) {
+  //       if (oneOf.length > 10) addGuidelineItem(GUIDELINE_TOO_MANY_COLOR_CATEGORIES, props.handleAction);
+  //       else removeGuidelineItem(GUIDELINE_TOO_MANY_COLOR_CATEGORIES, props.handleAction);
+  //     }
+  //     else if (typeof spec.encoding != 'undefined' && typeof spec.encoding.shape != 'undefined' &&
+  //       spec.encoding.shape.field == filter.field) {
+  //       if (oneOf.length > 10) addGuidelineItem(GUIDELINE_TOO_MANY_SHAPE_CATEGORIES, props.handleAction);
+  //       else removeGuidelineItem(GUIDELINE_TOO_MANY_SHAPE_CATEGORIES, props.handleAction);
+  //     }
+  //     else {} // do nothing
+  //     break;
+  //   }
+  // }
 }
 
 export function addGuidelineItem(item: GuidelineItemTypes, handleAction?: (action: GuidelineAction) => void) {

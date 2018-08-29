@@ -3,7 +3,7 @@ import * as CSSModules from 'react-css-modules';
 import * as styles from './actionable-overplotting.scss';
 
 import {ActionableID, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting, GuideActionItem, isRowOrColumnUsed, isColorUsed, getRowAndColumnField, DEFAULT_CHANGE_POINT_SIZE, FilterStages, PointOpacityStages, PointResizeStages, AggregateStages, DensityPlotStages, SeperateGraphStages, RemoveFillColorStages, isDensityPlot, isRowUsed, isSkipColorOfAggregatePoints, getColorField} from '../../../models/guidelines';
-import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_FIELD_ADD, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR, ACTIONABLE_ADJUST_POINT_SIZE, ACTIONABLE_ADJUST_POINT_OPACITY, SPEC_MARK_CHANGE_TYPE, ACTIONABLE_CHANGE_FILLED} from '../../../actions';
+import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_FIELD_ADD, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR, ACTIONABLE_ADJUST_POINT_SIZE, ACTIONABLE_ADJUST_POINT_OPACITY, SPEC_MARK_CHANGE_TYPE, ACTIONABLE_CHANGE_FILLED, FilterAction} from '../../../actions';
 import {Logger} from '../../util/util.logger';
 import {Themes} from '../../../models/theme/theme';
 import {FacetedCompositeUnitSpec} from '../../../../node_modules/vega-lite/build/src/spec';
@@ -11,7 +11,7 @@ import {InlineData} from '../../../../node_modules/vega-lite/build/src/data';
 import {CIRCLE, SQUARE, Mark, RECT} from '../../../../node_modules/vega-lite/build/src/mark';
 import {VegaLite} from '../../vega-lite';
 import {QUANTITATIVE, NOMINAL} from '../../../../node_modules/vega-lite/build/src/type';
-import {Schema, toTransforms} from '../../../models';
+import {Schema, toTransforms, ShelfFilter} from '../../../models';
 import {COLOR, COLUMN} from '../../../../node_modules/vega-lite/build/src/channel';
 import {FieldPicker} from './actionable-common-ui/field-picker';
 import {startTimeline, renderPoints} from '../../../models/d3-chart';
@@ -19,11 +19,12 @@ import {OneOfFilter} from 'vega-lite/build/src/filter';
 import {NumberAdjuster} from './actionable-common-ui/number-adjuster';
 import {ToggleSwitcher} from './actionable-common-ui/toggle-switcher';
 import {isNullOrUndefined} from '../../../util';
+import {FilterAdjuster} from './actionable-common-ui/filter-adjuster';
 
-export interface ActionableOverplottingProps extends ActionHandler<GuidelineAction | LogAction | SpecAction> {
+export interface ActionableOverplottingProps extends ActionHandler<GuidelineAction | LogAction | SpecAction | FilterAction> {
   item: GuidelineItemOverPlotting;
   schema: Schema;
-
+  filters: ShelfFilter[];
   //preveiw
   data: InlineData;
   mainSpec: FacetedCompositeUnitSpec;
@@ -88,6 +89,20 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             schema={this.props.schema}
             defaultField={this.getDefaultSmallSizedNominalFieldName()}
             pickedFieldAction={this.aggregateByFieldAction}
+          />
+        </div>
+        <div styleName={triggeredAction == 'FILTER' ? '' : 'hidden'}>
+          <FilterAdjuster
+            id={this.props.item.id + 'FILTER'}
+            title={ACTIONABLE_FILTER_GENERAL.title}
+            subtitle={ACTIONABLE_FILTER_GENERAL.subtitle}
+            fields={this.getNominalFieldNames()}
+            filters={this.props.filters}
+            schema={this.props.schema}
+            defaultField={this.getDefaultSmallSizedNominalFieldName()}
+            defaultOneOf={this.getDefaultOneOf(this.getDefaultSmallSizedNominalFieldName())}
+            handleAction={this.props.handleAction}
+            filterAction={this.filterAction}
           />
         </div>
         <div styleName={triggeredAction == 'REMOVE_FILL_COLOR' ? '' : 'hidden'}>
@@ -207,7 +222,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     const {mark} = mainSpec;
     try {
       if (mark == CIRCLE || mark == SQUARE || mark['type'] == CIRCLE || mark['type'] == SQUARE) {
-        if(!isNullOrUndefined(mark['filled']) && !mark['filled']) return false;
+        if (!isNullOrUndefined(mark['filled']) && !mark['filled']) return false;
         return true;
       }
       else {
@@ -235,7 +250,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
 
   private onFilterClick() {
-
+    this.setState({triggeredAction: 'FILTER'});
   }
   private onChangePointSizeClick() {
     this.changePointSizeAction(DEFAULT_CHANGE_POINT_SIZE);
@@ -315,6 +330,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       }
     });
   }
+  filterAction = (field: string, oneOf: any[]) => {
+    // do nothing since filter automatically add/modify and change charts
+  }
 
   private onEncodingDensityClick() {
     this.props.handleAction({
@@ -364,9 +382,15 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   //TODO: consider only column
   private getFilterSpec() {
     let spec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
-    let field = this.getDefaultSmallSizedNominalFieldName(getRowAndColumnField(spec));
     const {transform} = spec;
 
+    let exceptFields = getRowAndColumnField(spec);
+    if(!isNullOrUndefined(transform)){
+      exceptFields = exceptFields.concat(transform.filter(t => !isNullOrUndefined(t['filter'])).map(t => t['filter'].field));
+      // console.log(transform.filter(t => !isNullOrUndefined(t['filter'])).map(t => t['filter'].field));
+    }
+    let field = this.getDefaultSmallSizedNominalFieldName(exceptFields);
+    // console.log(field);
     let newFilter: OneOfFilter = {
       field,
       oneOf: this.getDefaultOneOf(field)
@@ -377,7 +401,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     return {spec};
   }
   private renderFilterPreview() {
-
     return (
       <VegaLite spec={this.getFilterSpec().spec}
         logger={this.plotLogger}
