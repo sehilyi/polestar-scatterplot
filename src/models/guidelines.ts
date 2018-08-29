@@ -118,32 +118,32 @@ export interface GuideActionItem {
 }
 
 export const ACTIONABLE_FILTER_GENERAL: GuideActionItem = {
-  title: 'Filter',
-  subtitle: 'Remove unneccessary values in the chart if there are any',
+  title: '필터',
+  subtitle: '관심 없는 데이터를 가립니다',
   faIcon: 'fa fa-filter',
   pros: 'Scalable to large data. Can show point attrubute (color/shape).',
   cons: 'Do not retain data. Cannot see overlap density. \'Uninteresting\' data should be predetermined.'
 }
 
 export const ACTIONABLE_POINT_SIZE: GuideActionItem = {
-  title: 'Change Point Size',
-  subtitle: 'Reduce the size of marks when over-plotting is relatively minor',
+  title: '점 크기 조절',
+  subtitle: '점의 크기를 조절해 점들끼리 겹치는 문제를 해결합니다',
   faIcon: 'fa fa-compress',
   pros: 'Retain data. Can show point attrubute (color/shape)',
   cons: 'Not scalable to large data. Cannot see overlap density.'
 }
 
 export const ACTIONABLE_POINT_OPACITY: GuideActionItem = {
-  title: 'Change Point Opacity',
-  subtitle: '',
+  title: '점 투명도 조절',
+  subtitle: '점의 투명도를 조절해 겹치는 점들도 보이도록 수정합니다',
   faIcon: 'fa fa-tint',
   pros: 'Retain data. Can see overlap density.',
   cons: 'Point attribute (color/shape) become less distinguishable. Dim outliers. Not scalable to large data.'
 }
 
 export const ACTIONABLE_REMOVE_FILL_COLOR: GuideActionItem = {
-  title: 'Remove Fill Color',
-  subtitle: '',
+  title: '점 중앙색 제거',
+  subtitle: '점의 중앙의 색을 제거해 겹치는 점들이 보일 수 있도록 수정합니다',
   faIcon: 'fa fa-circle-o',
   pros: 'Retain data. Can show point attrubute (color/shape)',
   cons: 'Not scalable to large data. Cannot see overlap density.'
@@ -159,24 +159,24 @@ export const ACTIONABLE_CHANGE_SHAPE: GuideActionItem = {
 }
 
 export const ACTIONABLE_AGGREGATE: GuideActionItem = {
-  title: 'Aggregate Points',
-  subtitle: '',
+  title: '점 합치기',
+  subtitle: '범주형 변수에 따라 평균값을 계산해 점들을 합칩니다',
   faIcon: 'fa fa-object-group',
   pros: 'Retain data. Can show point attrubute (color/shape)',
   cons: 'Not scalable to large data. Cannot see overlap density.'
 }
 
 export const ACTIONABLE_ENCODING_DENSITY: GuideActionItem = {
-  title: 'Use Desnsity Plot',
-  subtitle: '',
+  title: 'Desnsity Plot',
+  subtitle: '격자 구간별 점들의 깊이를 색깔로 표현합니다',
   faIcon: 'fa fa-th',
   pros: 'Retain data. Can show point attrubute (color/shape)',
   cons: 'Not scalable to large data. Cannot see overlap density.'
 }
 
 export const ACTIONABLE_SEPARATE_GRAPH: GuideActionItem = {
-  title: 'Separate Graph',
-  subtitle: '',
+  title: '차트 분리',
+  subtitle: '변주형 변수에 따라 차트를 분리합니다',
   faIcon: 'fa fa-clone',
   pros: 'Retain data. Can show point attrubute (color/shape)',
   cons: 'Not scalable to large data. Cannot see overlap density.'

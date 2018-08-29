@@ -159,7 +159,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             {' '}
             {data.actionItem.title}
           </p>
-          {/* <p styleName='preview-score'>72% experts</p> */}
+          <p styleName='preview-score'>{data.actionItem.subtitle}</p>
           {data.renderPreview.bind(this)()}
           <ul styleName='preview-desc' className='fa-ul'>
             <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{data.actionItem.pros}</li>
@@ -171,7 +171,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             <i className='fa fa-play' aria-hidden='true' />
           </div>
           <div onClick={data.onAction.bind(this)} styleName='apply-button'>
-            <i className="fa fa-check" aria-hidden="true" />{' ' + 'Apply'}
+            {/* TRNASLATION: Apply */}
+            <i className="fa fa-check" aria-hidden="true" />{' ' + '적용'}
           </div>
         </div>
       </div>
