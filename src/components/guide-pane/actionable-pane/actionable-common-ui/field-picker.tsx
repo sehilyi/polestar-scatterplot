@@ -2,7 +2,8 @@ import * as React from 'react';
 import * as CSSModules from 'react-css-modules';
 
 import * as styles from './field-picker.scss';
-import {Schema} from '../../../../models';
+import {Schema, filterIndexOf, filterHasField, ShelfFilter} from '../../../../models';
+import {OneOfFilter} from 'vega-lite/build/src/filter';
 
 export interface FieldPickerProps {
   id: string;
@@ -10,7 +11,9 @@ export interface FieldPickerProps {
   subtitle?: string;
   fields: string[];
   schema: Schema;
+  filters: ShelfFilter[];
   defaultField: string;
+  disableThreshold: number;
   pickedFieldAction: (picked: string) => void;
 }
 
@@ -27,8 +30,11 @@ export class FieldPickerBase extends React.PureComponent<FieldPickerProps, Field
   }
 
   public render() {
-    const {id, title, subtitle, fields, schema} = this.props;
+    const {id, title, subtitle, fields, filters, schema, disableThreshold} = this.props;
     const fieldPicker = (fields as any[]).map(option => {
+      const length = filterHasField(filters, option) ?
+        (filters[filterIndexOf(filters, option)] as OneOfFilter).oneOf.length :
+        schema.domain({field: option}).length;
       return (
         <div key={option} className='option-div' styleName='option-row'>
           <label>
@@ -36,13 +42,13 @@ export class FieldPickerBase extends React.PureComponent<FieldPickerProps, Field
               name={id}
               value={option}
               type='radio'
-              disabled={schema.domain({field: option}).length > 10}
+              disabled={length > disableThreshold}
               checked={option == this.state.selectedField}
               onChange={this.toggleRadio.bind(this, option)}
             /> {'' + option}
           </label>
           <span>
-            {'(' + schema.domain({field: option}).length + ' categories)'}
+            {'(' + length + ' categories)'}
           </span>
         </div>
       );

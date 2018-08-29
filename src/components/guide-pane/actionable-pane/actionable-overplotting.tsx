@@ -86,7 +86,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             title='Aggregate Points'
             subtitle='Select one of nominal fields to aggregate points'
             fields={this.getNominalFieldNames()}
+            filters={this.props.filters}
             schema={this.props.schema}
+            disableThreshold={1000}
             defaultField={this.getDefaultSmallSizedNominalFieldName()}
             pickedFieldAction={this.aggregateByFieldAction}
           />
@@ -120,7 +122,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             title='Separate Graph'
             subtitle='Select one of nominal fields to separate graph'
             fields={this.getNominalFieldNames()}
+            filters={this.props.filters}
             schema={this.props.schema}
+            disableThreshold={10}
             defaultField={this.getDefaultSmallSizedNominalFieldName()}
             pickedFieldAction={this.separateByFieldAction}
           />

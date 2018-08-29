@@ -12,6 +12,7 @@ import {Schema} from "../api/api";
 import {encoding} from "../../node_modules/vega-lite";
 import {TransitionAttr, COMMON_DURATION, COMMON_SHORT_DELAY} from "./d3-chart";
 import {isNullOrUndefined} from "../util";
+import d3 = require("d3");
 
 export type GuideState = "WARN" | "TIP" | "DONE" | "IGNORE";
 export type guidelineIds = "NEW_CHART_BINNED_SCATTERPLOT" | "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" | "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES" |
@@ -468,8 +469,9 @@ export function getColumnField(spec: any) {
   } catch (e) {}
   return {columnField};
 }
-export function getNumberOfGraphs(spec: any, schema: Schema) {
-  return isColumnFieldUsing(spec) ? schema.domain({field: getColumnField(spec).columnField}).length : 1;
+export function getNumberOfGraphs(spec: any, schema: Schema, data: any[]) {
+  // return isColumnFieldUsing(spec) ? schema.domain({field: getColumnField(spec).columnField}).length : 1;
+  return isColumnFieldUsing(spec) ? d3.map(data, d => d[getColumnField(spec).columnField]).keys().length : 1;
 }
 export function isColumnFieldUsing(spec: any) {
   return typeof getColumnField(spec).columnField != 'undefined';

@@ -118,8 +118,8 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   isSkip1APStage = isNullOrUndefined(isSkip1APStage) ? false : isSkip1APStage;
   // console.log(columnField);
   // console.log(schema);
-  const numOfColumnCategory = getNumberOfGraphs(spec, schema);
-  const categories = isColumnUsing ? schema.domain({field: columnField}) : null;
+  const numOfColumnCategory = getNumberOfGraphs(spec, schema, data);
+  const categories = isColumnUsing ? getDomainWithFilter(data, columnField) : null; //schema.domain({field: columnField})
   const isLegend = isLegendUsing(spec);
   const xField = spec.encoding.x['field'], yField = spec.encoding.y['field'];
   const attr = getPointAttrs(spec);
@@ -173,7 +173,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   // render legend
   let colorScale: any;
   if (isLegend) {
-    colorScale = renderLegend(id, attr, isDensity ? 'count' : colorField.field, colorField.type, schema, getNumberOfGraphs(spec, schema), isTransition && !isSkip1APStage, isDensity, maxCount);
+    colorScale = renderLegend(id, attr, isDensity ? 'count' : colorField.field, colorField.type, schema, getNumberOfGraphs(spec, schema, data), isTransition && !isSkip1APStage, isDensity, maxCount, data);
     // console.log(id + ':');
     // console.log(colorScale);
   }
@@ -253,7 +253,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
       .attr('opacity', 0);
   }
   else if (id === 'AGGREGATE_POINTS' && isLegendUsing(spec)) {
-    const categoryDomain = schema.domain({field: colorField.field});
+    const categoryDomain = getDomainWithFilter(data, colorField.field);//schema.domain({field: colorField.field});
     let categoryPointUsed = categoryDomain.slice();
     //Leave only one point for each category
     //rather than update data
@@ -444,7 +444,7 @@ export function renderAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, sch
   let xGrid = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(null).tickSize(-CHART_SIZE.width);
   let yGrid = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40)).tickFormat(null).tickSize(-CHART_SIZE.height);
 
-  const numOfCategory = getNumberOfGraphs(spec, schema);
+  const numOfCategory = getNumberOfGraphs(spec, schema, data);
 
   for (let i = 0; i < numOfCategory; i++) {
 
@@ -522,12 +522,17 @@ export function removeLegend(id: ActionableID) {
   selectRootSVG(id).selectAll('.legend').remove();
 }
 // export type LegendType = 'NOMINAL' | 'QUANTITATIVE' | 'DENSITYPLOT';
+export function getDomainWithFilter(data: any[], field: string){
+  return d3.map(data, d => d[field]).keys();
+}
 export function renderLegend(id: ActionableID, attr: PointAttr, field: string, type: string, schema: Schema, numOfChart: number, isTransition: boolean,
-  isDensity: boolean, maxCount: number) {
+  isDensity: boolean, maxCount: number, data: any[]) {
 
   removeLegend(id);
 
-  const fieldDomain = !isDensity ? schema.domain({field}) : [0, maxCount];
+  const fieldDomain = isDensity ? [0, maxCount] :
+    type === NOMINAL ? getDomainWithFilter(data, field) :
+      schema.domain({field});
   const colorScale: any = type == NOMINAL ?
     d3.scaleOrdinal(NOMINAL_COLOR_SCHEME).domain(fieldDomain) :
     isDensity ?
