@@ -70,13 +70,13 @@ export function renderPoints(id: ActionableID, fromSpec: FacetedCompositeUnitSpe
 
   // to
   let diffOneof = !isSpecifiedView ? getFilterForTransition(fromSpec.transform, spec.transform) : null;
-  console.log(diffOneof);
   renderScatterplot(id, spec, data, schema, isTransition, diffOneof, isSkipColorOfAggregatePoints(id, fromSpec));
+  // console.log(diffOneof);
 }
 
 export function getFilterForTransition(a1: any[], a2: any[]) {
-  console.log(a1);
-  console.log(a2);
+  // console.log(a1);
+  // console.log(a2);
   if (typeof a2 == 'undefined') {
     return null;
   }

@@ -88,7 +88,7 @@ export class FilterAdjusterBase extends React.PureComponent<FilterAdjusterProps,
   pickedCategoryActionForFilter = (selected: string[] | number[] | boolean[] | DateTime[]) => {
     const {handleAction, filters} = this.props;
     const {field} = this.state;
-
+    console.log(filters);
     if (filterHasField(filters, field)) {
       handleAction({
         type: FILTER_MODIFY_ONE_OF,

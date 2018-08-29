@@ -205,6 +205,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     );
   }
 
+  private isFilterUsing() {
+    if (typeof this.props.mainSpec == 'undefined') return false;
+    if (this.getPossibleFilterField() == '') return false;
+    return true;
+  }
   private isChangePointSizeUsing() {
     if (typeof this.props.mainSpec == 'undefined') return false;
     if (isDensityPlot(this.props.mainSpec)) return false;
@@ -380,17 +385,22 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     return [this.props.schema.domain({field})[0]];
   }
   //TODO: consider only column
+  private getPossibleFilterField() {
+    let spec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
+    const {transform} = spec;
+    let exceptFields = getRowAndColumnField(spec);
+    if (!isNullOrUndefined(transform)) {
+      exceptFields = exceptFields.concat(transform.filter(t => !isNullOrUndefined(t['filter'])).map(t => t['filter'].field));
+    }
+    let field = this.getDefaultSmallSizedNominalFieldName(exceptFields);
+    return field;
+  }
+
   private getFilterSpec() {
     let spec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
     const {transform} = spec;
 
-    let exceptFields = getRowAndColumnField(spec);
-    if(!isNullOrUndefined(transform)){
-      exceptFields = exceptFields.concat(transform.filter(t => !isNullOrUndefined(t['filter'])).map(t => t['filter'].field));
-      // console.log(transform.filter(t => !isNullOrUndefined(t['filter'])).map(t => t['filter'].field));
-    }
-    let field = this.getDefaultSmallSizedNominalFieldName(exceptFields);
-    // console.log(field);
+    let field = this.getPossibleFilterField();
     let newFilter: OneOfFilter = {
       field,
       oneOf: this.getDefaultOneOf(field)
@@ -642,7 +652,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   private getPaneData() {
     const PANE_FILTER_GENERAL: ActionPaneData = {
       id: 'FILTER',
-      isPaneUsing: true,
+      isPaneUsing: this.isFilterUsing(),
       actionItem: ACTIONABLE_FILTER_GENERAL,
       renderPreview: this.renderFilterPreview,
       onTransition: this.onFilterTransition,
