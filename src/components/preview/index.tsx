@@ -15,10 +15,10 @@ export class PreviewBase extends React.PureComponent<PreviewProps, {}> {
   public render() {
     return (
       <div styleName="preview-pane">
-        <div styleName='preview-apply-button'>
+        {/* <div styleName='preview-apply-button'>
           <i className="fa fa-arrow-circle-up" aria-hidden="true" />{' '} Apply Preview
-          </div>
-        <h2><i className="fa fa-search" aria-hidden="true" /> Preview</h2>
+        </div> */}
+        <h2><i className="fa fa-bookmark" aria-hidden="true" /> Last Bookmark</h2>
         {this.renderPreview()}
       </div>
     );
@@ -26,7 +26,7 @@ export class PreviewBase extends React.PureComponent<PreviewProps, {}> {
 
   private renderPreview() {
     return (
-      <div styleName='preview-chart'>
+      <div id='last-bookmark-chart' styleName='preview-chart'>
 
       </div>
     );
