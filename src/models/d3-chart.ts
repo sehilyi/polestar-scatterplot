@@ -7,6 +7,7 @@ import {OneOfFilter} from '../../node_modules/vega-lite/build/src/filter';
 import {FieldDef} from 'vega-lite/build/src/fielddef';
 import {QUANTITATIVE, NOMINAL} from 'vega-lite/build/src/type';
 import {translate} from '../d3-util';
+import {isNullOrUndefined} from '../util';
 
 // Basic property for d3-chart
 export const COMMON_DURATION: number = 1000;
@@ -16,7 +17,7 @@ export const COMMON_SHORT_DELAY: number = 300;
 export const CHART_SIZE = {width: 200, height: 200};
 export const CHART_MARGIN = {top: 20, right: 20, bottom: 50, left: 50};
 export const CHART_PADDING = {right: 20};
-export const LEGEND_MARGIN = {top: 20};
+export const LEGEND_MARK_SIZE = {height: 20};
 export const LEGEND_WIDTH = 50;
 export const NOMINAL_COLOR_SCHEME = ['#4c78a8', '#f58518', '#e45756', '#72b7b2', '#54a24b', '#eeca3b', '#b279a2', '#ff9da6', '#9d755d', '#bab0ac'];
 
@@ -112,7 +113,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   const {columnField} = getColumnField(spec);
   const isColumnUsing = isColumnFieldUsing(spec);
   const isDensity = isDensityPlot(spec);
-  isSkip1APStage = typeof isSkip1APStage == 'undefined' ? false : isSkip1APStage;
+  isSkip1APStage = isNullOrUndefined(isSkip1APStage) ? false : isSkip1APStage;
   // console.log(columnField);
   // console.log(schema);
   const numOfColumnCategory = getNumberOfGraphs(spec, schema);
@@ -211,7 +212,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
 
   points
     .attr('transform', function (d) {
-      return 'translate(' + (isColumnUsing ? (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * categories.indexOf(d[columnField]) : 0) + ', 0)';
+      return translate(isColumnUsing ? (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * categories.indexOf(d[columnField]) : 0, 0);
     })
     .attr('x', function (d) {
       return isXMeanFn ?
@@ -225,7 +226,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
     });
 
   // console.log(filter);
-  if (typeof filter != 'undefined' && filter != null && id === 'FILTER') {
+  if (!isNullOrUndefined(filter) && id === 'FILTER') {
     points
       .filter(function (d) {return (filter.oneOf as string[]).indexOf(d[filter.field]) == -1;})
       .transition().duration(isTransition ? FilterStages[0].duration : 0)
@@ -433,25 +434,25 @@ export function renderAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, sch
       .call(xGrid)
       .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
       .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * i + CHART_MARGIN.left,
-        CHART_SIZE.height + CHART_MARGIN.top));
+        CHART_SIZE.height + CHART_MARGIN.top))
 
     svg.append('g')
       .classed('grid', true)
       .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + (CHART_MARGIN.top) + ')')
       .call(yGrid)
       .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
-      .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * i + CHART_MARGIN.left) + ',' + CHART_MARGIN.top + ')')
+      .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * i + CHART_MARGIN.left, CHART_MARGIN.top))
 
     let xaxis = svg.append('g')
       .classed('axis', true)
       .attr('stroke', '#888888')
       .attr('stroke-width', 0.5)
-      .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
-      .call(xAxis);
+      .attr('transform', translate(CHART_MARGIN.left, CHART_SIZE.height + CHART_MARGIN.top))
+      .call(xAxis)
 
     xaxis
       .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
-      .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * i + CHART_MARGIN.left) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')');
+      .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * i + CHART_MARGIN.left, CHART_SIZE.height + CHART_MARGIN.top));
 
     xaxis.append('text')
       .classed('label', true)
@@ -462,18 +463,18 @@ export function renderAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, sch
       .style('font-family', 'sans-serif')
       .style('font-size', 11)
       .style('text-anchor', 'middle')
-      .text(xField);
+      .text(xField)
 
     let yaxis = svg.append('g')
       .classed('axis', true)
       .attr('stroke', '#888888')
       .attr('stroke-width', 0.5)
-      .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + (CHART_MARGIN.top) + ')')
-      .call(yAxis);
+      .attr('transform', translate(CHART_MARGIN.left, CHART_MARGIN.top))
+      .call(yAxis)
 
     yaxis
       .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
-      .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * i + CHART_MARGIN.left) + ',' + CHART_MARGIN.top + ')');
+      .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * i + CHART_MARGIN.left, CHART_MARGIN.top))
 
     yaxis.append('text')
       .classed('label', true)
@@ -486,7 +487,7 @@ export function renderAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, sch
       .style('font-size', 11)
       .style('fill', 'black')
       .style('text-anchor', 'middle')
-      .text(yField);
+      .text(yField)
   }
 }
 
@@ -494,7 +495,7 @@ export function appendPoints(id: string, data: any[]) {
   selectRootSVG(id).selectAll('.point')
     .data(data)
     .enter().append('rect')
-    .classed('point', true);
+    .classed('point', true)
 }
 
 export function removeLegend(id: ActionableID) {
@@ -508,8 +509,14 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
     d3.scaleOrdinal(NOMINAL_COLOR_SCHEME).domain(fieldDomain) :
     d3.scaleSequential(d3.interpolateBlues).domain(d3.extent(fieldDomain));
 
+  // root
+  let legendRoot = selectRootSVG(id)
+    .append('g')
+    .classed('legend', true)
+    .attr('transform', translate(CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right, CHART_MARGIN.top))
+
   // title
-  selectRootSVG(id).selectAll('.legend-title')
+  legendRoot.selectAll('.legend-title')
     .data([field])
     .enter().append('text')
     .classed('legend-title', true)
@@ -519,18 +526,14 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
     .style('font-size', 15)
     .style('font-weight', 'bold')
     .text(function (d) {return d;})
-    .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) - CHART_PADDING.right) + ',' + (CHART_MARGIN.top) + ')');
 
   if (type == NOMINAL) {
-    let nominalLegend = selectRootSVG(id).selectAll('.legend')
+
+    let nominalLegend = legendRoot.selectAll('.nlegend')
       .data(fieldDomain)
       .enter().append('g')
-      .classed('legend', true)
-      .attr('transform', function (d, i) {
-        return 'translate(' +
-          ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) - CHART_PADDING.right) + ',' +
-          (CHART_MARGIN.top + LEGEND_MARGIN.top + i * 20) + ')';
-      });
+      .classed('nlegend', true)
+      .attr('transform', function (d, i) {return translate(0, (i + 1) * LEGEND_MARK_SIZE.height)});
 
     //marks
     nominalLegend.append('rect')
@@ -538,12 +541,13 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
       .attr('y', 0)
       .attr('rx', attr.rx)
       .attr('ry', attr.ry)
-      .attr('width', 5)//attr.width)
-      .attr('height', 5)//attr.height)
       .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : colorScale(d);})
       .attr('stroke-width', attr.stroke_width)
       .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : colorScale(d);})
-      .attr('opacity', 1);//attr.opacity);
+      // use constant attr
+      .attr('width', 5)
+      .attr('height', 5)
+      .attr('opacity', 1);
 
     nominalLegend.append('text')
       .attr('x', 10)
@@ -552,79 +556,45 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
       .style('text-anchor', 'start')
       .style('font-size', 15);
 
-    if (id === 'AGGREGATE_POINTS') {
-      //title
-      selectRootSVG(id).selectAll('.legend-title')
-        .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right) + ',' + (CHART_MARGIN.top) + ')')
-        .attr('opacity', 0)
-        .transition().duration(isTransition ? AggregateStages[0].duration : 0)
-        .attr('opacity', 1);
 
-      //marks
-      selectRootSVG(id).selectAll('.legend')
-        .attr('transform', function (d, i) {
-          return 'translate(' +
-            ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right) + ',' +
-            (CHART_MARGIN.top + LEGEND_MARGIN.top + i * 20) + ')';
-        })
-        .attr('opacity', 0)
-        .transition().duration(isTransition ? AggregateStages[0].duration : 0)
-        .attr('opacity', 1);
-    }
-    else if (id === 'SEPARATE_GRAPH') {
-      //title
-      selectRootSVG(id).selectAll('.legend-title')
-        .transition().duration(isTransition && id === 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
-        .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right) + ',' + (CHART_MARGIN.top) + ')');
-
-      //marks
-      selectRootSVG(id).selectAll('.legend')
-        .transition().duration(isTransition && id === 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
-        .attr('transform', function (d, i) {
-          return 'translate(' +
-            ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right) + ',' +
-            (CHART_MARGIN.top + LEGEND_MARGIN.top + i * 20) + ')';
-        });
+    if (id === 'SEPARATE_GRAPH') {
+      legendRoot
+        .transition().duration(isTransition ? SeperateGraphStages[0].duration : 0)
+        .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right, CHART_MARGIN.top))
     }
     else {
-      //title
-      selectRootSVG(id).selectAll('.legend-title')
-        .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right) + ',' + (CHART_MARGIN.top) + ')');
-
-      //marks
-      selectRootSVG(id).selectAll('.legend')
-        .attr('transform', function (d, i) {
-          return 'translate(' +
-            ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right) + ',' +
-            (CHART_MARGIN.top + LEGEND_MARGIN.top + i * 20) + ')';
-        });
+      legendRoot
+        .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right, CHART_MARGIN.top))
+        .attr('opacity', 0)
+        .transition().duration(isTransition && id === 'AGGREGATE_POINTS' ? AggregateStages[0].duration : 0)
+        .attr('opacity', 1)
     }
   }
   else if (type == QUANTITATIVE) {
-    let quantitativeLegend = selectRootSVG(id);
-    const defs = quantitativeLegend.append("defs");
+
+
+    const defs = legendRoot.append("defs");
     const linearGradient = defs.append("linearGradient")
       .attr("id", "linear-gradient")
       .attr('x1', '0%')
       .attr('y1', '0%')
       .attr('x2', '0%')
-      .attr('y2', '100%');
+      .attr('y2', '100%')
 
     linearGradient.selectAll("stop")
       .data(colorScale.ticks().map((t: any, i: any, n: any) => ({offset: `${100 * i / n.length}%`, color: colorScale(t)})))
       .enter().append("stop")
       .attr("offset", d => d['offset'])
-      .attr("stop-color", d => d['color']);
+      .attr("stop-color", d => d['color'])
 
-    quantitativeLegend.append('g')
+    legendRoot.append('g')
       .append("rect")
-      .attr('transform', `translate(${(CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right}, ${CHART_MARGIN.top + LEGEND_MARGIN.top})`)
+      .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right, CHART_MARGIN.top + LEGEND_MARK_SIZE.height))
       .attr("width", 15)
-      .attr("height", CHART_SIZE.height - LEGEND_MARGIN.top)
-      .style("fill", "url(#linear-gradient)");
-    // console.log(d3.extent(fieldDomain));
+      .attr("height", CHART_SIZE.height - LEGEND_MARK_SIZE.height)
+      .style("fill", "url(#linear-gradient)")
 
-    quantitativeLegend.append('g').selectAll('.qlegend-minmax')
+    legendRoot.append('g').selectAll('.qlegend-minmax')
       .data([d3.extent(fieldDomain)[0]])
       .enter().append('text')
       .attr('x', 0)
@@ -632,9 +602,12 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
       .text(function (d) {return d as string;})
       .style('text-anchor', 'start')
       .style('font-size', 15)
-      .attr('transform', `translate(${(CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right + 15 + 2}, ${CHART_MARGIN.top + LEGEND_MARGIN.top})`);
+      .attr('transform', translate(
+        (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right + 15 + 2,
+        CHART_MARGIN.top + LEGEND_MARK_SIZE.height)
+      )
 
-    quantitativeLegend.append('g').selectAll('.qlegend-minmax')
+    legendRoot.append('g').selectAll('.qlegend-minmax')
       .data([d3.extent(fieldDomain)[1]])
       .enter().append('text')
       .attr('x', 0)
@@ -642,7 +615,10 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
       .text(function (d) {return d as string;})
       .style('text-anchor', 'start')
       .style('font-size', 15)
-      .attr('transform', `translate(${(CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right + 15 + 2}, ${CHART_MARGIN.top + CHART_SIZE.height - 15})`);
+      .attr('transform', translate(
+        (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right + 15 + 2,
+        CHART_MARGIN.top + CHART_SIZE.height - 15)
+      )
   }
   return colorScale;
 }
@@ -683,10 +659,10 @@ export function showContourInD3Chart(id: string, spec: FacetedCompositeUnitSpec,
 
   let x = d3.scaleLinear()
     .domain([0, d3.max(data, function (d) {return d[xField]})] as number[]).nice()
-    .range([0, CHART_SIZE.width]);
+    .range([0, CHART_SIZE.width])
   let y = d3.scaleLinear()
     .domain([0, d3.max(data, function (d) {return d[yField]})] as number[]).nice()
-    .range([CHART_SIZE.height, 0]);
+    .range([CHART_SIZE.height, 0])
 
   svg.selectAll('.contour')
     .data(d3.contourDensity()
@@ -702,8 +678,8 @@ export function showContourInD3Chart(id: string, spec: FacetedCompositeUnitSpec,
     .attr('opacity', 0)
     .transition().duration(COMMON_DURATION)
     .attr('fill', 'red')
-    .attr('opacity', 0.05);
+    .attr('opacity', 0.05)
 }
 export function hideContourInD3Chart(id: string) {
-  selectRootSVG(id).selectAll('.contour').remove();
+  selectRootSVG(id).selectAll('.contour').remove()
 }
