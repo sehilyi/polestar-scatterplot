@@ -6,6 +6,7 @@ import {Schema} from '../models';
 import {OneOfFilter} from '../../node_modules/vega-lite/build/src/filter';
 import {FieldDef} from 'vega-lite/build/src/fielddef';
 import {QUANTITATIVE, NOMINAL} from 'vega-lite/build/src/type';
+import {translate} from '../d3-util';
 
 // Basic property for d3-chart
 export const COMMON_DURATION: number = 1000;
@@ -428,10 +429,11 @@ export function renderAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, sch
 
     svg.append('g')
       .classed('grid', true)
-      .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')')
+      .attr('transform', translate(CHART_MARGIN.left, CHART_SIZE.height + CHART_MARGIN.top))
       .call(xGrid)
       .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
-      .attr('transform', 'translate(' + ((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * i + CHART_MARGIN.left) + ',' + (CHART_SIZE.height + CHART_MARGIN.top) + ')');
+      .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * i + CHART_MARGIN.left,
+        CHART_SIZE.height + CHART_MARGIN.top));
 
     svg.append('g')
       .classed('grid', true)
