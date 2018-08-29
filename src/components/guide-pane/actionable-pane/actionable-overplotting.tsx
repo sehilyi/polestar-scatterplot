@@ -3,7 +3,7 @@ import * as CSSModules from 'react-css-modules';
 import * as styles from './actionable-overplotting.scss';
 
 import {ActionableID, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting, GuideActionItem, isRowOrColumnUsed, isColorUsed, getRowAndColumnField, DEFAULT_CHANGE_POINT_SIZE, FilterStages, PointOpacityStages, PointResizeStages, AggregateStages, DensityPlotStages, SeperateGraphStages, RemoveFillColorStages, isDensityPlot, isRowUsed, isSkipColorOfAggregatePoints, getColorField} from '../../../models/guidelines';
-import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_FIELD_ADD, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR, ACTIONABLE_ADJUST_POINT_SIZE, ACTIONABLE_ADJUST_POINT_OPACITY} from '../../../actions';
+import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_FIELD_ADD, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR, ACTIONABLE_ADJUST_POINT_SIZE, ACTIONABLE_ADJUST_POINT_OPACITY, SPEC_MARK_CHANGE_TYPE, ACTIONABLE_CHANGE_FILLED} from '../../../actions';
 import {Logger} from '../../util/util.logger';
 import {Themes} from '../../../models/theme/theme';
 import {FacetedCompositeUnitSpec} from '../../../../node_modules/vega-lite/build/src/spec';
@@ -17,6 +17,8 @@ import {FieldPicker} from './actionable-common-ui/field-picker';
 import {startTimeline, renderPoints} from '../../../models/d3-chart';
 import {OneOfFilter} from 'vega-lite/build/src/filter';
 import {NumberAdjuster} from './actionable-common-ui/number-adjuster';
+import {ToggleSwitcher} from './actionable-common-ui/toggle-switcher';
+import {isNullOrUndefined} from '../../../util';
 
 export interface ActionableOverplottingProps extends ActionHandler<GuidelineAction | LogAction | SpecAction> {
   item: GuidelineItemOverPlotting;
@@ -86,6 +88,15 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             schema={this.props.schema}
             defaultField={this.getDefaultSmallSizedNominalFieldName()}
             pickedFieldAction={this.aggregateByFieldAction}
+          />
+        </div>
+        <div styleName={triggeredAction == 'REMOVE_FILL_COLOR' ? '' : 'hidden'}>
+          <ToggleSwitcher
+            id={this.props.item.id + 'REMOVE_FILL_COLOR'}
+            title={ACTIONABLE_REMOVE_FILL_COLOR.title}
+            subtitle={ACTIONABLE_REMOVE_FILL_COLOR.subtitle}
+            defaultIsOn={true}
+            toggleAction={this.removeFillColorAction}
           />
         </div>
         <div styleName={triggeredAction == 'SEPARATE_GRAPH' ? '' : 'hidden'}>
@@ -195,7 +206,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     const {mainSpec} = this.props;
     const {mark} = mainSpec;
     try {
-      if (mark == CIRCLE || mark == SQUARE) {
+      if (mark == CIRCLE || mark == SQUARE || mark['type'] == CIRCLE || mark['type'] == SQUARE) {
+        if(!isNullOrUndefined(mark['filled']) && !mark['filled']) return false;
         return true;
       }
       else {
@@ -234,7 +246,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     this.setState({triggeredAction: 'CHANGE_POINT_OPACITY'});
   }
   private onRemoveFillColorClick() {
-
+    this.removeFillColorAction(false);
+    this.setState({triggeredAction: 'REMOVE_FILL_COLOR'});
   }
   private onAggregatePointsClick() {
     this.aggregateByFieldAction(this.getDefaultSmallSizedNominalFieldName());
@@ -290,6 +303,15 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           type: NOMINAL
         },
         replace: true
+      }
+    });
+  }
+  removeFillColorAction = (filled: boolean) => {
+    this.props.handleAction({
+      type: ACTIONABLE_CHANGE_FILLED,
+      payload: {
+        item: this.props.item,
+        filled
       }
     });
   }
@@ -416,9 +438,10 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     let spec = (JSON.parse(JSON.stringify(this.props.mainSpec))) as FacetedCompositeUnitSpec;
 
     spec.mark = {
-      type: spec.mark as Mark,
+      type: isNullOrUndefined(spec.mark['type']) ? spec.mark as Mark : spec.mark['type'],
       filled: false
     };
+    // console.log(spec.mark);
 
     return {spec};
   }

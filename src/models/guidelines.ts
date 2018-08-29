@@ -6,11 +6,12 @@ import {COLOR, Channel, SHAPE} from "vega-lite/build/src/channel";
 import {GUIDELINE_REMOVE_ITEM, GUIDELINE_ADD_ITEM, GuidelineAction} from "../actions/guidelines";
 import {OneOfFilterShelfProps} from "../components/filter-pane/one-of-filter-shelf";
 import {NOMINAL, QUANTITATIVE} from "../../node_modules/vega-lite/build/src/type";
-import {POINT, CIRCLE, SQUARE, RECT} from "vega-lite/build/src/mark";
+import {POINT, CIRCLE, SQUARE, RECT, Mark} from "vega-lite/build/src/mark";
 import {FacetedCompositeUnitSpec, TopLevelExtendedSpec} from "vega-lite/build/src/spec";
 import {Schema} from "../api/api";
 import {encoding} from "../../node_modules/vega-lite";
 import {TransitionAttr, COMMON_DURATION, COMMON_SHORT_DELAY} from "./d3-chart";
+import {isNullOrUndefined} from "../util";
 
 export type GuideState = "WARN" | "TIP" | "DONE" | "IGNORE";
 export type guidelineIds = "NEW_CHART_BINNED_SCATTERPLOT" | "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" | "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES" |
@@ -42,6 +43,7 @@ export interface GuidelineItemOverPlotting extends GuidelineItem {
   fieldToSeparate?: string;
   pointSize?: number;
   pointOpacity?: number;
+  filled?: boolean;
   // TODO: add more
 }
 
@@ -313,6 +315,14 @@ export function getGuidedSpec(spec: TopLevelExtendedSpec, guidelines: GuidelineI
             ...newSpec.encoding,
             opacity: {value: itemDetail.pointOpacity}
           }
+        }
+        if (!isNullOrUndefined(itemDetail.filled)) {
+          let markType = isNullOrUndefined(newSpec.mark['type']) ? newSpec.mark : newSpec.mark['type'];
+          newSpec.mark = itemDetail.filled ? markType as Mark : {
+            type: markType as Mark,
+            filled: itemDetail.filled
+          }
+          // console.log(newSpec.mark);
         }
         break;
       }

@@ -131,17 +131,12 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   for (let i = 0; i < numOfBin; i++) {
     yBinRange.push(i * binHeight + binHeight / 2.0);
   }
-  // temp
   let maxCount = 0;
   if (isDensity) {
     //TODO: consider with only the filtered data
     let xValues: number[] = data.map(x => x[xField]), yValues: number[] = data.map(x => x[yField]);
     let xMin = d3.min(xValues as number[]), xMax = d3.max(xValues as number[]), xStep = (xMax - xMin) / numOfBin;
     let yMin = d3.min(yValues as number[]), yMax = d3.max(yValues as number[]), yStep = (yMax - yMin) / numOfBin;
-    console.log(xMin);
-    console.log(yMin);
-    console.log(xMax);
-    console.log(yMax);
     for (let i = xMin; i < xMax; i += xStep) {
       for (let j = yMin; j < yMax; j += yStep) {
         let count = data.filter(x => i <= x[xField] && x[xField] < i + xStep && j <= x[yField] && x[yField] < j + yStep).length;
@@ -149,9 +144,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
           maxCount = count;
       }
     }
-    console.log('here');
     attr.opacity = Math.max(1 / (maxCount + 1), .04);  // 1 for zero count
-    console.log(attr.opacity);
   }
   //
 
