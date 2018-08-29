@@ -131,6 +131,29 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   for (let i = 0; i < numOfBin; i++) {
     yBinRange.push(i * binHeight + binHeight / 2.0);
   }
+  // temp
+  let maxCount = 0;
+  if (isDensity) {
+    //TODO: consider with only the filtered data
+    let xValues: number[] = data.map(x => x[xField]), yValues: number[] = data.map(x => x[yField]);
+    let xMin = d3.min(xValues as number[]), xMax = d3.max(xValues as number[]), xStep = (xMax - xMin) / numOfBin;
+    let yMin = d3.min(yValues as number[]), yMax = d3.max(yValues as number[]), yStep = (yMax - yMin) / numOfBin;
+    console.log(xMin);
+    console.log(yMin);
+    console.log(xMax);
+    console.log(yMax);
+    for (let i = xMin; i < xMax; i += xStep) {
+      for (let j = yMin; j < yMax; j += yStep) {
+        let count = data.filter(x => i <= x[xField] && x[xField] < i + xStep && j <= x[yField] && x[yField] < j + yStep).length;
+        if (maxCount < count)
+          maxCount = count;
+      }
+    }
+    console.log('here');
+    attr.opacity = Math.max(1 / (maxCount + 1), .04);  // 1 for zero count
+    console.log(attr.opacity);
+  }
+  //
 
   const x = !isDensity ?
     d3.scaleLinear()
@@ -154,8 +177,8 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
 
   // render legend
   let colorScale: any;
-  if (isLegend && !isDensity) {
-    colorScale = renderLegend(id, attr, colorField.field, colorField.type, schema, getNumberOfGraphs(spec, schema), isTransition && !isSkip1APStage);
+  if (isLegend) {
+    colorScale = renderLegend(id, attr, isDensity ? 'count' : colorField.field, colorField.type, schema, getNumberOfGraphs(spec, schema), isTransition && !isSkip1APStage, isDensity, maxCount);
     // console.log(id + ':');
     // console.log(colorScale);
   }
@@ -188,8 +211,8 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   }
 
   points
-    .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : (typeof colorScale != 'undefined' ? colorScale(d[colorField.field]) : attr.fill);})
-    .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : (typeof colorScale != 'undefined' ? colorScale(d[colorField.field]) : attr.stroke);})
+    .attr('fill', function (d) {return attr.fill == 'transparent' ? 'transparent' : (!isNullOrUndefined(colorScale) && !isDensity ? colorScale(d[colorField.field]) : attr.fill);})
+    .attr('stroke', function (d) {return attr.stroke == 'transparent' ? 'transparent' : (!isNullOrUndefined(colorScale) && !isDensity ? colorScale(d[colorField.field]) : attr.stroke);})
     .attr('rx', attr.rx)  // to draw either circle or rect
     .attr('ry', attr.ry)
     .attr('width', attr.width)
@@ -501,13 +524,18 @@ export function appendPoints(id: string, data: any[]) {
 export function removeLegend(id: ActionableID) {
   selectRootSVG(id).selectAll('.legend').remove();
 }
-export function renderLegend(id: ActionableID, attr: PointAttr, field: string, type: string, schema: Schema, numOfChart: number, isTransition: boolean) {
+// export type LegendType = 'NOMINAL' | 'QUANTITATIVE' | 'DENSITYPLOT';
+export function renderLegend(id: ActionableID, attr: PointAttr, field: string, type: string, schema: Schema, numOfChart: number, isTransition: boolean,
+  isDensity: boolean, maxCount: number) {
+
   removeLegend(id);
 
-  const fieldDomain = schema.domain({field});
-  let colorScale: any = type == NOMINAL ?
+  const fieldDomain = !isDensity ? schema.domain({field}) : [0, maxCount];
+  const colorScale: any = type == NOMINAL ?
     d3.scaleOrdinal(NOMINAL_COLOR_SCHEME).domain(fieldDomain) :
-    d3.scaleSequential(d3.interpolateBlues).domain(d3.extent(fieldDomain));
+    isDensity ?
+      d3.scaleSequential(d3.interpolate('white', '#08519c')).domain(d3.extent(fieldDomain)) :
+      d3.scaleSequential(d3.interpolateBlues).domain(d3.extent(fieldDomain));
 
   // root
   let legendRoot = selectRootSVG(id)
@@ -527,8 +555,6 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
     .style('font-family', 'Roboto Condensed')
     .style('font-weight', 'bold')
     .text(d => d)
-
-    console.log(field.length);
 
   if (type == NOMINAL) {
 
@@ -555,7 +581,7 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
     nominalLegend.append('text')
       .attr('x', 10)
       .attr('y', 5)
-      .text(function (d) {return d as string;})
+      .text(d => d)
       .style('text-anchor', 'start')
       .style('font-family', 'Roboto Condensed')
       .style('font-size', 12 + 'px');
@@ -592,7 +618,7 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
       .text(function (d) {return d as string;})
       .style('text-anchor', 'start')
       .style('font-family', 'Roboto Condensed')
-      // .style('font-size', 15)
+    // .style('font-size', 15)
 
     // max
     legendRoot.append('g').selectAll('.qlegend-minmax')
@@ -637,7 +663,9 @@ export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
   try {size = spec.encoding.size['value'] / 10.0;} catch (e) {}
   try {opacity = spec.encoding.opacity['value'];} catch (e) {}
   if (isDensity) size = CHART_SIZE.width / 35;
-  if (isDensity) opacity = 0.1;
+  if (isDensity) {
+    opacity = 0.1;
+  }
   return {
     fill: isDensity ? '#08519c' : (mark == 'point' || isRemoveFill) ? 'transparent' : '#4c78a8',
     opacity,
