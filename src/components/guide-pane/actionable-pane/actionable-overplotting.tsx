@@ -202,7 +202,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           </div>
           <div onClick={data.onAction.bind(this)} styleName='apply-button'>
             {/* TRNASLATION: Apply */}
-            <i className="fa fa-check" aria-hidden="true" />{' ' + '적용'}
+            <i className="fa fa-check" aria-hidden="true" />{' ' + '설정 및 적용'}
           </div>
         </div>
       </div>
@@ -549,7 +549,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       bin: {maxbins: 50}
     };
 
-    spec.mark = RECT;
+    spec.mark = SQUARE;
 
     return {spec};
   }

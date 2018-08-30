@@ -416,8 +416,8 @@ export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
     stroke_width: isDensity ? 0 : 2,
     width: size,
     height: size,
-    rx: mark == 'square' || isDensity ? 0 : size,
-    ry: mark == 'square' || isDensity ? 0 : size,
+    rx: mark == 'square' ? 0 : size,
+    ry: mark == 'square' ? 0 : size,
   };
 }
 
