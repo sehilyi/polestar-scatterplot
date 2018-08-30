@@ -18,7 +18,7 @@ export const COMMON_SHORT_DELAY: number = 300;
 export const CHART_SIZE = {width: 200, height: 200};
 export const CHART_MARGIN = {top: 30, right: 20, bottom: 40, left: 50};
 export const CHART_PADDING = {right: 20};
-export const LEGEND_MARK_SIZE = {height: 20};
+export const LEGEND_MARK_SIZE = {height: 13};
 export const LEGEND_WIDTH = 70;
 export const NOMINAL_COLOR_SCHEME = ['#4c78a8', '#f58518', '#e45756', '#72b7b2', '#54a24b', '#eeca3b', '#b279a2', '#ff9da6', '#9d755d', '#bab0ac'];
 
@@ -576,9 +576,9 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
     .enter().append('text')
     .classed('legend-title', true)
     .attr('x', 0)
-    .attr('y', 10)
+    .attr('y', 8)
     .style('text-anchor', 'start')
-    .style('font-size', d => ((d as string).length > 7 ? 9 : 12) + 'px')
+    .style('font-size', d => ((d as string).length > 7 ? 8 : 10) + 'px')
     // .style('font-family', 'Roboto Condensed')
     .style('font-weight', 'bold')
     .text(d => d)
@@ -611,7 +611,7 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
       .text(d => d)
       .style('text-anchor', 'start')
       // .style('font-family', 'Roboto Condensed')
-      .style('font-size', 12 + 'px');
+      .style('font-size', 8 + 'px');
   }
   else if (type == QUANTITATIVE) {
 
