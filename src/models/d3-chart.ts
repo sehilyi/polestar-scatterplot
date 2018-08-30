@@ -266,6 +266,160 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
       .attr('opacity', 0);
   }
 }
+export function renderLegend(id: ActionableID, attr: PointAttr, field: string, type: string, schema: Schema, numOfChart: number, isTransition: boolean,
+  isDensity: boolean, maxCount: number, data: any[]) {
+
+  removeLegend(id);
+
+  const fieldDomain = isDensity ? [0, maxCount] :
+    type === NOMINAL ? getDomainWithFilteredData(data, field) :
+      schema.domain({field});
+  const colorScale: any = type == NOMINAL ?
+    d3.scaleOrdinal(NOMINAL_COLOR_SCHEME).domain(fieldDomain) :
+    isDensity ?
+      d3.scaleSequential(d3.interpolate('white', '#08519c')).domain(d3.extent(fieldDomain)) :
+      d3.scaleSequential(d3.interpolateBlues).domain(d3.extent(fieldDomain));
+
+  // root
+  let legendRoot = selectRootSVG(id)
+    .append('g')
+    .classed('legend', true)
+    .attr('transform', translate(CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right, CHART_MARGIN.top))
+
+  // title
+  legendRoot.selectAll('.legend-title')
+    .data([field])
+    .enter().append('text')
+    .classed('legend-title', true)
+    .attr('x', 0)
+    .attr('y', 8)
+    .style('text-anchor', 'start')
+    .style('font-size', d => ((d as string).length > 7 ? 8 : 10) + 'px')
+    // .style('font-family', 'Roboto Condensed')
+    .style('font-weight', 'bold')
+    .text(d => d)
+
+  if (type == NOMINAL) {
+
+    let nominalLegend = legendRoot.selectAll('.nlegend')
+      .data(fieldDomain)
+      .enter().append('g')
+      .classed('nlegend', true)
+      .attr('transform', (d, i) => translate(0, (i + 1) * LEGEND_MARK_SIZE.height))
+
+    //marks
+    nominalLegend.append('rect')
+      .attr('x', 0)
+      .attr('y', 0)
+      .attr('rx', attr.rx == 0 ? 0 : 5)
+      .attr('ry', attr.ry == 0 ? 0 : 5)
+      .attr('stroke', d => attr.stroke == 'transparent' ? 'transparent' : colorScale(d))
+      .attr('stroke-width', attr.stroke_width)
+      .attr('fill', d => attr.fill == 'transparent' ? 'transparent' : colorScale(d))
+      // use constant attr
+      .attr('width', 5)
+      .attr('height', 5)
+      .attr('opacity', 1);
+
+    nominalLegend.append('text')
+      .attr('x', 10)
+      .attr('y', 5)
+      .text(d => d)
+      .style('text-anchor', 'start')
+      // .style('font-family', 'Roboto Condensed')
+      .style('font-size', 8 + 'px');
+  }
+  else if (type == QUANTITATIVE) {
+
+    const defs = legendRoot.append("defs");
+    const linearGradient = defs.append("linearGradient")
+      .attr("id", "linear-gradient")
+      .attr('x1', '0%')
+      .attr('y1', '0%')
+      .attr('x2', '0%')
+      .attr('y2', '100%')
+
+    linearGradient.selectAll("stop")
+      .data(colorScale.ticks().map((t: any, i: any, n: any) => ({offset: `${100 * i / n.length}%`, color: colorScale(t)})))
+      .enter().append("stop")
+      .attr("offset", d => d['offset'])
+      .attr("stop-color", d => d['color'])
+
+    legendRoot.append('g')
+      .append("rect")
+      .attr("width", 15)
+      .attr("height", CHART_SIZE.height - LEGEND_MARK_SIZE.height)
+      .attr('transform', translate(0, LEGEND_MARK_SIZE.height))
+      .style("fill", "url(#linear-gradient)")
+
+    // min
+    legendRoot.append('g').selectAll('.qlegend-minmax')
+      .data([d3.extent(fieldDomain)[0]])
+      .enter().append('text')
+      .attr('x', 17)
+      .attr('y', LEGEND_MARK_SIZE.height + 10)
+      .text(function (d) {return d as string;})
+      .style('text-anchor', 'start')
+      // .style('font-family', 'Roboto Condensed')
+      .style('font-size', 12 + 'px')
+
+    // max
+    legendRoot.append('g').selectAll('.qlegend-minmax')
+      .data([d3.extent(fieldDomain)[1]])
+      .enter().append('text')
+      .attr('x', 17)
+      .attr('y', CHART_MARGIN.top + CHART_SIZE.height - 25)
+      .text(function (d) {return d as string;})
+      .style('text-anchor', 'start')
+      .style('font-size', 12 + 'px')
+    // .style('font-family', 'Roboto Condensed')
+  }
+
+  if (id === 'SEPARATE_GRAPH') {
+    legendRoot
+      .transition().duration(isTransition ? SeperateGraphStages[0].duration : 0)
+      .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right, CHART_MARGIN.top))
+  }
+  else {
+    legendRoot
+      .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right, CHART_MARGIN.top))
+      .attr('opacity', 0)
+      .transition().duration(isTransition && id === 'AGGREGATE_POINTS' ? AggregateStages[0].duration : 0)
+      .attr('opacity', 1)
+  }
+
+  return colorScale;
+}
+
+export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
+
+  const isDensity = isDensityPlot(spec);
+  let isRemoveFill = false;
+  if (typeof spec.mark['filled'] != 'undefined') {
+    isRemoveFill = !spec.mark['filled'];
+  }
+
+  // Notice: If filled === false? then, spec.mark is Object {type, filled} rather than string
+  const mark = !isRemoveFill ? spec.mark : spec.mark['type'];
+  let size = mark == 'square' ? 5 : 6;
+  let opacity = 0.7;
+  try {size = spec.encoding.size['value'] / 10.0;} catch (e) {}
+  try {opacity = spec.encoding.opacity['value'];} catch (e) {}
+  if (isDensity) size = CHART_SIZE.width / 35;
+  if (isDensity) {
+    opacity = 0.1;
+  }
+  return {
+    fill: isDensity ? '#08519c' : (mark == 'point' || isRemoveFill) ? 'transparent' : '#4c78a8',
+    opacity,
+    stroke: '#4c78a8',
+    stroke_width: isDensity ? 0 : 2,
+    width: size,
+    height: size,
+    rx: mark == 'square' || isDensity ? 0 : size,
+    ry: mark == 'square' || isDensity ? 0 : size,
+  };
+}
 
 export function isThereD3Chart(id: string) {
   return selectRootSVG(id) != null;
@@ -550,160 +704,7 @@ export function removeLegend(id: ActionableID) {
 export function getDomainWithFilteredData(data: any[], field: string) {
   return d3.map(data, d => d[field]).keys();
 }
-export function renderLegend(id: ActionableID, attr: PointAttr, field: string, type: string, schema: Schema, numOfChart: number, isTransition: boolean,
-  isDensity: boolean, maxCount: number, data: any[]) {
 
-  removeLegend(id);
-
-  const fieldDomain = isDensity ? [0, maxCount] :
-    type === NOMINAL ? getDomainWithFilteredData(data, field) :
-      schema.domain({field});
-  const colorScale: any = type == NOMINAL ?
-    d3.scaleOrdinal(NOMINAL_COLOR_SCHEME).domain(fieldDomain) :
-    isDensity ?
-      d3.scaleSequential(d3.interpolate('white', '#08519c')).domain(d3.extent(fieldDomain)) :
-      d3.scaleSequential(d3.interpolateBlues).domain(d3.extent(fieldDomain));
-
-  // root
-  let legendRoot = selectRootSVG(id)
-    .append('g')
-    .classed('legend', true)
-    .attr('transform', translate(CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right, CHART_MARGIN.top))
-
-  // title
-  legendRoot.selectAll('.legend-title')
-    .data([field])
-    .enter().append('text')
-    .classed('legend-title', true)
-    .attr('x', 0)
-    .attr('y', 8)
-    .style('text-anchor', 'start')
-    .style('font-size', d => ((d as string).length > 7 ? 8 : 10) + 'px')
-    // .style('font-family', 'Roboto Condensed')
-    .style('font-weight', 'bold')
-    .text(d => d)
-
-  if (type == NOMINAL) {
-
-    let nominalLegend = legendRoot.selectAll('.nlegend')
-      .data(fieldDomain)
-      .enter().append('g')
-      .classed('nlegend', true)
-      .attr('transform', (d, i) => translate(0, (i + 1) * LEGEND_MARK_SIZE.height))
-
-    //marks
-    nominalLegend.append('rect')
-      .attr('x', 0)
-      .attr('y', 0)
-      .attr('rx', attr.rx)
-      .attr('ry', attr.ry)
-      .attr('stroke', d => attr.stroke == 'transparent' ? 'transparent' : colorScale(d))
-      .attr('stroke-width', attr.stroke_width)
-      .attr('fill', d => attr.fill == 'transparent' ? 'transparent' : colorScale(d))
-      // use constant attr
-      .attr('width', 5)
-      .attr('height', 5)
-      .attr('opacity', 1);
-
-    nominalLegend.append('text')
-      .attr('x', 10)
-      .attr('y', 5)
-      .text(d => d)
-      .style('text-anchor', 'start')
-      // .style('font-family', 'Roboto Condensed')
-      .style('font-size', 8 + 'px');
-  }
-  else if (type == QUANTITATIVE) {
-
-    const defs = legendRoot.append("defs");
-    const linearGradient = defs.append("linearGradient")
-      .attr("id", "linear-gradient")
-      .attr('x1', '0%')
-      .attr('y1', '0%')
-      .attr('x2', '0%')
-      .attr('y2', '100%')
-
-    linearGradient.selectAll("stop")
-      .data(colorScale.ticks().map((t: any, i: any, n: any) => ({offset: `${100 * i / n.length}%`, color: colorScale(t)})))
-      .enter().append("stop")
-      .attr("offset", d => d['offset'])
-      .attr("stop-color", d => d['color'])
-
-    legendRoot.append('g')
-      .append("rect")
-      .attr("width", 15)
-      .attr("height", CHART_SIZE.height - LEGEND_MARK_SIZE.height)
-      .attr('transform', translate(0, LEGEND_MARK_SIZE.height))
-      .style("fill", "url(#linear-gradient)")
-
-    // min
-    legendRoot.append('g').selectAll('.qlegend-minmax')
-      .data([d3.extent(fieldDomain)[0]])
-      .enter().append('text')
-      .attr('x', 17)
-      .attr('y', LEGEND_MARK_SIZE.height + 10)
-      .text(function (d) {return d as string;})
-      .style('text-anchor', 'start')
-      // .style('font-family', 'Roboto Condensed')
-      .style('font-size', 12 + 'px')
-
-    // max
-    legendRoot.append('g').selectAll('.qlegend-minmax')
-      .data([d3.extent(fieldDomain)[1]])
-      .enter().append('text')
-      .attr('x', 17)
-      .attr('y', CHART_MARGIN.top + CHART_SIZE.height - 25)
-      .text(function (d) {return d as string;})
-      .style('text-anchor', 'start')
-      .style('font-size', 12 + 'px')
-    // .style('font-family', 'Roboto Condensed')
-  }
-
-  if (id === 'SEPARATE_GRAPH') {
-    legendRoot
-      .transition().duration(isTransition ? SeperateGraphStages[0].duration : 0)
-      .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right, CHART_MARGIN.top))
-  }
-  else {
-    legendRoot
-      .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right, CHART_MARGIN.top))
-      .attr('opacity', 0)
-      .transition().duration(isTransition && id === 'AGGREGATE_POINTS' ? AggregateStages[0].duration : 0)
-      .attr('opacity', 1)
-  }
-
-  return colorScale;
-}
-
-export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
-
-  const isDensity = isDensityPlot(spec);
-  let isRemoveFill = false;
-  if (typeof spec.mark['filled'] != 'undefined') {
-    isRemoveFill = !spec.mark['filled'];
-  }
-
-  // Notice: If filled === false? then, spec.mark is Object {type, filled} rather than string
-  const mark = !isRemoveFill ? spec.mark : spec.mark['type'];
-  let size = mark == 'square' ? 5 : 6;
-  let opacity = 0.7;
-  try {size = spec.encoding.size['value'] / 10.0;} catch (e) {}
-  try {opacity = spec.encoding.opacity['value'];} catch (e) {}
-  if (isDensity) size = CHART_SIZE.width / 35;
-  if (isDensity) {
-    opacity = 0.1;
-  }
-  return {
-    fill: isDensity ? '#08519c' : (mark == 'point' || isRemoveFill) ? 'transparent' : '#4c78a8',
-    opacity,
-    stroke: '#4c78a8',
-    stroke_width: isDensity ? 0 : 2,
-    width: size,
-    height: size,
-    rx: mark == 'square' || isDensity ? 0 : size,
-    ry: mark == 'square' || isDensity ? 0 : size,
-  };
-}
 // https://bl.ocks.org/mbostock/7f5f22524bd1d824dd53c535eda0187f
 export function showContourInD3Chart(id: string, spec: FacetedCompositeUnitSpec, data: any[]) {
   let svg = selectRootSVG(id);
