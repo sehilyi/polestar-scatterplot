@@ -12,6 +12,7 @@ export function studyReducer(
         actionOrderSeed: prop.actionOrderSeed,
         isConditionSelected: prop.isConditionSelected,
         isSeedSelected: prop.isSeedSelected,
+        log: prop.log
       };
     }
   }

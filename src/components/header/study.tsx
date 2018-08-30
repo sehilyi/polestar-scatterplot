@@ -1,7 +1,8 @@
 import * as React from 'react';
 import * as CSSModules from 'react-css-modules';
+import * as CopyToClipboard from 'react-copy-to-clipboard';
 
-import * as styles from './theme.scss';
+import * as styles from './study.scss';
 import {ActionHandler} from '../../actions';
 import {THEME_CHANGE, ThemeAction} from '../../actions/theme';
 import {ALL_TEHEMS, VegaTheme} from '../../models/theme/theme';
@@ -56,6 +57,11 @@ export class StudyBase extends React.PureComponent<StudyProps, {}> {
             {seedOptions}
           </select>
         }
+
+        <CopyToClipboard
+          text={this.props.studySetting.log}>
+          <i title='Copy' className='fa fa-clipboard' styleName='clipboard'/>
+        </CopyToClipboard>
       </div>
     );
   }
@@ -68,6 +74,7 @@ export class StudyBase extends React.PureComponent<StudyProps, {}> {
         actionOrderSeed: this.props.studySetting.actionOrderSeed,
         isConditionSelected: true,
         isSeedSelected: this.props.studySetting.isSeedSelected,
+        log: this.props.studySetting.log
       }
     });
   }
@@ -80,6 +87,7 @@ export class StudyBase extends React.PureComponent<StudyProps, {}> {
         condition: this.props.studySetting.condition,
         isConditionSelected: this.props.studySetting.isConditionSelected,
         isSeedSelected: true,
+        log: this.props.studySetting.log
       }
     });
   }

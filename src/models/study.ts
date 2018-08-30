@@ -7,6 +7,7 @@ export interface StudySetting {
   actionOrderSeed: number;
   isConditionSelected: boolean;
   isSeedSelected: boolean;
+  log: string;
 };
 
 export const DEFAULT_STUDY_SETTING: StudySetting = {
@@ -14,6 +15,7 @@ export const DEFAULT_STUDY_SETTING: StudySetting = {
   actionOrderSeed: 1,
   isConditionSelected: false,
   isSeedSelected: false,
+  log: ''
 }
 
 export function GET_RAMDOM_ORDERED_ACTIONS(array: any[], seed: number) {

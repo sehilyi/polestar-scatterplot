@@ -1,3 +1,20 @@
-.temptemptemp {
-  background: transparent;
+.log-copy-button {
+  border: 1px #949191 solid;
+  padding: 3px;
+  background: lightgray;
+  padding-bottom: 1px;
+  cursor: pointer;
+}
+
+$padding: 8px;
+
+.right {
+  position: absolute;
+  right: $padding;
+  display: inline-block;
+}
+
+.clipboard {
+  padding-left: 6px;
+  color: #a7a7a7;
 }

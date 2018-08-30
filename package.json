@@ -41,6 +41,7 @@
     "ajv": "^5.2.2",
     "compassql": "0.19.18",
     "d3": "^5.5.0",
+    "dropbox": "^4.0.9",
     "font-awesome": "^4.7.0",
     "font-awesome-sass-loader": "^1.0.3",
     "isomorphic-fetch": "^2.2.1",
