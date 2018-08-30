@@ -110,7 +110,7 @@ export const GUIDELINE_TOO_MANY_SHAPE_CATEGORIES: GuidelineItemActionableCategor
 
 //TODO: Later, this could be more systematic, including all kinds of actionables in all guidelines
 export type ActionableID = "FILTER" | "SEPARATE_GRAPH" | "AGGREGATE_POINTS" | 'CHANGE_POINT_SIZE' | 'CHANGE_POINT_OPACITY' | "REMOVE_FILL_COLOR" | "ENCODING_DENSITY" |
-  "FILTER_CATEGORIES" | "SELECT_CATEGORIES" | "REMOVE_FIELD" | "NONE";
+  "FILTER_CATEGORIES" | "SELECT_CATEGORIES" | "REMOVE_FIELD" | "NONE" | "NONE2";  //TODO: don't mix with vega-lite types
 
 export interface GuideActionItem {
   title: string;

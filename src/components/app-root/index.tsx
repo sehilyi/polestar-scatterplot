@@ -20,7 +20,7 @@ import {LoadData} from '../load-data-pane/index';
 import {LogPane} from '../log-pane/index';
 import {ViewPane} from '../view-pane/index';
 import {GuidePane} from '../guide-pane';
-import {Preview} from '../preview';
+import {LastBookmark} from '../last-bookmark';
 import {DatasetAsyncAction, ActionHandler, datasetLoad, createDispatchHandler} from '../../actions';
 
 export interface AppRootProps extends ActionHandler<DatasetAsyncAction> {
@@ -49,7 +49,7 @@ class AppRootBase extends React.PureComponent<AppRootProps, {}> {
               <SplitPane split="vertical" defaultSize={683} minSize={300} maxSize={1000} primary="second">
                 <SplitPane split="horizontal" defaultSize={'50%'} primary='first' >
                   <ViewPane />
-                  <Preview />
+                  <LastBookmark />
                 </SplitPane>
                 <GuidePane />
               </SplitPane>

@@ -56,7 +56,7 @@ export class BookmarkButtonBase extends React.PureComponent<BookmarkProps, Bookm
       >
         <i
           title='Bookmark'
-          className="fa fa-bookmark"
+          className="fa fa-thumb-tack"
           styleName={styleName}
           onClick={this.onBookmarkClick}
         />
@@ -71,7 +71,7 @@ export class BookmarkButtonBase extends React.PureComponent<BookmarkProps, Bookm
                 <span styleName='fa-span'><i className="fa fa-trash-o"/>&nbsp;Remove it&nbsp;&nbsp;</span>
               </a>
               <a onClick={this.onKeepBookmark}>
-                <span styleName='fa-span'><i className="fa fa-bookmark"/>&nbsp;Keep it&nbsp;&nbsp;</span>
+                <span styleName='fa-span'><i className="fa fa-thumb-tack"/>&nbsp;Keep it&nbsp;&nbsp;</span>
               </a>
             </div>
           </div>

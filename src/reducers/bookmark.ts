@@ -9,17 +9,17 @@ export function bookmarkReducer(bookmark: Bookmark = DEFAULT_BOOKMARK, action: A
     case BOOKMARK_ADD_PLOT: {
       const {plot} = action.payload;
       const specKey = JSON.stringify(plot.spec);
-
+      // Use only one for study
       return {
         dict: {
-          ...dict,
+          // ...dict,
           [specKey]: {
             plot: plot,
             note: '',
           }
         },
-        count: count + 1,
-        list: list.concat([specKey])
+        count: 1, //count + 1,
+        list: [specKey] //list.concat([specKey])
       };
     }
 

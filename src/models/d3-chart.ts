@@ -45,7 +45,8 @@ export interface PointAttr {
   ry: number;
 }
 
-export function renderD3Preview(id: ActionableID, CHART_REF: any, fromSpec: FacetedCompositeUnitSpec, toSpec: FacetedCompositeUnitSpec, schema: Schema, data: any[], transitionAttrs: TransitionAttr[], isTransition: boolean, isNoTimeline: boolean) {
+export function renderD3Preview(id: ActionableID, CHART_REF: any, fromSpec: FacetedCompositeUnitSpec, toSpec: FacetedCompositeUnitSpec, schema: Schema, data: any[],
+  transitionAttrs: TransitionAttr[], isTransition: boolean, isNoTimeline: boolean) {
   // console.log('spec for D3:');
   // console.log(toSpec);
   removePrevChart(CHART_REF);

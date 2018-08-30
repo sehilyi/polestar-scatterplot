@@ -19,12 +19,13 @@
 .plot {
   overflow: hidden;
   padding-right: 11px;
-  @extend .plot-scroll; // show scroll for novices
 }
 
 .plot-scroll {
-  overflow: auto;
-  padding-right: 0px;
+  overflow: hidden;
+  padding-right: 11px;
+  // overflow: auto;
+  // // padding-right: 0px;
 }
 
 .plot-info {
@@ -39,6 +40,10 @@
 
 .command-toolbox {
   float: right;
+}
+
+.command-toolbox > i, .command-toolbox > span > i {
+  font-size: 15px;
 }
 
 .command {

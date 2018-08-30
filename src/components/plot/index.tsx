@@ -107,7 +107,7 @@ export class PlotBase extends React.PureComponent<PlotProps, PlotState> {
 
     let notesDiv;
     const specKey = JSON.stringify(spec);
-    if (this.props.bookmark.dict[specKey]) {
+    if (this.props.bookmark.dict[specKey] && false) { //TODO: remove for study
       notesDiv = (
         <textarea
           styleName='note'

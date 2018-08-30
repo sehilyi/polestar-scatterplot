@@ -39,6 +39,7 @@ export interface VegaLiteProps {
   filters?: ShelfFilter[];
   isPreview?: boolean;
   transitionAttrs?: TransitionAttr[];
+  // isLastBookmark?: boolean;
 }
 
 export interface VegaLiteState {

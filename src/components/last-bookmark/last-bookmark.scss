@@ -2,12 +2,19 @@
   height: 100%;
   background: #f3f6fa;
   padding: 8px;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 .preview-chart {
   background: white;
   padding: 8px;
   height: calc(100% - 65px);
   border-radius: 20px;
+  overflow: hidden;
+  height: calc(100% - 63px);
   // border: dotted 2px #bfbfbfb3;
 }
 .preview-apply-button {
