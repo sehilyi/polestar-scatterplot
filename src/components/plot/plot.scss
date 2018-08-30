@@ -17,15 +17,15 @@
 }
 
 .plot {
-  overflow: hidden;
-  padding-right: 11px;
+  overflow: auto;
+  // padding-right: 11px;
 }
 
 .plot-scroll {
-  overflow: hidden;
-  padding-right: 11px;
-  // overflow: auto;
-  // // padding-right: 0px;
+  // overflow: hidden;
+  // padding-right: 11px;
+  overflow: auto;
+  padding-right: 0px;
 }
 
 .plot-info {

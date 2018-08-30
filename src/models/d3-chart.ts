@@ -45,15 +45,18 @@ export interface PointAttr {
   ry: number;
 }
 
-export function renderD3Preview(id: ActionableID, CHART_REF: any, fromSpec: FacetedCompositeUnitSpec, toSpec: FacetedCompositeUnitSpec, schema: Schema, data: any[],
+export function renderD3Preview(
+  id: ActionableID, CHART_REF: any, fromSpec: FacetedCompositeUnitSpec, toSpec: FacetedCompositeUnitSpec, schema: Schema, data: any[],
   transitionAttrs: TransitionAttr[], isTransition: boolean, isNoTimeline: boolean) {
   // console.log('spec for D3:');
   // console.log(toSpec);
+  // console.log(isNoTimeline);
   removePrevChart(CHART_REF);
   appendRootSVG(id, CHART_REF, isNoTimeline);
   if (!isNoTimeline) {
     let newAttrs = transitionAttrs.slice();
-    if (isSkipColorOfAggregatePoints(id, fromSpec)) {  // For the only exception, remove first stage for Aggregate Points when color is already used
+    // For the only exception, remove first stage of Aggregate Points transition when color is already used.
+    if (isSkipColorOfAggregatePoints(id, fromSpec)) {
       newAttrs.splice(0, 1);
     }
     appendTransitionTimeline(id, '', newAttrs, false);
@@ -427,9 +430,9 @@ export function isThereD3Chart(id: string) {
 export function selectRootSVG(id: string): d3.Selection<BaseType, {}, HTMLElement, any> {
   return d3.select('#d3-chart-specified-' + id).select('svg');
 }
-export function appendRootSVG(id: string, CHART_REF: any, isSpecifiedView: boolean) {
+export function appendRootSVG(id: ActionableID, CHART_REF: any, isNoTimeline: boolean) {
 
-  if (!isSpecifiedView) {
+  if (!isNoTimeline) {
     // timeline
     d3.select(CHART_REF)
       .append('div')
@@ -447,9 +450,10 @@ export function appendRootSVG(id: string, CHART_REF: any, isSpecifiedView: boole
     .classed('d3-chart', true)
     .attr('id', 'd3-chart-specified-' + id)
     .style('margin', 'auto')
+    .style('height', `calc(100% - ${isNoTimeline ? 0 : 50}px)`)
     .append('svg')
     .attr('width', '100%')
-    .attr('height', isSpecifiedView ? '350px' : '100%');
+    .attr('height', id == 'NONE' ? '350px' : '100%');
 }
 
 export function startTimelineWithId(id: ActionableID) {

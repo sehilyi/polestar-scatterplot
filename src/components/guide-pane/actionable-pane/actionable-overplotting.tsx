@@ -184,7 +184,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
               onClick={data.onAction.bind(this)} />
           </p> */}
         </div>
-        <div className={expandedAction == data.id ? 'preview-expand' : 'preview'}
+        <div className={expandedAction == data.id ? studySetting.condition.indexOf('A') == -1 ? 'preview-expand-notimeline' : 'preview-expand' : 'preview'}
           styleName={'guide-preview-inner'}
           ref={this.vegaLiteWrapperRefHandler}>
           <p styleName='preview-title'>
@@ -250,7 +250,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     try {
       if (getColorField(this.props.mainSpec).colorField.type == QUANTITATIVE) return false;
     } catch (e) {}
-    if(isMeanAggregated(this.props.mainSpec).isXMeanFn && isMeanAggregated(this.props.mainSpec).isYMeanFn) return false;
+    if (isMeanAggregated(this.props.mainSpec).isXMeanFn && isMeanAggregated(this.props.mainSpec).isYMeanFn) return false;
     return this.isThereNominalField();
   }
   private isEncodingDensityUsing() {
@@ -419,11 +419,15 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     return {spec};
   }
   private renderFilterPreview() {
+    // console.log('x')
+    // console.log(this.props.studySetting.condition.indexOf('A') == -1 || false);
     return (
       <VegaLite spec={this.getFilterSpec().spec}
         logger={this.plotLogger}
         data={this.props.data}
+        isNoTimeline={this.state.expandedAction != "FILTER" || this.props.studySetting.condition.indexOf('A') == -1}
         isPreview={true}
+        isSpecifiedView={false}
         fromSpec={this.props.mainSpec}
         actionId={"FILTER"}
         schema={this.props.schema}
@@ -447,6 +451,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         logger={this.plotLogger}
         data={this.props.data}
         isPreview={true}
+        isSpecifiedView={false}
+        isNoTimeline={this.state.expandedAction != "CHANGE_POINT_SIZE" || this.props.studySetting.condition.indexOf('A') == -1}
         fromSpec={this.props.mainSpec}
         actionId={"CHANGE_POINT_SIZE"}
         schema={this.props.schema}
@@ -469,6 +475,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         logger={this.plotLogger}
         data={this.props.data}
         isPreview={true}
+        isSpecifiedView={false}
+        isNoTimeline={this.state.expandedAction != "CHANGE_POINT_OPACITY" || this.props.studySetting.condition.indexOf('A') == -1}
         fromSpec={this.props.mainSpec}
         actionId={"CHANGE_POINT_OPACITY"}
         schema={this.props.schema}
@@ -493,6 +501,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         logger={this.plotLogger}
         data={this.props.data}
         isPreview={true}
+        isSpecifiedView={false}
+        isNoTimeline={this.state.expandedAction != "REMOVE_FILL_COLOR" || this.props.studySetting.condition.indexOf('A') == -1}
         fromSpec={this.props.mainSpec}
         actionId={"REMOVE_FILL_COLOR"}
         schema={this.props.schema}
@@ -526,6 +536,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         logger={this.plotLogger}
         data={this.props.data}
         isPreview={true}
+        isSpecifiedView={false}
+        isNoTimeline={this.state.expandedAction != "AGGREGATE_POINTS" || this.props.studySetting.condition.indexOf('A') == -1}
         fromSpec={this.props.mainSpec}
         actionId={"AGGREGATE_POINTS"}
         schema={this.props.schema}
@@ -562,6 +574,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         logger={this.plotLogger}
         data={this.props.data}
         isPreview={true}
+        isSpecifiedView={false}
+        isNoTimeline={this.state.expandedAction != "ENCODING_DENSITY" || this.props.studySetting.condition.indexOf('A') == -1}
         fromSpec={this.props.mainSpec}
         actionId={"ENCODING_DENSITY"}
         schema={this.props.schema}
@@ -596,6 +610,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         logger={this.plotLogger}
         data={this.props.data}
         isPreview={true}
+        isSpecifiedView={false}
+        isNoTimeline={this.state.expandedAction != "SEPARATE_GRAPH" || this.props.studySetting.condition.indexOf('A') == -1}
         fromSpec={this.props.mainSpec}
         actionId={"SEPARATE_GRAPH"}
         schema={this.props.schema}

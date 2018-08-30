@@ -230,14 +230,22 @@
     width: 160px !important;
     height: 160px !important;
     min-height: 160px;
+    // display: flex;
   }
   .preview .timeline {
     display: none;
   }
   .preview-expand .chart {
     width: 350px !important;
+    height: 350px !important;
+    min-height: 350px;
     height: 408px !important;
     min-height: 408px;
+  }
+  .preview-expand-notimeline .chart {
+    width: 350px !important;
+    height: 350px !important;
+    min-height: 350px;
   }
   .preview-expand .marks {
     width: 350px !important;
@@ -257,12 +265,12 @@
   }
 
   // to differenciate with normal vl chart
-  .preview .d3-chart, .preview-expand .d3-chart {
-    // border-left: dotted 1px transparent;
-    position: relative;
-    top: 40%;
-    transform: translateY(-40%);
-  }
+  // .preview .d3-chart, .preview-expand .d3-chart {
+  //   // border-left: dotted 1px transparent;
+  //   // position: relative;
+  //   // top: 40%;
+  //   // transform: translateY(-40%);
+  // }
   .d3-chart .grid line, .d3-chart .grid path {
     stroke: rgb(221, 221, 221);
     // shape-rendering: crispEdges;
