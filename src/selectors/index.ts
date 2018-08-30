@@ -20,6 +20,7 @@ import {selectData} from './dataset';
 import {selectFilters} from './shelf';
 import {Themes} from '../models/theme/theme';
 import {Guidelines} from '../models/guidelines';
+import {StudySetting} from '../models/study';
 
 export * from './dataset';
 export * from './result';
@@ -32,6 +33,7 @@ export const selectRelatedViews = (state: State): RelatedViews => state.persiste
 export const selectShelfPreview = (state: State): ShelfPreview => state.persistent.shelfPreview;
 export const selectLog = (state: State): Log => state.persistent.log;
 export const selectTheme = (state: State): Themes => state.persistent.theme;
+export const selectStudySetting = (state: State): StudySetting => state.persistent.studySetting;
 export const selectGuidelines = (state: State): Guidelines => state.persistent.guidelines;
 
 export const selectCustomWildcardFields = (state: State): CustomWildcardField[] => {

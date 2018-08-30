@@ -19,6 +19,7 @@ import {COLOR, SHAPE} from '../../../node_modules/vega-lite/build/src/channel';
 import {ActionableNewVis} from './actionable-pane/actionable-new-vis';
 import {ActionableOverplotting} from './actionable-pane/actionable-overplotting';
 import {showContourInD3Chart, hideContourInD3Chart} from '../../models/d3-chart';
+import {StudySetting} from '../../models/study';
 
 export interface GuideElementProps extends ActionHandler<GuidelineAction> {
   item: GuidelineItemTypes;
@@ -31,6 +32,7 @@ export interface GuideElementProps extends ActionHandler<GuidelineAction> {
   mainSpec: FacetedCompositeUnitSpec;
   filters: ShelfFilter[];
   theme: Themes;
+  studySetting: StudySetting;
 
   // TODO: try to remove this
   guidelines: GuidelineItemTypes[];
@@ -116,7 +118,7 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
   }
   private renderActionablePane() {
     const {id} = this.props.item;
-    const {item, schema, spec, handleAction, data, mainSpec, theme, filters, guidelines} = this.props;
+    const {item, schema, spec, handleAction, data, mainSpec, theme, filters, guidelines, studySetting} = this.props;
 
     switch (id) {
       case 'GUIDELINE_OVER_PLOTTING': {
@@ -126,6 +128,7 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
             schema={schema}
             filters={filters}
             handleAction={handleAction}
+            studySetting={studySetting}
 
             // for vega preview
             data={data}

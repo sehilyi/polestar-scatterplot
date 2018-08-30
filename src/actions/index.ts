@@ -14,6 +14,7 @@ import {TAB_ACTION_TYPE_INDEX, TabAction} from './tab';
 import {UndoableAction} from './undo-redo';
 import {ThemeAction} from './theme';
 import {GuidelineAction} from './guidelines';
+import {StudySettingAction} from './study';
 
 export * from './bookmark';
 export * from './custom-wildcard-field';
@@ -50,7 +51,8 @@ export type Action = (
   TabAction |
   UndoableAction |
   ThemeAction |
-  GuidelineAction
+  GuidelineAction |
+  StudySettingAction
 );
 
 export type ActionType = Action['type'];
@@ -134,6 +136,8 @@ export const ACTION_TYPE_INDEX: {[k in ActionType]: 1} = {
   ACTIONABLE_MODIFY_ONE_OF_CATEGORIES: 1,
   ACTIONABLE_TRIGGER_INTERFACE: 1,
   GUIDELINE_SET_USER_ACTION_TYPE: 1,
+
+  STUDY_SETTING_CHANGE: 1,
 };
 
 /** An array of all possible action types. */

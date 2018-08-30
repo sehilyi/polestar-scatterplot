@@ -5,7 +5,7 @@ import * as styles from "./guide-pane.scss"
 import * as CSSModules from 'react-css-modules';
 import {GuideElement} from "./guide-element";
 import {GuidelineItem, Guidelines} from "../../models/guidelines";
-import {selectGuidelines, selectDataset, selectShelfSpec, selectFilteredData, selectMainSpec, selectTheme, selectFilters} from "../../selectors";
+import {selectGuidelines, selectDataset, selectShelfSpec, selectFilteredData, selectMainSpec, selectTheme, selectFilters, selectStudySetting} from "../../selectors";
 import {ActionHandler, createDispatchHandler, SpecAction, LogAction, SpecMarkChangeType} from "../../actions";
 import {Action} from "../../actions/index";
 import {GuidelineAction} from "../../actions/guidelines";
@@ -13,6 +13,7 @@ import {InlineData} from "vega-lite/build/src/data";
 import {FacetedCompositeUnitSpec} from "vega-lite/build/src/spec";
 import {Themes} from "../../models/theme/theme";
 import {OneOfFilter, RangeFilter} from "../../../node_modules/vega-lite/build/src/filter";
+import {StudySetting} from "../../models/study";
 
 export interface GuidePaneProps extends ActionHandler<Action> {
   guidelines: Guidelines;
@@ -25,6 +26,7 @@ export interface GuidePaneProps extends ActionHandler<Action> {
   mainSpec: FacetedCompositeUnitSpec;
   filters: Array<RangeFilter | OneOfFilter>;
   theme: Themes;
+  studySetting: StudySetting;
 }
 
 export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
@@ -58,7 +60,7 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
   private guideElement(gs: GuidelineItem) {
 
     const {id} = gs;
-    const {handleAction, schema, spec, data, theme, filters, mainSpec, guidelines} = this.props;
+    const {handleAction, schema, spec, data, theme, filters, mainSpec, guidelines, studySetting} = this.props;
 
     return (
       <GuideElement
@@ -72,7 +74,7 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
         mainSpec={typeof mainSpec == "undefined" ? undefined : this.specWithFilter}
         theme={theme}
         filters={filters}
-
+        studySetting={studySetting}
         //TODO: try to remove this
         guidelines={guidelines.list}
       />
@@ -101,6 +103,7 @@ export const GuidePane = connect(
       mainSpec: selectMainSpec(state),
       theme: selectTheme(state),
       filters: selectFilters(state),
+      studySetting: selectStudySetting(state)
     };
   },
   createDispatchHandler<GuidelineAction | SpecAction | LogAction | SpecMarkChangeType>()

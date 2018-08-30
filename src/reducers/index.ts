@@ -90,6 +90,8 @@ import {themeReducer} from './theme';
 import {modifyItemInArray} from './util';
 import {guidelineReducer} from './guidelines';
 import {GUIDELINE_ADD_ITEM, GUIDELINE_REMOVE_ITEM, ACTIONABLE_SELECT_CATEGORIES, GUIDELINE_SHOW_RECT_INDICATOR, GUIDELINE_HIDE_INDICATOR, GUIDELINE_TOGGLE_IGNORE_ITEM, GUIDELINE_TOGGLE_ISEXPANDED, ACTIONABLE_TRIGGER_INTERFACE, ACTIONABLE_MODIFY_ONE_OF_CATEGORIES, GUIDELINE_SET_USER_ACTION_TYPE} from '../actions/guidelines';
+import {STUDY_SETTING_CHANGE} from '../actions/study';
+import {studyReducer} from './study';
 
 /**
  * Whether to reset a particular property of the persistent state during RESET action
@@ -102,6 +104,7 @@ const persistentStateToReset: ResetIndex<PersistentState> = {
   shelfPreview: true,
   theme: false,
   guidelines: false,
+  studySetting: false
 };
 
 export const persistentReducer = makeResetReducer(
@@ -112,7 +115,8 @@ export const persistentReducer = makeResetReducer(
     log: logReducer,
     shelfPreview: shelfPreviewReducer,
     theme: themeReducer,
-    guidelines: guidelineReducer
+    guidelines: guidelineReducer,
+    studySetting: studyReducer
   }),
   persistentStateToReset,
   DEFAULT_PERSISTENT_STATE
@@ -242,6 +246,8 @@ export const USER_ACTIONS: ActionType[] = [
   ACTIONABLE_SELECT_CATEGORIES,
   ACTIONABLE_MODIFY_ONE_OF_CATEGORIES,
   ACTIONABLE_TRIGGER_INTERFACE,
+
+  STUDY_SETTING_CHANGE,
 ];
 
 

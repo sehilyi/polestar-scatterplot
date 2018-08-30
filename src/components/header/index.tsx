@@ -11,12 +11,15 @@ import * as styles from './header.scss';
 import {Themes} from './theme';
 import {ActionHandler, createDispatchHandler, ThemeAction} from '../../actions';
 import {Action} from '../../actions/index';
-import {selectTheme} from '../../selectors';
+import {selectTheme, selectStudySetting} from '../../selectors';
 import {Themes as ITheme} from '../../models/theme/theme';
+import {StudySetting} from '../../models/study';
+import {Study} from './study';
 
 export interface HeaderProps extends ActionHandler<Action> {
   data: InlineData;
   theme: ITheme;
+  studySetting: StudySetting;
 }
 
 export class HeaderBase extends React.PureComponent<HeaderProps, {}> {
@@ -26,11 +29,12 @@ export class HeaderBase extends React.PureComponent<HeaderProps, {}> {
   }
 
   public render() {
-    const {data, theme, handleAction} = this.props;
+    const {data, theme, handleAction, studySetting} = this.props;
     return (
       <div styleName='header'>
         <img styleName='voyager-logo' src={logo} />
         {data && <Controls />}
+        {data && <Study studySetting={studySetting} handleAction={handleAction}/>}
         {/* {data && <Themes theme={theme.theme} handleAction={handleAction} />} */}
       </div>
     );
@@ -45,7 +49,8 @@ export const Header = connect(
   (state: State) => {
     return {
       data: selectData(state),
-      theme: selectTheme(state)
+      theme: selectTheme(state),
+      studySetting: selectStudySetting(state)
     };
   },
   createDispatchHandler<ThemeAction>()

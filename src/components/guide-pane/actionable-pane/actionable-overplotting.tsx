@@ -20,6 +20,7 @@ import {NumberAdjuster} from './actionable-common-ui/number-adjuster';
 import {ToggleSwitcher} from './actionable-common-ui/toggle-switcher';
 import {isNullOrUndefined} from '../../../util';
 import {FilterAdjuster} from './actionable-common-ui/filter-adjuster';
+import {GET_RAMDOM_ORDERED_ACTIONS, StudySetting} from '../../../models/study';
 
 export interface ActionableOverplottingProps extends ActionHandler<GuidelineAction | LogAction | SpecAction | FilterAction> {
   item: GuidelineItemOverPlotting;
@@ -29,6 +30,7 @@ export interface ActionableOverplottingProps extends ActionHandler<GuidelineActi
   data: InlineData;
   mainSpec: FacetedCompositeUnitSpec;
   theme: Themes;
+  studySetting: StudySetting;
 }
 
 export interface ActionableOverplottingState {
@@ -159,6 +161,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   private previewPane(data: ActionPaneData) {
     const vegaReady = typeof this.props.mainSpec != 'undefined';
     const {expandedAction} = this.state;
+    const {studySetting} = this.props;
     if (!data.isPaneUsing) return null;
     if (!vegaReady) return null;
     return (
@@ -189,20 +192,20 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             {' '}
             {data.actionItem.title}
           </p>
-          <p styleName='preview-score'>{data.actionItem.subtitle}</p>
+          <p styleName={studySetting.condition.indexOf('T') != -1 ? 'preview-score' : 'hidden'}>{data.actionItem.subtitle}</p>
           {data.renderPreview.bind(this)()}
-          <ul styleName='preview-desc' className='fa-ul'>
+          <ul styleName={studySetting.condition.indexOf('T') != -1 ? 'preview-desc' : 'hidden'} className='fa-ul'>
             <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{data.actionItem.pros}</li>
             <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' />{data.actionItem.cons}</li>
           </ul>
         </div>
         <div styleName='bottom-button'>
-          <div onClick={data.onTransition.bind(this)} styleName='transition-button' >
+          <div onClick={data.onTransition.bind(this)} styleName={studySetting.condition.indexOf('A') != -1 ? 'transition-button' : 'hidden'} >
             <i className='fa fa-play' aria-hidden='true' />
           </div>
           <div onClick={data.onAction.bind(this)} styleName='apply-button'>
             {/* TRNASLATION: Apply */}
-            <i className="fa fa-check" aria-hidden="true" />{' ' + '설정 및 적용'}
+            <i className="fa fa-check" aria-hidden="true" />{' ' + '적용'}
           </div>
         </div>
       </div>
@@ -711,7 +714,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       onTransition: this.onSeparateGraphTransition,
       onAction: this.onSeparateGraphClick
     }
-    const paneData: ActionPaneData[] = [
+    let seed = 1;
+    const paneData: ActionPaneData[] = GET_RAMDOM_ORDERED_ACTIONS([
+      // Be careful changing the order of this data in code.
       PANE_FILTER_GENERAL,
       PANE_POINT_SIZE,
       PANE_POINT_OPACITY,
@@ -719,7 +724,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       PANE_AGGREGATE,
       PANE_ENCODING_DENSITY,
       PANE_SEPARATE_GRAPH
-    ];
+    ], this.props.studySetting.actionOrderSeed);
     return paneData;
   }
 }
