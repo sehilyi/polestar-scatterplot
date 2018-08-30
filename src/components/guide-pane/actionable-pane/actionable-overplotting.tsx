@@ -255,7 +255,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private isSeparateGraphUsing() {
     if (typeof this.props.mainSpec == 'undefined') return false;
-    return !isRowUsed(this.props.mainSpec) && this.isThereSmallSizedNominalField();
+    return !isRowOrColumnUsed(this.props.mainSpec) && this.isThereSmallSizedNominalField();
   }
 
   private onFilterClick() {

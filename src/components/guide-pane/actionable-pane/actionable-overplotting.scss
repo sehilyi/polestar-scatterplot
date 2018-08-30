@@ -29,13 +29,14 @@ $grid-margin-double: 4px;
 
 .guide-preview {
   margin: $grid-margin;
-  background: #fcfcfc;
+  background: white; //#fcfcfc;
   // width: 125px;
   display: block;
   text-align: center;
   border: #dedede solid 1px;
   flex-grow: 1;
   position: relative;
+  box-shadow: 0 0 2px 0 rgba(0,0,0,0.1);
 }
 .guide-preview-expand {
   @extend .guide-preview;
