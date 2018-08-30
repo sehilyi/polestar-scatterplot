@@ -16,10 +16,10 @@ export const COMMON_FAST_DURATION: number = 100;
 export const COMMON_DELAY: number = 2000;
 export const COMMON_SHORT_DELAY: number = 300;
 export const CHART_SIZE = {width: 200, height: 200};
-export const CHART_MARGIN = {top: 20, right: 20, bottom: 50, left: 50};
+export const CHART_MARGIN = {top: 30, right: 20, bottom: 40, left: 50};
 export const CHART_PADDING = {right: 20};
 export const LEGEND_MARK_SIZE = {height: 20};
-export const LEGEND_WIDTH = 50;
+export const LEGEND_WIDTH = 70;
 export const NOMINAL_COLOR_SCHEME = ['#4c78a8', '#f58518', '#e45756', '#72b7b2', '#54a24b', '#eeca3b', '#b279a2', '#ff9da6', '#9d755d', '#bab0ac'];
 
 export const TIMELINE_SIZE = {width: 250, height: 8};
@@ -116,10 +116,8 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   const isColumnUsing = isColumnFieldUsing(spec);
   const isDensity = isDensityPlot(spec);
   isSkip1APStage = isNullOrUndefined(isSkip1APStage) ? false : isSkip1APStage;
-  // console.log(columnField);
-  // console.log(schema);
   const numOfColumnCategory = getNumberOfGraphs(spec, schema, data);
-  const categories = isColumnUsing ? getDomainWithFilter(data, columnField) : null; //schema.domain({field: columnField})
+  const categories = isColumnUsing ? getDomainWithFilteredData(data, columnField) : null; //schema.domain({field: columnField})
   const isLegend = isLegendUsing(spec);
   const xField = spec.encoding.x['field'], yField = spec.encoding.y['field'];
   const attr = getPointAttrs(spec);
@@ -148,7 +146,6 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
     }
     attr.opacity = Math.max(1 / (maxCount + 1), .04);  // 1 for zero count
   }
-  //
 
   const x = !isDensity ?
     d3.scaleLinear()
@@ -168,7 +165,6 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   resizeRootSVG(id, numOfColumnCategory, isLegend, false);
   renderAxes(id, spec, schema, data, isTransition);
   selectRootSVG(id).selectAll('.point').raise();
-  // startTimelineWithId(id);
 
   // render legend
   let colorScale: any;
@@ -253,14 +249,15 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
       .attr('opacity', 0);
   }
   else if (id === 'AGGREGATE_POINTS' && isLegendUsing(spec)) {
-    const categoryDomain = getDomainWithFilter(data, colorField.field);//schema.domain({field: colorField.field});
+    const categoryDomain = getDomainWithFilteredData(data, colorField.field);//schema.domain({field: colorField.field});
     let categoryPointUsed = categoryDomain.slice();
+    console.log(categoryPointUsed);
     //Leave only one point for each category
     //rather than update data
     points
       .filter(function (d) {
-        if (categoryPointUsed.indexOf(d[colorField.field]) != -1) {
-          categoryPointUsed.splice(categoryPointUsed.indexOf(d[colorField.field]), 1);
+        if (categoryPointUsed.indexOf(d[colorField.field].toString()) != -1) {
+          categoryPointUsed.splice(categoryPointUsed.indexOf(d[colorField.field].toString()), 1);
           return false;
         }
         return true;
@@ -425,12 +422,15 @@ export function removePrevChart(CHART_REF: any) {
 export function removeAxes(id: ActionableID) {
   selectRootSVG(id).selectAll('.axis').remove();
   selectRootSVG(id).selectAll('.grid').remove();
+  selectRootSVG(id).selectAll('.axis-label').remove();
 }
 export function renderAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, schema: Schema, data: any[], isTransition: boolean) {
   removeAxes(id);
 
   let svg = selectRootSVG(id);
   const xField = spec.encoding.x['field'], yField = spec.encoding.y['field'];
+  const isColumnUsing = isColumnFieldUsing(spec), {columnField} = getColumnField(spec);
+  const categories = isColumnUsing ? getDomainWithFilteredData(data, columnField) : [];
 
   let x = d3.scaleLinear()
     .domain([0, d3.max(data.map(d => d[xField]))]).nice()
@@ -446,7 +446,30 @@ export function renderAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, sch
 
   const numOfCategory = getNumberOfGraphs(spec, schema, data);
 
+  // title
+  if (isColumnFieldUsing) {
+    svg.append('text')
+      .classed('axis-label', true)
+      .attr('transform', translate(((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfCategory - CHART_MARGIN.right) / 2, 7))
+      .attr('opacity', 0)
+      .text(columnField)
+      .style('font-weight', 'bold')
+      .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
+      .attr('opacity', 1)
+  }
+
   for (let i = 0; i < numOfCategory; i++) {
+
+    if (isColumnFieldUsing) {
+      svg.append('text')
+        .classed('axis-label', true)
+        .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * i + (CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right) / 2, 20))
+        .attr('opacity', 0)
+        .text(categories[i])
+        .style('font-size', 12 + 'px')
+        .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
+        .attr('opacity', 1)
+    }
 
     svg.append('g')
       .classed('grid', true)
@@ -462,6 +485,7 @@ export function renderAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, sch
       .call(yGrid)
       .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
       .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * i + CHART_MARGIN.left, CHART_MARGIN.top))
+
 
     let xaxis = svg.append('g')
       .classed('axis', true)
@@ -481,7 +505,7 @@ export function renderAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, sch
       .style('fill', 'black')
       .style('font-weight', 'bold')
       .style('font-family', 'sans-serif')
-      .style('font-size', 11)
+      .style('font-size', 12 + 'px')
       .style('text-anchor', 'middle')
       .text(xField)
 
@@ -522,7 +546,7 @@ export function removeLegend(id: ActionableID) {
   selectRootSVG(id).selectAll('.legend').remove();
 }
 // export type LegendType = 'NOMINAL' | 'QUANTITATIVE' | 'DENSITYPLOT';
-export function getDomainWithFilter(data: any[], field: string){
+export function getDomainWithFilteredData(data: any[], field: string) {
   return d3.map(data, d => d[field]).keys();
 }
 export function renderLegend(id: ActionableID, attr: PointAttr, field: string, type: string, schema: Schema, numOfChart: number, isTransition: boolean,
@@ -531,7 +555,7 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
   removeLegend(id);
 
   const fieldDomain = isDensity ? [0, maxCount] :
-    type === NOMINAL ? getDomainWithFilter(data, field) :
+    type === NOMINAL ? getDomainWithFilteredData(data, field) :
       schema.domain({field});
   const colorScale: any = type == NOMINAL ?
     d3.scaleOrdinal(NOMINAL_COLOR_SCHEME).domain(fieldDomain) :
@@ -554,7 +578,7 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
     .attr('y', 10)
     .style('text-anchor', 'start')
     .style('font-size', d => ((d as string).length > 7 ? 9 : 12) + 'px')
-    .style('font-family', 'Roboto Condensed')
+    // .style('font-family', 'Roboto Condensed')
     .style('font-weight', 'bold')
     .text(d => d)
 
@@ -585,7 +609,7 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
       .attr('y', 5)
       .text(d => d)
       .style('text-anchor', 'start')
-      .style('font-family', 'Roboto Condensed')
+      // .style('font-family', 'Roboto Condensed')
       .style('font-size', 12 + 'px');
   }
   else if (type == QUANTITATIVE) {
@@ -619,8 +643,8 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
       .attr('y', LEGEND_MARK_SIZE.height + 10)
       .text(function (d) {return d as string;})
       .style('text-anchor', 'start')
-      .style('font-family', 'Roboto Condensed')
-    // .style('font-size', 15)
+      // .style('font-family', 'Roboto Condensed')
+      .style('font-size', 12 + 'px')
 
     // max
     legendRoot.append('g').selectAll('.qlegend-minmax')
@@ -630,8 +654,8 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
       .attr('y', CHART_MARGIN.top + CHART_SIZE.height - 25)
       .text(function (d) {return d as string;})
       .style('text-anchor', 'start')
-      // .style('font-size', 15)
-      .style('font-family', 'Roboto Condensed')
+      .style('font-size', 12 + 'px')
+    // .style('font-family', 'Roboto Condensed')
   }
 
   if (id === 'SEPARATE_GRAPH') {
