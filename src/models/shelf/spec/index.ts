@@ -11,6 +11,7 @@ import {
   toEncodingQuery,
   toFieldQuery
 } from './encoding';
+import {CIRCLE} from 'vega-lite/build/src/mark';
 
 export * from './encoding';
 export * from './function';
@@ -114,7 +115,7 @@ function specificEncodingsToEncodingQueries(encoding: SpecificEncoding): Encodin
 
 
 export const DEFAULT_SHELF_UNIT_SPEC: Readonly<ShelfUnitSpec> = {
-  mark: SHORT_WILDCARD,
+  mark: CIRCLE, // SHORT_WILDCARD,
   encoding: {},
   anyEncodings: [],
   config: {}
