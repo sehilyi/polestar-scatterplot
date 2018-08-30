@@ -8,11 +8,12 @@ import * as styles from './mark-picker.scss';
 import {ActionHandler, SPEC_MARK_CHANGE_TYPE, SpecMarkChangeType} from '../../actions';
 import {ShelfMark} from '../../models';
 
-const ALL_MARKS = [SHORT_WILDCARD, POINT, CIRCLE, SQUARE, RECT];//...PRIMITIVE_MARKS];
+const ALL_MARKS = /*[SHORT_WILDCARD,*/[CIRCLE, SQUARE, POINT];//...PRIMITIVE_MARKS];
 
 const options = ALL_MARKS.map(mark => (
   <option key={mark} value={mark}>
-    {mark === SHORT_WILDCARD ? 'auto' : mark}
+    {/* {mark === SHORT_WILDCARD ? 'auto' :  */}
+    {mark}
   </option>
 ));
 
@@ -35,7 +36,7 @@ export class MarkPickerBase extends React.PureComponent<MarkPickerProps, {}> {
     const {mark} = this.props;
     return (
       <select
-        styleName={isWildcard(mark) ? 'mark-picker-any' : 'mark-picker'}
+        styleName={'mark-picker'} //isWildcard(mark) ? 'mark-picker-any' : 'mark-picker'}
         value={mark}
         onChange={this.onMarkChange}
       >

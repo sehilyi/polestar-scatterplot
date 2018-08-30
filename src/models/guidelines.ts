@@ -425,7 +425,8 @@ export function isDensityPlot(spec: any) {
   try {
     if (encoding.x.type === QUANTITATIVE && encoding.y.type === QUANTITATIVE &&
       typeof encoding.x.bin !== 'undefined' && typeof encoding.y.bin !== 'undefined' &&
-      mark === RECT && encoding.color.aggregate === 'count') {
+      // important: originally, vega use RECT for density plot. But we use square to restrict mark types.
+      mark === SQUARE && encoding.color.aggregate === 'count') {
       return true;
     }
     else {

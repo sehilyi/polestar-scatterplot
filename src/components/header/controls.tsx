@@ -8,8 +8,8 @@ export class ControlsBase extends React.PureComponent<{}, {}> {
   public render() {
     return (
       <div styleName='controls'>
-        <BookmarkPane/>
-        <UndoRedo/>
+        {/* <BookmarkPane/>
+        <UndoRedo/> */}
       </div>
     );
   }

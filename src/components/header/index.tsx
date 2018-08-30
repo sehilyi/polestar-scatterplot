@@ -31,7 +31,7 @@ export class HeaderBase extends React.PureComponent<HeaderProps, {}> {
       <div styleName='header'>
         <img styleName='voyager-logo' src={logo} />
         {data && <Controls />}
-        {data && <Themes theme={theme.theme} handleAction={handleAction} />}
+        {/* {data && <Themes theme={theme.theme} handleAction={handleAction} />} */}
       </div>
     );
   }

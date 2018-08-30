@@ -164,9 +164,9 @@ class FieldBase extends React.PureComponent<FieldProps, FieldState> {
   }
 
   private renderAddSpan() {
-    return this.props.onAdd && (
-      <span><a onClick={this.onAdd}><i className="fa fa-plus"/></a></span>
-    );
+    // return this.props.onAdd && (
+    //   <span><a onClick={this.onAdd}><i className="fa fa-plus"/></a></span>
+    // );
   }
 
   private renderRemoveSpan() {
