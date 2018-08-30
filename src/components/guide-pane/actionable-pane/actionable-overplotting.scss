@@ -36,7 +36,7 @@ $grid-margin-double: 4px;
   border: #dedede solid 1px;
   flex-grow: 1;
   position: relative;
-  box-shadow: 0 0 2px 0 rgba(0,0,0,0.1);
+  // box-shadow: 0 0 2px 0 rgba(0,0,0,0.1);
 }
 .guide-preview-expand {
   @extend .guide-preview;

@@ -73,7 +73,7 @@ export function renderPoints(id: ActionableID, fromSpec: FacetedCompositeUnitSpe
   }
 
   // to
-  let diffOneof = !isSpecifiedView ? getFilterForTransition(fromSpec.transform, spec.transform) : null;
+  let diffOneof = id != 'NONE' && id != 'NONE2' ? getFilterForTransition(fromSpec.transform, spec.transform) : null;
   renderScatterplot(id, spec, data, schema, isTransition, diffOneof, isSkipColorOfAggregatePoints(id, fromSpec));
   // console.log(diffOneof);
 }
@@ -244,6 +244,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
     });
 
   // console.log(filter);
+  // console.log(id);
   if (!isNullOrUndefined(filter) && id === 'FILTER') {
     // console.log('FILTER:');
     // console.log(filter.oneOf);
@@ -255,7 +256,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   else if (id === 'AGGREGATE_POINTS' && isLegendUsing(spec)) {
     const categoryDomain = getDomainWithFilteredData(data, colorField.field);//schema.domain({field: colorField.field});
     let categoryPointUsed = categoryDomain.slice();
-    console.log(categoryPointUsed);
+    // console.log(categoryPointUsed);
     //Leave only one point for each category
     //rather than update data
     points
@@ -295,7 +296,7 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
     .enter().append('text')
     .classed('legend-title', true)
     .attr('x', 0)
-    .attr('y', 8)
+    .attr('y', 5)
     .style('text-anchor', 'start')
     .style('font-size', d => ((d as string).length > 7 ? 8 : 10) + 'px')
     // .style('font-family', 'Roboto Condensed')
@@ -453,7 +454,7 @@ export function appendRootSVG(id: ActionableID, CHART_REF: any, isNoTimeline: bo
     .style('height', `calc(100% - ${isNoTimeline ? 0 : 50}px)`)
     .append('svg')
     .attr('width', '100%')
-    .attr('height', id == 'NONE' ? '350px' : '100%');
+    .attr('height', id == 'NONE' || id == 'NONE2' ? '350px' : '100%');
 }
 
 export function startTimelineWithId(id: ActionableID) {

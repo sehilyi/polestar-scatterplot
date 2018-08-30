@@ -23,6 +23,7 @@ import {COLOR, X, Y, SIZE} from 'vega-lite/build/src/channel';
 import {Scale} from 'vega-lite/build/src/scale';
 import {Transform} from 'vega-lite/build/src/transform';
 import {QUANTITATIVE} from '../../../node_modules/vega-lite/build/src/type';
+import {SQUARE} from 'vega-lite/build/src/mark';
 
 export function shelfSpecFieldAutoAddReducer(
   shelfSpec: Readonly<ShelfUnitSpec>, action: SpecFieldAutoAdd, schema: Schema
@@ -74,7 +75,7 @@ export function shelfSpecReducer(
     case SPEC_TO_DENSITY_PLOT: {
       return {
         ...shelfSpec,
-        mark: 'rect',
+        mark: SQUARE,
         encoding: {
           ...shelfSpec.encoding,
           [COLOR]: {
