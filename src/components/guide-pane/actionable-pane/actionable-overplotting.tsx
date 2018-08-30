@@ -660,7 +660,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     return false;
   }
 
-
   private onBackButton() {
     this.setState({triggeredAction: 'NONE'});
   }
