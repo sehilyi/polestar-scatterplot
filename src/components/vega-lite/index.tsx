@@ -115,7 +115,8 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
         } else if (prevProps.data !== data) {
           if (this.isRenderD3Preview()) {
             const {actionId, fromSpec, spec, schema, data, transitionAttrs, isSpecifiedView, isNoTimeline} = this.props;
-            renderD3Preview(actionId, this.refs[CHART_REF], fromSpec as FacetedCompositeUnitSpec, spec as FacetedCompositeUnitSpec, schema, data.values, transitionAttrs, false, isSpecifiedView || isNoTimeline);
+            let newSpec = this.getGuidedSpec();
+            renderD3Preview(actionId, this.refs[CHART_REF], fromSpec as FacetedCompositeUnitSpec, newSpec as FacetedCompositeUnitSpec, schema, data.values, transitionAttrs, false, isSpecifiedView || isNoTimeline);
           }
           else {
             this.bindData();
