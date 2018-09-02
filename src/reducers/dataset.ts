@@ -21,6 +21,10 @@ export function datasetReducer(dataset: Readonly<Dataset> = DEFAULT_DATASET, act
 
     case DATASET_RECEIVE: {
       const { name, data, schema } = action.payload;
+      if(name == '학생') {
+        //TODO: task 2
+        console.log(schema);
+      }
       return {
         ...dataset,
         isLoading: false,
