@@ -192,7 +192,7 @@ export const AggregateStages: TransitionAttr[] = [
 export const DensityPlotStages: TransitionAttr[] = [
   {id: 'MORPH', title: '사각형 도형', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY},
   {id: 'COLOR', title: '투명도 조절', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY},
-  {id: 'REPOSITION', title: '격자형 좌표로 이동', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
+  {id: 'REPOSITION', title: '격자형 좌표', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
 ];
 export const PointOpacityStages: TransitionAttr[] = [
   {id: 'COLOR', title: '투명도 조절', duration: COMMON_DURATION, delay: COMMON_SHORT_DELAY}
