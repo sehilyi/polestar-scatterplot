@@ -9,6 +9,7 @@ import {Dataset, DEFAULT_DATASET} from '../models';
 
 import {ExpandedType} from 'compassql/build/src/query/expandedtype';
 import {FieldSchema, Schema} from 'compassql/build/src/schema';
+import {QUANTITATIVE} from 'vega-lite/build/src/type';
 
 export function datasetReducer(dataset: Readonly<Dataset> = DEFAULT_DATASET, action: Action): Dataset {
   switch (action.type) {
@@ -21,15 +22,21 @@ export function datasetReducer(dataset: Readonly<Dataset> = DEFAULT_DATASET, act
 
     case DATASET_RECEIVE: {
       const { name, data, schema } = action.payload;
+      let newSchame = schema;
       if(name == '학생') {
-        //TODO: task 2
-        console.log(schema);
+        // auto field change for task 2
+        // console.log(name);
+        // console.log(schema);
+        newSchame = changeFieldType(newSchame, '기말 점수', QUANTITATIVE);
+        newSchame = changeFieldType(newSchame, '나이', QUANTITATIVE);
+        newSchame = changeFieldType(newSchame, '중간 점수', QUANTITATIVE);
+        newSchame = changeFieldType(newSchame, '최종 점수', QUANTITATIVE);
       }
       return {
         ...dataset,
         isLoading: false,
         name,
-        schema,
+        schema: newSchame,
         data,
       };
     }
