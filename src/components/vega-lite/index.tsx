@@ -97,7 +97,12 @@ export class VegaLite extends React.PureComponent<VegaLiteProps, VegaLiteState> 
       this.setState({
         isLoading: true
       });
-      this.size = this.getChartSize();
+      try {
+        this.size = this.getChartSize();
+      } catch (e) {
+        console.log(this.props.spec);
+        console.log(nextProps.spec);
+      }
     }
   }
 

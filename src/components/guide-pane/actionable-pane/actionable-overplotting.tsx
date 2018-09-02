@@ -566,6 +566,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
 
     spec.mark = SQUARE;
 
+    console.log(spec);
     return {spec};
   }
   private renderEncodingDensityPreview() {

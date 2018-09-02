@@ -276,7 +276,7 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
   isDensity: boolean, maxCount: number, data: any[]) {
 
   removeLegend(id);
-
+  // debugger;
   const fieldDomain = isDensity ? [0, maxCount] :
     type === NOMINAL ? getDomainWithFilteredData(data, field) :
       schema.domain({field});
@@ -499,7 +499,7 @@ export function appendTransitionTimeline(id: string, title: string, stages: Tran
     .attr('x', TIMELINE_MARGIN.left + TIMELINE_SIZE.width / 2.0)
     .attr('y', TIMELINE_MARGIN.top - 10)
     .style('font-weight', 'bold')
-    .style('font-family', 'Roboto')
+    // .style('font-family', 'Roboto')
     .style('font-size', 12)
     .style('text-anchor', 'middle')
     .style('fill', '#2e2e2e');
