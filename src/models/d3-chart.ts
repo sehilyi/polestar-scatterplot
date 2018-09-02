@@ -126,6 +126,8 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   const xField = spec.encoding.x['field'], yField = spec.encoding.y['field'];
   const attr = getPointAttrs(spec);
 
+  debugger;
+
   // for density plot
   let xBinRange = [], yBinRange = [];
   const numOfBin = 35, binWidth = CHART_SIZE.width / numOfBin, binHeight = CHART_SIZE.height / numOfBin;
@@ -138,12 +140,12 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   let maxCount = 0;
   if (isDensity) {
     //TODO: consider with only the filtered data
-    let xValues: number[] = data.map(x => x[xField]), yValues: number[] = data.map(x => x[yField]);
-    let xMin = d3.min(xValues as number[]), xMax = d3.max(xValues as number[]), xStep = (xMax - xMin) / numOfBin;
-    let yMin = d3.min(yValues as number[]), yMax = d3.max(yValues as number[]), yStep = (yMax - yMin) / numOfBin;
+    let xValues: number[] = data.map(x => Number(x[xField])), yValues: number[] = data.map(x => Number(x[yField]));
+    let xMin = d3.min(xValues.map(x => Number(x))), xMax = d3.max(xValues.map(x => Number(x))), xStep = (xMax - xMin) / numOfBin;
+    let yMin = d3.min(yValues.map(x => Number(x))), yMax = d3.max(yValues.map(x => Number(x))), yStep = (yMax - yMin) / numOfBin;
     for (let i = xMin; i < xMax; i += xStep) {
       for (let j = yMin; j < yMax; j += yStep) {
-        let count = data.filter(x => i <= x[xField] && x[xField] < i + xStep && j <= x[yField] && x[yField] < j + yStep).length;
+        let count = data.filter(x => i <= Number(x[xField]) && Number(x[xField]) < i + xStep && j <= Number(x[yField]) && Number(x[yField]) < j + yStep).length;
         if (maxCount < count)
           maxCount = count;
       }
@@ -153,17 +155,17 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
 
   const x = !isDensity ?
     d3.scaleLinear()
-      .domain([0, d3.max(data.map(d => d[xField]))]).nice()
+      .domain([0, d3.max(data.map(d => Number(d[xField])))]).nice()
       .rangeRound([0, CHART_SIZE.width]) :
     d3.scaleQuantize()
-      .domain([0, d3.max(data, function (d) {return d[xField]})]).nice()
+      .domain([0, d3.max(data, function (d) {return Number(d[xField])})]).nice()
       .range(xBinRange);
   const y = !isDensity ?
     d3.scaleLinear()
-      .domain([0, d3.max(data.map(d => d[yField]))]).nice()
+      .domain([0, d3.max(data.map(d => Number(d[yField])))]).nice()
       .rangeRound([CHART_SIZE.height, 0]) :
     d3.scaleQuantize()
-      .domain([0, d3.max(data, function (d) {return d[yField]})]).nice()
+      .domain([0, d3.max(data, function (d) {return Number(d[yField])})]).nice()
       .range(yBinRange.reverse());
 
   resizeRootSVG(id, numOfColumnCategory, isLegend, false);
@@ -234,8 +236,8 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
     })
     .attr('x', function (d) {
       return isXMeanFn ?
-        CHART_MARGIN.left + x(d3.mean(data.map(function (_d) {return _d[colorField.field] == d[colorField.field] ? _d[xField] : null;}))) + (-attr.width / 2.0) :
-        CHART_MARGIN.left + x(d[xField]) + (-attr.width / 2.0);
+        CHART_MARGIN.left + x(d3.mean(data.map(function (_d) {return _d[colorField.field] == d[colorField.field] ? Number(_d[xField]) : null;}))) + (-attr.width / 2.0) :
+        CHART_MARGIN.left + x(Number(d[xField])) + (-attr.width / 2.0);
     })
     .attr('y', function (d) {
       return isYMeanFn ?
@@ -593,10 +595,10 @@ export function renderAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, sch
   const categories = isColumnUsing ? getDomainWithFilteredData(data, columnField) : [];
 
   let x = d3.scaleLinear()
-    .domain([0, d3.max(data.map(d => d[xField]))]).nice()
+    .domain([0, d3.max(data.map(d => Number(d[xField])))]).nice()
     .rangeRound([0, CHART_SIZE.width]);
   let y = d3.scaleLinear()
-    .domain([0, d3.max(data.map(x => x[yField]))]).nice()
+    .domain([0, d3.max(data.map(x => Number(x[yField])))]).nice()
     .rangeRound([CHART_SIZE.height, 0]);
 
   let xAxis = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40));
@@ -718,16 +720,16 @@ export function showContourInD3Chart(id: string, spec: FacetedCompositeUnitSpec,
   let yField = spec.encoding.y['field'];
 
   let x = d3.scaleLinear()
-    .domain([0, d3.max(data, function (d) {return d[xField]})] as number[]).nice()
+    .domain([0, d3.max(data, function (d) {return Number(d[xField])})]).nice()
     .range([0, CHART_SIZE.width])
   let y = d3.scaleLinear()
-    .domain([0, d3.max(data, function (d) {return d[yField]})] as number[]).nice()
+    .domain([0, d3.max(data, function (d) {return Number(d[yField])})]).nice()
     .range([CHART_SIZE.height, 0])
 
   svg.selectAll('.contour')
     .data(d3.contourDensity()
-      .x(function (d) {return CHART_MARGIN.left + x(d[xField]);})
-      .y(function (d) {return CHART_MARGIN.top + y(d[yField]);})
+      .x(function (d) {return CHART_MARGIN.left + x(Number(d[xField]));})
+      .y(function (d) {return CHART_MARGIN.top + y(Number(d[yField]));})
       .size([CHART_SIZE.width, CHART_SIZE.height])
       .bandwidth(10)
       (data))
