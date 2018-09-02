@@ -126,7 +126,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   const xField = spec.encoding.x['field'], yField = spec.encoding.y['field'];
   const attr = getPointAttrs(spec);
 
-  debugger;
+  // debugger;
 
   // for density plot
   let xBinRange = [], yBinRange = [];
@@ -601,8 +601,8 @@ export function renderAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, sch
     .domain([0, d3.max(data.map(x => Number(x[yField])))]).nice()
     .rangeRound([CHART_SIZE.height, 0]);
 
-  let xAxis = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40));
-  let yAxis = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40));
+  let xAxis = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(d3.format('.2s'));
+  let yAxis = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40)).tickFormat(d3.format('.2s'));
   let xGrid = d3.axisBottom(x).ticks(Math.ceil(CHART_SIZE.width / 40)).tickFormat(null).tickSize(-CHART_SIZE.width);
   let yGrid = d3.axisLeft(y).ticks(Math.ceil(CHART_SIZE.height / 40)).tickFormat(null).tickSize(-CHART_SIZE.height);
 
