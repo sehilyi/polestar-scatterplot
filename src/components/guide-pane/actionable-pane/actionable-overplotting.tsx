@@ -195,8 +195,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           <p styleName={studySetting.condition.indexOf('T') != -1 ? 'preview-score' : 'hidden'}>{data.actionItem.subtitle}</p>
           {data.renderPreview.bind(this)()}
           <ul styleName={studySetting.condition.indexOf('T') != -1 ? 'preview-desc' : 'hidden'} className='fa-ul'>
-            <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' />{data.actionItem.pros}</li>
-            <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' />{data.actionItem.cons}</li>
+            <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' /><p dangerouslySetInnerHTML={{__html: data.actionItem.pros}}/></li>
+            <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' /><p dangerouslySetInnerHTML={{__html: data.actionItem.cons}}/></li>
           </ul>
         </div>
         <div styleName='bottom-button'>
@@ -556,12 +556,12 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
 
     spec.encoding.x = {
       ...spec.encoding.x,
-      bin: {maxbins: 50}
+      bin: {maxbins: 10}
     };
 
     spec.encoding.y = {
       ...spec.encoding.y,
-      bin: {maxbins: 50}
+      bin: {maxbins: 10}
     };
 
     spec.mark = SQUARE;

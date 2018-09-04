@@ -13,6 +13,10 @@ $grid-margin-double: 4px;
   // overflow: auto;
 }
 
+.preview-desc hl{
+  // background: #f8ff87;
+  font-size: 19px;
+}
 .guide-previews {
   align-content: center;
   display: flex;
@@ -172,13 +176,14 @@ $grid-margin-double: 4px;
 }
 .preview-desc {
   color: #545454;
-  font-size: 11px;
+  font-size: 13px;
   margin-top: 10px;
   margin-bottom: 0px;
   margin: 0px 3px 3px 3px;
   text-align: start;
   white-space: pre-line;
   line-height: 18px;
+  padding-top: 10px;
 }
 
 .preview-desc li {

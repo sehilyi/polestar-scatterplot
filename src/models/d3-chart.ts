@@ -15,6 +15,7 @@ export const COMMON_DURATION: number = 1000;
 export const COMMON_FAST_DURATION: number = 100;
 export const COMMON_DELAY: number = 2000;
 export const COMMON_SHORT_DELAY: number = 300;
+export const DEFAULT_NUM_OF_BINS: number = 20;
 export const CHART_SIZE = {width: 200, height: 200};
 export const CHART_MARGIN = {top: 30, right: 20, bottom: 40, left: 50};
 export const CHART_PADDING = {right: 20};
@@ -130,7 +131,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
 
   // for density plot
   let xBinRange = [], yBinRange = [];
-  const numOfBin = 35, binWidth = CHART_SIZE.width / numOfBin, binHeight = CHART_SIZE.height / numOfBin;
+  const numOfBin = DEFAULT_NUM_OF_BINS, binWidth = CHART_SIZE.width / numOfBin, binHeight = CHART_SIZE.height / numOfBin;
   for (let i = 0; i < numOfBin; i++) {
     xBinRange.push(i * binWidth + binWidth / 2.0);
   }
@@ -186,7 +187,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
 
   // also include all of the one stage transitions
   if (isTransition && id === 'AGGREGATE_POINTS') {
-    points.attr('opacity', attr.opacity); // TODO: why not working?
+    points.attr('opacity', attr.opacity);
     if (!isSkip1APStage) {
       points = points.transition().duration(AggregateStages[0].duration);
     }
@@ -196,6 +197,25 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   }
   else if (isTransition && id === 'ENCODING_DENSITY') {
     points = points.transition().duration(DensityPlotStages[0].duration);
+    points
+      .attr('x', function (d) {
+        return isXMeanFn ?
+          CHART_MARGIN.left + d3.scaleLinear()
+            .domain([0, d3.max(data.map(d => Number(d[xField])))]).nice()
+            .rangeRound([0, CHART_SIZE.width])(d3.mean(data.map(function (_d) {return _d[colorField.field] == d[colorField.field] ? Number(_d[xField]) : null;}))) + (-attr.width / 2.0) :
+          CHART_MARGIN.left + d3.scaleLinear()
+            .domain([0, d3.max(data.map(d => Number(d[xField])))]).nice()
+            .rangeRound([0, CHART_SIZE.width])(Number(d[xField])) + (-attr.width / 2.0);
+      })
+      .attr('y', function (d) {
+        return isYMeanFn ?
+          d3.scaleLinear()
+            .domain([0, d3.max(data.map(d => Number(d[yField])))]).nice()
+            .rangeRound([CHART_SIZE.height, 0])(d3.mean(data.map(function (_d) {return _d[colorField.field] == d[colorField.field] ? _d[yField] : null;}))) + (-attr.height / 2.0 + CHART_MARGIN.top) :
+          d3.scaleLinear()
+            .domain([0, d3.max(data.map(d => Number(d[yField])))]).nice()
+            .rangeRound([CHART_SIZE.height, 0])(d[yField]) + (-attr.height / 2.0 + CHART_MARGIN.top);
+      });
   }
   else if (isTransition && id === 'CHANGE_POINT_SIZE') {
     points = points.transition().duration(PointResizeStages[0].duration);
@@ -411,7 +431,7 @@ export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
   let opacity = 0.7;
   try {size = spec.encoding.size['value'] / 10.0;} catch (e) {}
   try {opacity = spec.encoding.opacity['value'];} catch (e) {}
-  if (isDensity) size = CHART_SIZE.width / 35;
+  if (isDensity) size = CHART_SIZE.width / DEFAULT_NUM_OF_BINS;
   if (isDensity) {
     opacity = 0.1;
   }
@@ -500,7 +520,7 @@ export function appendTransitionTimeline(id: string, title: string, stages: Tran
     .attr('y', TIMELINE_MARGIN.top - 10)
     .style('font-weight', 'bold')
     // .style('font-family', 'Roboto')
-    .style('font-size', 12)
+    .style('font-size', 12 + 'px')
     .style('text-anchor', 'middle')
     .style('fill', '#2e2e2e');
 
@@ -540,7 +560,7 @@ export function appendTransitionTimeline(id: string, title: string, stages: Tran
     .style('font-family', 'Roboto Condensed')
     .style('text-anchor', 'middle')
     .style('fill', '#2e2e2e')
-    .attr('font-size', 12)
+    .attr('font-size', 10 + 'px')
     .attr('opacity', 1);
 
   // append progress bar
