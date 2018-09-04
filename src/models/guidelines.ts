@@ -174,7 +174,7 @@ export const ACTIONABLE_ENCODING_DENSITY: GuideActionItem = {
   subtitle: '구간별 점들의 개수를 색깔의 강도로 표현합니다',
   faIcon: 'fa fa-th',
   pros: '점들의 <hl>밀도</hl>(겹쳐진 정도)를 잘 보여줌 / 큰 데이터에 적용 가능',
-  cons: '<hl>점의 색깔</hl>을 보여주지 못함 / 이상치를 잘 보여주지 못함'
+  cons: '이미 색깔이 의미있게 쓰이기 때문에 <hl>색깔</hl>을 <hl>범주형 변수</hl>를 표현하는데 사용될 수 없음 / 이상치를 잘 보여주지 못함'
 }
 
 export const ACTIONABLE_SEPARATE_GRAPH: GuideActionItem = {
