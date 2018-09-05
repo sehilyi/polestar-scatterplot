@@ -262,7 +262,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private isEncodingDensityUsing() {
     if (typeof this.props.mainSpec == 'undefined') return false;
-    return !isColorUsed(this.props.mainSpec);
+    return isDensityPlot(this.props.mainSpec) || !isColorUsed(this.props.mainSpec);
   }
   private isSeparateGraphUsing() {
     if (typeof this.props.mainSpec == 'undefined') return false;
