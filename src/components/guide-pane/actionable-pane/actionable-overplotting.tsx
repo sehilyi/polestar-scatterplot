@@ -2,8 +2,8 @@ import * as React from 'react';
 import * as CSSModules from 'react-css-modules';
 import * as styles from './actionable-overplotting.scss';
 
-import {ActionableID, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting, GuideActionItem, isRowOrColumnUsed, isColorUsed, getRowAndColumnField, DEFAULT_CHANGE_POINT_SIZE, FilterStages, PointOpacityStages, PointResizeStages, AggregateStages, DensityPlotStages, SeperateGraphStages, RemoveFillColorStages, isDensityPlot, isRowUsed, isSkipColorOfAggregatePoints, getColorField, isMeanAggregated} from '../../../models/guidelines';
-import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_FIELD_ADD, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR, ACTIONABLE_ADJUST_POINT_SIZE, ACTIONABLE_ADJUST_POINT_OPACITY, SPEC_MARK_CHANGE_TYPE, ACTIONABLE_CHANGE_FILLED, FilterAction} from '../../../actions';
+import {ActionableID, ACTIONABLE_FILTER_GENERAL, ACTIONABLE_POINT_SIZE, ACTIONABLE_POINT_OPACITY, ACTIONABLE_REMOVE_FILL_COLOR, ACTIONABLE_AGGREGATE, ACTIONABLE_ENCODING_DENSITY, ACTIONABLE_SEPARATE_GRAPH, GuidelineItemOverPlotting, GuideActionItem, isRowOrColumnUsed, isColorUsed, getRowAndColumnField, DEFAULT_CHANGE_POINT_SIZE, FilterStages, PointOpacityStages, PointResizeStages, AggregateStages, DensityPlotStages, SeperateGraphStages, RemoveFillColorStages, isDensityPlot, isRowUsed, isSkipColorOfAggregatePoints, getColorField, isMeanAggregated, DEFAULT_NONE_USED_STR} from '../../../models/guidelines';
+import {GuidelineAction, ActionHandler, GUIDELINE_TOGGLE_IGNORE_ITEM, LogAction, SPEC_FIELD_ADD, SpecAction, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR, ACTIONABLE_ADJUST_POINT_SIZE, ACTIONABLE_ADJUST_POINT_OPACITY, SPEC_MARK_CHANGE_TYPE, ACTIONABLE_CHANGE_FILLED, FilterAction, SPEC_FIELD_REMOVE, SPEC_UNAGGREGATE_POINTS_BY_COLOR} from '../../../actions';
 import {Logger} from '../../util/util.logger';
 import {Themes} from '../../../models/theme/theme';
 import {FacetedCompositeUnitSpec} from '../../../../node_modules/vega-lite/build/src/spec';
@@ -87,11 +87,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             id={this.props.item.id + 'AGGREGATE_POINTS'}
             title={ACTIONABLE_AGGREGATE.title}
             subtitle={ACTIONABLE_AGGREGATE.subtitle}
-            fields={this.getNominalFieldNames()}
+            fields={[DEFAULT_NONE_USED_STR].concat(this.getNominalFieldNames())}
             filters={this.props.filters}
             schema={this.props.schema}
             disableThreshold={1000}
-            defaultField={this.getDefaultSmallSizedNominalFieldName()}
+            defaultField={DEFAULT_NONE_USED_STR}//this.getDefaultSmallSizedNominalFieldName()}
             pickedFieldAction={this.aggregateByFieldAction}
           />
         </div>
@@ -123,11 +123,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             id={this.props.item.id + 'SEPARATE_GRAPH'}
             title={ACTIONABLE_SEPARATE_GRAPH.title}
             subtitle={ACTIONABLE_SEPARATE_GRAPH.subtitle}
-            fields={this.getNominalFieldNames()}
+            fields={[DEFAULT_NONE_USED_STR].concat(this.getNominalFieldNames())}
             filters={this.props.filters}
             schema={this.props.schema}
             disableThreshold={10}
-            defaultField={this.getDefaultSmallSizedNominalFieldName()}
+            defaultField={DEFAULT_NONE_USED_STR}//this.getDefaultSmallSizedNominalFieldName()}
             pickedFieldAction={this.separateByFieldAction}
           />
         </div>
@@ -285,11 +285,11 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     this.setState({triggeredAction: 'REMOVE_FILL_COLOR'});
   }
   private onAggregatePointsClick() {
-    this.aggregateByFieldAction(this.getDefaultSmallSizedNominalFieldName());
+    // this.aggregateByFieldAction(this.getDefaultSmallSizedNominalFieldName());
     this.setState({triggeredAction: 'AGGREGATE_POINTS'});
   }
   private onSeparateGraphClick() {
-    this.separateByFieldAction(this.getDefaultSmallSizedNominalFieldName());
+    // this.separateByFieldAction(this.getDefaultSmallSizedNominalFieldName());
     this.setState({triggeredAction: 'SEPARATE_GRAPH'});
   }
 
@@ -316,30 +316,45 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     });
   }
   separateByFieldAction = (picked: string) => {
-    this.props.handleAction({
-      type: SPEC_FIELD_ADD,
-      payload: {
-        shelfId: {channel: COLUMN},
-        fieldDef: {
-          field: picked,
-          type: NOMINAL
-        },
-        replace: true
-      }
-    });
+    if (picked === DEFAULT_NONE_USED_STR) {
+      this.props.handleAction({
+        type: SPEC_FIELD_REMOVE,
+        payload: {channel: COLUMN}
+      });
+    }
+    else {
+      this.props.handleAction({
+        type: SPEC_FIELD_ADD,
+        payload: {
+          shelfId: {channel: COLUMN},
+          fieldDef: {
+            field: picked,
+            type: NOMINAL
+          },
+          replace: true
+        }
+      });
+    }
   }
   aggregateByFieldAction = (picked: string) => {
-    this.props.handleAction({
-      type: SPEC_AGGREGATE_POINTS_BY_COLOR,
-      payload: {
-        shelfId: {channel: COLOR},
-        fieldDef: {
-          field: picked,
-          type: NOMINAL
-        },
-        replace: true
-      }
-    });
+    if (picked === DEFAULT_NONE_USED_STR) {
+      this.props.handleAction({
+        type: SPEC_UNAGGREGATE_POINTS_BY_COLOR
+      });
+    }
+    else {
+      this.props.handleAction({
+        type: SPEC_AGGREGATE_POINTS_BY_COLOR,
+        payload: {
+          shelfId: {channel: COLOR},
+          fieldDef: {
+            field: picked,
+            type: NOMINAL
+          },
+          replace: true
+        }
+      });
+    }
   }
   removeFillColorAction = (filled: boolean) => {
     this.props.handleAction({
@@ -361,6 +376,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
 
   private getIsOnRemoveFillColor() {
+    if(typeof this.props.mainSpec == 'undefined') return;
     const {mainSpec} = this.props;
     const {mark} = mainSpec;
     let isOn = true;

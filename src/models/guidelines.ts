@@ -18,6 +18,7 @@ export type GuideState = "WARN" | "TIP" | "DONE" | "IGNORE";
 export type guidelineIds = "NEW_CHART_BINNED_SCATTERPLOT" | "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" | "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES" |
   "GUIDELINE_OVER_PLOTTING" | "GUIDELINE_NONE";
 export type GuidelineItemTypes = GuidelineItemOverPlotting | GuidelineItemActionableCategories | GuidelineItem;
+export const DEFAULT_NONE_USED_STR = "사용 안함";
 
 //Thresholds
 export const CATEGORY_THRESHOLD = 10;

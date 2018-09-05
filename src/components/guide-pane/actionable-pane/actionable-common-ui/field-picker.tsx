@@ -4,6 +4,7 @@ import * as CSSModules from 'react-css-modules';
 import * as styles from './field-picker.scss';
 import {Schema, filterIndexOf, filterHasField, ShelfFilter} from '../../../../models';
 import {OneOfFilter} from 'vega-lite/build/src/filter';
+import {DEFAULT_NONE_USED_STR} from '../../../../models/guidelines';
 
 export interface FieldPickerProps {
   id: string;
@@ -32,7 +33,8 @@ export class FieldPickerBase extends React.PureComponent<FieldPickerProps, Field
   public render() {
     const {id, title, subtitle, fields, filters, schema, disableThreshold} = this.props;
     const fieldPicker = (fields as any[]).map(option => {
-      const length = filterHasField(filters, option) ?
+      const isNone = option == DEFAULT_NONE_USED_STR;
+      const length = isNone ? 0 : filterHasField(filters, option) ?
         (filters[filterIndexOf(filters, option)] as OneOfFilter).oneOf.length :
         schema.domain({field: option}).length;
       return (
@@ -45,11 +47,15 @@ export class FieldPickerBase extends React.PureComponent<FieldPickerProps, Field
               disabled={length > disableThreshold}
               checked={option == this.state.selectedField}
               onChange={this.toggleRadio.bind(this, option)}
-            /> {'' + option}
+            />
+            {'' + option}
+            {length > disableThreshold ? ' - 카테고리가 너무 많습니다. 필터 후 사용하세요.' : ''}
           </label>
-          <span>
-            {'(' + length + ' categories)'}
-          </span>
+          {isNone ? null :
+            <span>
+              {'(' + length + ' 카테고리)'}
+            </span>
+          }
         </div>
       );
     });

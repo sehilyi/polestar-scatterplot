@@ -20,7 +20,8 @@ export type SpecEncodingAction = SpecFieldAdd | SpecFieldAutoAdd |
   SpecLoad |
   SpecColorScaleSpecified | SpecColorTransformSpecified |
   // Guideline for over-plotting
-  SpecToDensityPlot | SpecAggregatePointsByColor | SpecPointSizeSpecified;
+  SpecToDensityPlot | SpecAggregatePointsByColor | SpecPointSizeSpecified |
+  SpecUnaggregatePointsByColor;
 
 export const SPEC_CLEAR = 'SPEC_CLEAR';
 export type SpecClear = PlainReduxAction<typeof SPEC_CLEAR>;
@@ -46,6 +47,9 @@ export type SpecAggregatePointsByColor = ReduxAction<typeof SPEC_AGGREGATE_POINT
   fieldDef: ShelfFieldDef;
   replace: boolean;
 }>;
+
+export const SPEC_UNAGGREGATE_POINTS_BY_COLOR = 'SPEC_UNAGGREGATE_POINTS_BY_COLOR';
+export type SpecUnaggregatePointsByColor = PlainReduxAction<typeof SPEC_UNAGGREGATE_POINTS_BY_COLOR>;
 
 export const SPEC_COLOR_SCALE_SPECIFIED = 'SPEC_COLOR_SCALE_SPECIFIED';
 export type SpecColorScaleSpecified = ReduxAction<typeof SPEC_COLOR_SCALE_SPECIFIED, {
@@ -82,11 +86,11 @@ export type SpecFieldMove = ReduxAction<typeof SPEC_FIELD_MOVE, {
 export const SPEC_FIELD_PROP_CHANGE = 'SPEC_FIELD_PROP_CHANGE';
 export type SpecFieldPropChange<
   P extends 'sort' // TODO: 'stack' | 'format'
-> = ReduxAction<typeof SPEC_FIELD_PROP_CHANGE, {
-  shelfId: ShelfId;
-  prop: P;
-  value: ShelfFieldDef[P];
-}>;
+  > = ReduxAction<typeof SPEC_FIELD_PROP_CHANGE, {
+    shelfId: ShelfId;
+    prop: P;
+    value: ShelfFieldDef[P];
+  }>;
 
 /**
  * Change nested property of a FieldDef to a specific value.
@@ -95,12 +99,12 @@ export const SPEC_FIELD_NESTED_PROP_CHANGE = 'SPEC_FIELD_NESTED_PROP_CHANGE';
 export type SpecFieldNestedPropChange<
   P extends 'scale' | 'axis' | 'legend',
   N extends (keyof ShelfFieldDef[P])
-> = ReduxAction<typeof SPEC_FIELD_NESTED_PROP_CHANGE, {
-  shelfId: ShelfId,
-  prop: P,
-  nestedProp: N,
-  value: ShelfFieldDef[P][N]
-}>;
+  > = ReduxAction<typeof SPEC_FIELD_NESTED_PROP_CHANGE, {
+    shelfId: ShelfId,
+    prop: P,
+    nestedProp: N,
+    value: ShelfFieldDef[P][N]
+  }>;
 
 /**
  * Change Function of a FieldDef to a specific value.
@@ -156,6 +160,7 @@ export const SPEC_ACTION_TYPE_INDEX: {[k in SpecAction['type']]: 1} = {
 
   SPEC_TO_DENSITY_PLOT: 1,
   SPEC_AGGREGATE_POINTS_BY_COLOR: 1,
+  SPEC_UNAGGREGATE_POINTS_BY_COLOR: 1,
 
   SPEC_FUNCTION_CHANGE: 1,
   SPEC_FUNCTION_ADD_WILDCARD: 1,
