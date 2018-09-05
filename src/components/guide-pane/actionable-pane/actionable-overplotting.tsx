@@ -114,7 +114,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             id={this.props.item.id + 'REMOVE_FILL_COLOR'}
             title={ACTIONABLE_REMOVE_FILL_COLOR.title}
             subtitle={ACTIONABLE_REMOVE_FILL_COLOR.subtitle}
-            defaultIsOn={true}
+            defaultIsOn={this.getIsOnRemoveFillColor()}
             toggleAction={this.removeFillColorAction}
           />
         </div>
@@ -169,7 +169,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       <div styleName={expandedAction == data.id ? 'guide-preview-expand' : 'guide-preview'} key={data.actionItem.title}>
         <div styleName='transition-progress-bg'>
           <div styleName='transition-progress'></div>
-          <div onClick={this.onExpand.bind(this, data.id)} styleName={isPaneUsing ? 'expand-button' : 'expand-button-disabled'}>
+          <div onClick={isPaneUsing ? this.onExpand.bind(this, data.id) : null} styleName={isPaneUsing ? 'expand-button' : 'expand-button-disabled'}>
             <i className={expandedAction == data.id ? "fa fa-compress" : 'fa fa-expand'} aria-hidden="true" />
           </div>
           {/* TODO: Remove when design decided */}
@@ -236,19 +236,20 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   private isRemoveFillColorUsing() {
     if (typeof this.props.mainSpec == 'undefined') return false;
     if (isDensityPlot(this.props.mainSpec)) return false;
-    const {mainSpec} = this.props;
-    const {mark} = mainSpec;
-    try {
-      if (mark == CIRCLE || mark == SQUARE || mark['type'] == CIRCLE || mark['type'] == SQUARE) {
-        if (!isNullOrUndefined(mark['filled']) && !mark['filled']) return false;
-        return true;
-      }
-      else {
-        return false;
-      }
-    } catch (e) {
-      return false;
-    }
+    return true;
+    // const {mainSpec} = this.props;
+    // const {mark} = mainSpec;
+    // try {
+    //   if (mark == CIRCLE || mark == SQUARE || mark['type'] == CIRCLE || mark['type'] == SQUARE) {
+    //     if (!isNullOrUndefined(mark['filled']) && !mark['filled']) return false;
+    //     return true;
+    //   }
+    //   else {
+    //     return false;
+    //   }
+    // } catch (e) {
+    //   return false;
+    // }
   }
   private isAggregateUsing() {
     if (typeof this.props.mainSpec == 'undefined') return false;
@@ -280,7 +281,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     this.setState({triggeredAction: 'CHANGE_POINT_OPACITY'});
   }
   private onRemoveFillColorClick() {
-    this.removeFillColorAction(false);
+    // this.removeFillColorAction(false);
     this.setState({triggeredAction: 'REMOVE_FILL_COLOR'});
   }
   private onAggregatePointsClick() {
@@ -357,6 +358,22 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     this.props.handleAction({
       type: SPEC_TO_DENSITY_PLOT
     })
+  }
+
+  private getIsOnRemoveFillColor() {
+    const {mainSpec} = this.props;
+    const {mark} = mainSpec;
+    let isOn = true;
+    try {
+      if (mark == CIRCLE || mark == SQUARE || mark['type'] == CIRCLE || mark['type'] == SQUARE) {
+        if (!isNullOrUndefined(mark['filled']) && !mark['filled']) isOn = true;
+        isOn = false;
+      }
+      else {
+        isOn = true;
+      }
+    } catch (e) {isOn = true}
+    return isOn;
   }
 
   private onFilterTransition() {
