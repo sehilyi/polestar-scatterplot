@@ -12,7 +12,7 @@ import {
   SPEC_FUNCTION_ADD_WILDCARD, SPEC_FUNCTION_DISABLE_WILDCARD,
   SPEC_FUNCTION_REMOVE_WILDCARD
 } from '../../actions/shelf';
-import {SPEC_FIELD_NESTED_PROP_CHANGE, SPEC_FIELD_PROP_CHANGE, SpecFieldAutoAdd, SPEC_COLOR_SCALE_SPECIFIED, SPEC_POINT_SIZE_SPECIFIED, SPEC_COLOR_TRANSFORM_SPECIFIED, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR, SPEC_UNAGGREGATE_POINTS_BY_COLOR} from '../../actions/shelf/spec';
+import {SPEC_FIELD_NESTED_PROP_CHANGE, SPEC_FIELD_PROP_CHANGE, SpecFieldAutoAdd, SPEC_TO_REMOVE_DENSITY_PLOT, SPEC_COLOR_SCALE_SPECIFIED, SPEC_POINT_SIZE_SPECIFIED, SPEC_COLOR_TRANSFORM_SPECIFIED, SPEC_TO_DENSITY_PLOT, SPEC_AGGREGATE_POINTS_BY_COLOR, SPEC_UNAGGREGATE_POINTS_BY_COLOR} from '../../actions/shelf/spec';
 import {isWildcardChannelId} from '../../models';
 import {ShelfAnyEncodingDef, ShelfFieldDef, ShelfId, ShelfUnitSpec} from '../../models/shelf';
 import {sortFunctions} from '../../models/shelf';
@@ -95,11 +95,18 @@ export function shelfSpecReducer(
         }
       };
     }
+    case SPEC_TO_REMOVE_DENSITY_PLOT: {
+      delete shelfSpec.encoding.color;
+      delete shelfSpec.encoding.x.fn;
+      delete shelfSpec.encoding.y.fn;
+      return {
+        ...shelfSpec
+      };
+    }
     case SPEC_UNAGGREGATE_POINTS_BY_COLOR: {
       delete shelfSpec.encoding.color;
       delete shelfSpec.encoding.x.fn;
       delete shelfSpec.encoding.y.fn;
-      // console.log(shelfSpec);
       return {
         ...shelfSpec
       };

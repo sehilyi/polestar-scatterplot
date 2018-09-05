@@ -21,7 +21,7 @@ export type SpecEncodingAction = SpecFieldAdd | SpecFieldAutoAdd |
   SpecColorScaleSpecified | SpecColorTransformSpecified |
   // Guideline for over-plotting
   SpecToDensityPlot | SpecAggregatePointsByColor | SpecPointSizeSpecified |
-  SpecUnaggregatePointsByColor;
+  SpecUnaggregatePointsByColor | SpecToRemoveDensityPlot;
 
 export const SPEC_CLEAR = 'SPEC_CLEAR';
 export type SpecClear = PlainReduxAction<typeof SPEC_CLEAR>;
@@ -40,6 +40,9 @@ export type SpecFieldAdd = ReduxAction<typeof SPEC_FIELD_ADD, {
 
 export const SPEC_TO_DENSITY_PLOT = 'SPEC_TO_DENSITY_PLOT';
 export type SpecToDensityPlot = PlainReduxAction<typeof SPEC_TO_DENSITY_PLOT>;
+
+export const SPEC_TO_REMOVE_DENSITY_PLOT = 'SPEC_TO_REMOVE_DENSITY_PLOT';
+export type SpecToRemoveDensityPlot = PlainReduxAction<typeof SPEC_TO_REMOVE_DENSITY_PLOT>;
 
 export const SPEC_AGGREGATE_POINTS_BY_COLOR = 'SPEC_AGGREGATE_POINTS_BY_COLOR';
 export type SpecAggregatePointsByColor = ReduxAction<typeof SPEC_AGGREGATE_POINTS_BY_COLOR, {
@@ -159,6 +162,7 @@ export const SPEC_ACTION_TYPE_INDEX: {[k in SpecAction['type']]: 1} = {
   SPEC_FIELD_REMOVE: 1,
 
   SPEC_TO_DENSITY_PLOT: 1,
+  SPEC_TO_REMOVE_DENSITY_PLOT: 1,
   SPEC_AGGREGATE_POINTS_BY_COLOR: 1,
   SPEC_UNAGGREGATE_POINTS_BY_COLOR: 1,
 
