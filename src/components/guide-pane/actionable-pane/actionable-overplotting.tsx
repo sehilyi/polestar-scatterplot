@@ -85,8 +85,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         <div styleName={triggeredAction == 'AGGREGATE_POINTS' ? '' : 'hidden'}>
           <FieldPicker
             id={this.props.item.id + 'AGGREGATE_POINTS'}
-            title='Aggregate Points'
-            subtitle='Select one of nominal fields to aggregate points'
+            title={ACTIONABLE_AGGREGATE.title}
+            subtitle={ACTIONABLE_AGGREGATE.subtitle}
             fields={this.getNominalFieldNames()}
             filters={this.props.filters}
             schema={this.props.schema}
@@ -121,8 +121,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         <div styleName={triggeredAction == 'SEPARATE_GRAPH' ? '' : 'hidden'}>
           <FieldPicker
             id={this.props.item.id + 'SEPARATE_GRAPH'}
-            title='Separate Graph'
-            subtitle='Select one of nominal fields to separate graph'
+            title={ACTIONABLE_SEPARATE_GRAPH.title}
+            subtitle={ACTIONABLE_SEPARATE_GRAPH.subtitle}
             fields={this.getNominalFieldNames()}
             filters={this.props.filters}
             schema={this.props.schema}
@@ -134,8 +134,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         <div styleName={triggeredAction == 'CHANGE_POINT_SIZE' ? '' : 'hidden'}>
           <NumberAdjuster
             id={this.props.item.id + 'CHANGE_POINT_SIZE'}
-            title='Change Point Size'
-            subtitle='Adjust size of points'
+            title={ACTIONABLE_FILTER_GENERAL.title}
+            subtitle={ACTIONABLE_FILTER_GENERAL.subtitle}
             min={1}
             max={60}
             step={1}
@@ -146,8 +146,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         <div styleName={triggeredAction == 'CHANGE_POINT_OPACITY' ? '' : 'hidden'}>
           <NumberAdjuster
             id={this.props.item.id + 'CHANGE_POINT_OPACITY'}
-            title='Change Point Opacity'
-            subtitle='Adjust oapcity of points'
+            title={ACTIONABLE_POINT_OPACITY.title}
+            subtitle={ACTIONABLE_POINT_OPACITY.subtitle}
             min={0}
             max={1}
             step={0.01}
