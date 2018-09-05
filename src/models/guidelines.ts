@@ -122,10 +122,10 @@ export interface GuideActionItem {
 
 export const ACTIONABLE_FILTER_GENERAL: GuideActionItem = {
   title: '필터',
-  subtitle: '관심 없는 데이터를 제거해 시각화하는 점들의 개수를 줄입니다',
+  subtitle: '관심 없는 데이터를 제거해 시각화에 사용되는 점들의 개수를 줄입니다',
   faIcon: 'fa fa-filter',
   pros: '<hl>점의 색깔</hl>을 잘 보여줌 / 큰 데이터에서 효과적임',
-  cons: '<hl>관심 없는 데이터</hl>가 미리 정의되어 있어야 함 / 점들이 <hl>겹쳐진 정도</hl>를 보여주지 못함 / 정보의 손실이 있음 (모든 점들을 보여주지 않음)'
+  cons: '<hl>관심 없는 데이터</hl>가 미리 정의되어 있어야 함 / 점들의 <hl>밀도</hl>(겹쳐진 정도)를 보여주지 못함 / <hl>정보의 손실</hl>이 있음 (모든 점들을 보여주지 않음)'
 }
 
 export const ACTIONABLE_POINT_SIZE: GuideActionItem = {
@@ -133,23 +133,23 @@ export const ACTIONABLE_POINT_SIZE: GuideActionItem = {
   subtitle: '점의 크기를 줄여서 서로 겹치는 면적을 줄입니다',
   faIcon: 'fa fa-compress',
   pros: '<hl>점의 색깔</hl>을 잘 보여줌',
-  cons: '점들이 겹쳐진 정도<hl>(밀도)</hl>를 보여주지 못함 / 큰 데이터에서 효과가 적음'
+  cons: '점들의 <hl>밀도</hl>(겹쳐진 정도)를 보여주지 못함 / <hl>같은 좌표</hl>에 있는 점들은 여전히 겹침 / <hl>겹친 점들이 많으면</hl> 효과가 적음'
 }
 
 export const ACTIONABLE_POINT_OPACITY: GuideActionItem = {
   title: '점 투명도 조절',
-  subtitle: '점의 투명도를 조절해 가려진 점들도 보이도록 합니다',
+  subtitle: '점의 투명도를 조절해서 다른 점들로 인해 가려진 점들도 보이도록 합니다',
   faIcon: 'fa fa-tint',
-  pros: '점들이 겹친 정도<hl>(밀도)</hl>를 잘 보여줌 / 큰 데이터에서 효과가 적음',
-  cons: '<hl>점의 색깔</hl>이 잘 구분되지 않을 수 있음 / outlier를 잘 보여주지 못함'
+  pros: '점들의 <hl>밀도</hl>(겹쳐진 정도)를 잘 보여줌',
+  cons: '<hl>점의 색깔</hl>이 잘 구분되지 않을 수 있음 / <hl>Outlier</hl>를 잘 보여주지 못함'
 }
 
 export const ACTIONABLE_REMOVE_FILL_COLOR: GuideActionItem = {
   title: '점 중앙색 제거',
-  subtitle: '점 중앙을 투명하게해서 서로 겹치는 면적을 줄입니다',
+  subtitle: '점 중앙을 투명하게 해서 서로 겹치는 면적을 줄입니다',
   faIcon: 'fa fa-circle-o',
   pros: '<hl>점의 색깔</hl>을 잘 보여줌',
-  cons: '점들이 겹쳐진 정도<hl>(밀도)</hl>를 잘 보여주지 못함 / 큰 데이터에서 효과가 적음'
+  cons: '점들의 <hl>밀도</hl>(겹쳐진 정도)를 잘 보여주지 못함 / <hl>겹친 점들이 많으면</hl> 효과가 적음'
 }
 
 // TODO: change pros and cons for these four actions
@@ -163,26 +163,26 @@ export const ACTIONABLE_REMOVE_FILL_COLOR: GuideActionItem = {
 
 export const ACTIONABLE_AGGREGATE: GuideActionItem = {
   title: '점 합치기',
-  subtitle: '카테고리별 평균 값을 계산해 카테고리별로 점들을 합칩니다',
+  subtitle: '카테고리에 따른 평균 좌표를 계산해 카테고리별로 점들을 합칩니다',
   faIcon: 'fa fa-object-group',
-  pros: '<hl>점의 색깔</hl>을 잘 보여줌 / 큰 데이터에 적용 가능',
-  cons: '점들이 겹쳐진 정도<hl>(밀도)</hl>를 보여주지 못함 / 정보의 손실이 있음 (모든 점들을 보여주지 않음)'
+  pros: '<hl>점의 색깔</hl>을 잘 보여줌 / <hl>큰 데이터</hl>에서도 효과적임',
+  cons: '점들의 <hl>밀도</hl>(겹쳐진 정도)를 보여주지 못함 / <hl>정보의 손실</hl>이 있음 (모든 점들을 보여주지 않음)'
 }
 
 export const ACTIONABLE_ENCODING_DENSITY: GuideActionItem = {
   title: '밀도 플롯',
   subtitle: '구간별 점들의 개수를 색깔의 강도로 표현합니다',
   faIcon: 'fa fa-th',
-  pros: '점들의 <hl>밀도</hl>(겹쳐진 정도)를 잘 보여줌 / 큰 데이터에 적용 가능',
-  cons: '이미 색깔이 의미있게 쓰이기 때문에 <hl>색깔</hl>을 <hl>범주형 변수</hl>를 표현하는데 사용될 수 없음 / 이상치를 잘 보여주지 못함'
+  pros: '점들의 <hl>밀도</hl>(겹쳐진 정도)를 잘 보여줌',
+  cons: '색깔이 이미 의미있게 쓰이기 때문에 <hl>색깔</hl>을 <hl>범주형 변수</hl>를 표현하는데 사용될 수 없음 / <hl>Outlier</hl>를 잘 보여주지 못함'
 }
 
 export const ACTIONABLE_SEPARATE_GRAPH: GuideActionItem = {
   title: '차트 분리',
   subtitle: '카테고리에 따라 차트를 여러개로 분리합니다',
   faIcon: 'fa fa-clone',
-  pros: ' <hl>점의 색깔</hl>을 잘 보여줌 / 큰 데이터에 적용 가능',
-  cons: '점들이 겹쳐진 정도<hl>(밀도)</hl>를 보여주지 못함 / 차트를 그리기 위한 <hl>충분한 공간</hl>이 필요함'
+  pros: ' <hl>점의 색깔</hl>을 잘 보여줌 / 큰 데이터에서도 효과적임',
+  cons: '점들의 <hl>밀도</hl>(겹쳐진 정도)를 보여주지 못함 / 차트를 그리기 위한 <hl>충분한 공간</hl>이 필요함'
 }
 
 export const AggregateStages: TransitionAttr[] = [
