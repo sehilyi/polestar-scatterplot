@@ -257,7 +257,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     try {
       if (getColorField(this.props.mainSpec).colorField.type == QUANTITATIVE) return false;
     } catch (e) {}
-    if (isMeanAggregated(this.props.mainSpec).isXMeanFn && isMeanAggregated(this.props.mainSpec).isYMeanFn) return false;
+    // if (isMeanAggregated(this.props.mainSpec).isXMeanFn && isMeanAggregated(this.props.mainSpec).isYMeanFn) return false;
     return this.isThereNominalField();
   }
   private isEncodingDensityUsing() {
