@@ -428,7 +428,7 @@ export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
   // Notice: If filled === false? then, spec.mark is Object {type, filled} rather than string
   const mark = !isRemoveFill ? spec.mark : spec.mark['type'];
   let size = mark == 'square' ? 5 : 6;
-  let opacity = 0.7;
+  let opacity = 1.0;
   try {size = spec.encoding.size['value'] / 10.0;} catch (e) {}
   try {opacity = spec.encoding.opacity['value'];} catch (e) {}
   if (isDensity) size = CHART_SIZE.width / DEFAULT_NUM_OF_BINS;

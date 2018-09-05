@@ -194,6 +194,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           </p>
           <p styleName={studySetting.condition.indexOf('T') != -1 ? 'preview-score' : 'hidden'}>{data.actionItem.subtitle}</p>
           {data.renderPreview.bind(this)()}
+          <p styleName={studySetting.condition.indexOf('T') != -1 && data.actionItem.subsubtitle != '' ? 'preview-subscore' : 'hidden'}>{'(' + (isColorUsed(this.props.mainSpec) ? getColorField(this.props.mainSpec).colorField.field : this.getDefaultSmallSizedNominalFieldName() + data.actionItem.subsubtitle)}</p>
           <ul styleName={studySetting.condition.indexOf('T') != -1 ? 'preview-desc' : 'hidden'} className='fa-ul'>
             <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' /><p dangerouslySetInnerHTML={{__html: data.actionItem.pros}}/></li>
             <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' /><p dangerouslySetInnerHTML={{__html: data.actionItem.cons}}/></li>
@@ -205,7 +206,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           </div>
           <div onClick={data.onAction.bind(this)} styleName='apply-button'>
             {/* TRNASLATION: Apply */}
-            <i className="fa fa-check" aria-hidden="true" />{' ' + '적용'}
+            <i className="fa fa-sliders" aria-hidden="true" />{' ' + '세부 설정'}
           </div>
         </div>
       </div>

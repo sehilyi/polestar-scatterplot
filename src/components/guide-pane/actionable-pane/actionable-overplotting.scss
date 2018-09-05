@@ -14,7 +14,7 @@ $grid-margin-double: 4px;
 }
 
 .preview-desc hl{
-  background: #fffc9999;
+  background: #fff80099;
   // font-size: 19px;
 }
 .guide-previews {
@@ -78,6 +78,12 @@ $grid-margin-double: 4px;
   padding: 0px;
   margin: 6px;
   font-weight: normal;
+}
+.preview-subscore {
+  color: #919191;
+  padding: 0px;
+  margin: 0px;
+  font-weight: bold;
 }
 
 .bottom-button {
