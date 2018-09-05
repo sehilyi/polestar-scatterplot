@@ -107,6 +107,14 @@ $grid-margin-double: 4px;
     color: black;
   }
 }
+.expand-button-disabled {
+  padding: 5px;
+  flex-grow: 1;
+  color: #979797;
+  right: 0;
+  position: absolute;
+  margin-right: 4px;
+}
 .transition-button {
   padding: 5px;
   flex-grow: 1;
@@ -124,12 +132,42 @@ $grid-margin-double: 4px;
   margin-top: 0;
   border-left: 1px solid #ececec;
   padding-top: 7px;
+
   color: #38425d;
   cursor: pointer;
   &:hover{
     // color: #277dfc;
     background: #f0f0f0;
   }
+}
+.disabled-button {
+  padding: 5px;
+  flex-grow: 4;
+  margin-top: 0;
+  border-left: 1px solid #ececec;
+  padding-top: 7px;
+
+  color: #979797;
+}
+
+.no-preview-reason{
+  width: 140px;
+
+  color: #707070;
+
+  margin: auto;
+
+  margin-top: 20px;
+
+  height: 80px;
+
+  background: #f3f3f3;
+
+  padding-top: 65px;
+
+  padding-left: 10px;
+
+  padding-right: 10px;
 }
 .left-buttons {
   margin: 0px;

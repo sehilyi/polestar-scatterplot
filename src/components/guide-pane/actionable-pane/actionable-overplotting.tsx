@@ -162,13 +162,14 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     const vegaReady = typeof this.props.mainSpec != 'undefined';
     const {expandedAction} = this.state;
     const {studySetting} = this.props;
-    if (!data.isPaneUsing) return null;
+    // if (!data.isPaneUsing) return null;
     if (!vegaReady) return null;
+    const {isPaneUsing} = data;
     return (
       <div styleName={expandedAction == data.id ? 'guide-preview-expand' : 'guide-preview'} key={data.actionItem.title}>
         <div styleName='transition-progress-bg'>
           <div styleName='transition-progress'></div>
-          <div onClick={this.onExpand.bind(this, data.id)} styleName='expand-button'>
+          <div onClick={this.onExpand.bind(this, data.id)} styleName={isPaneUsing ? 'expand-button' : 'expand-button-disabled'}>
             <i className={expandedAction == data.id ? "fa fa-compress" : 'fa fa-expand'} aria-hidden="true" />
           </div>
           {/* TODO: Remove when design decided */}
@@ -193,18 +194,22 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             {data.actionItem.title}
           </p>
           <p styleName={studySetting.condition.indexOf('T') != -1 ? 'preview-score' : 'hidden'}>{data.actionItem.subtitle}</p>
-          {data.renderPreview.bind(this)()}
-          <p styleName={studySetting.condition.indexOf('T') != -1 && data.actionItem.subsubtitle != '' ? 'preview-subscore' : 'hidden'}>{'(' + (isColorUsed(this.props.mainSpec) ? getColorField(this.props.mainSpec).colorField.field : this.getDefaultSmallSizedNominalFieldName() + data.actionItem.subsubtitle)}</p>
+          {
+            isPaneUsing ?
+              data.renderPreview.bind(this)() :
+              this.renderReasonsForNoPreview(data.actionItem.noPreviewDesc)
+          }
+          {/* <p styleName={studySetting.condition.indexOf('T') != -1 && data.actionItem.subsubtitle != '' ? 'preview-subscore' : 'hidden'}>{'(' + (isColorUsed(this.props.mainSpec) ? getColorField(this.props.mainSpec).colorField.field : this.getDefaultSmallSizedNominalFieldName() + data.actionItem.subsubtitle)}</p> */}
           <ul styleName={studySetting.condition.indexOf('T') != -1 ? 'preview-desc' : 'hidden'} className='fa-ul'>
-            <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' /><p dangerouslySetInnerHTML={{__html: data.actionItem.pros}}/></li>
-            <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' /><p dangerouslySetInnerHTML={{__html: data.actionItem.cons}}/></li>
+            <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' /><p dangerouslySetInnerHTML={{__html: data.actionItem.pros}} /></li>
+            <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' /><p dangerouslySetInnerHTML={{__html: data.actionItem.cons}} /></li>
           </ul>
         </div>
-        <div styleName='bottom-button'>
-          <div onClick={data.onTransition.bind(this)} styleName={studySetting.condition.indexOf('A') != -1 ? 'transition-button' : 'hidden'} >
+        <div styleName={'bottom-button'}>
+          <div onClick={!isPaneUsing ? null : data.onTransition.bind(this)} styleName={studySetting.condition.indexOf('A') == -1 ? 'hidden' : !isPaneUsing ? 'disabled-button' : 'transition-button'} >
             <i className='fa fa-play' aria-hidden='true' />
           </div>
-          <div onClick={data.onAction.bind(this)} styleName='apply-button'>
+          <div onClick={!isPaneUsing ? null : data.onAction.bind(this)} styleName={!isPaneUsing ? 'disabled-button' : 'apply-button'}>
             {/* TRNASLATION: Apply */}
             <i className="fa fa-sliders" aria-hidden="true" />{' ' + '세부 설정'}
           </div>
@@ -260,7 +265,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private isSeparateGraphUsing() {
     if (typeof this.props.mainSpec == 'undefined') return false;
-    return !isRowOrColumnUsed(this.props.mainSpec) && this.isThereSmallSizedNominalField();
+    return /*!isRowOrColumnUsed(this.props.mainSpec) && */ this.isThereSmallSizedNominalField();
   }
 
   private onFilterClick() {
@@ -619,6 +624,14 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         schema={this.props.schema}
         transitionAttrs={SeperateGraphStages} />
     );
+  }
+  private renderReasonsForNoPreview(desc: string) {
+    return (
+      <div styleName='no-preview-reason'>
+        <i className='fa fa-exclamation-triangle' aria-hidden='true' />
+        {' ' + desc}
+      </div>
+    )
   }
 
   private getDefaultSmallSizedNominalFieldName(exceptField?: string[]) {
