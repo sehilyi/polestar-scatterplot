@@ -30,7 +30,7 @@ export interface AppRootProps extends ActionHandler<DatasetAsyncAction> {
 
 class AppRootBase extends React.PureComponent<AppRootProps, {}> {
   public render() {
-    const IS_DEBUG: boolean = true;
+    const IS_DEBUG: boolean = false;
     const {dataset, config} = this.props;
     const {hideHeader, hideFooter} = config;
     let bottomPane, footer;
