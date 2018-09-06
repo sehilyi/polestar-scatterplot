@@ -7,8 +7,10 @@ import * as CSSModules from 'react-css-modules';
 import {ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec} from 'react-dnd';
 import {isOneOfFilter, isRangeFilter, OneOfFilter, RangeFilter} from 'vega-lite/build/src/filter';
 import {TimeUnit} from 'vega-lite/build/src/timeunit';
-import {FILTER_ADD, FILTER_MODIFY_TIME_UNIT,
-  FILTER_REMOVE, FilterAction} from '../../actions';
+import {
+  FILTER_ADD, FILTER_MODIFY_TIME_UNIT,
+  FILTER_REMOVE, FilterAction
+} from '../../actions';
 import {ActionHandler} from '../../actions/redux-action';
 import {DraggableType} from '../../constants';
 import {filterHasField, getDefaultList, getDefaultTimeRange} from '../../models/shelf/filter';
@@ -112,7 +114,7 @@ class FilterPaneBase extends React.PureComponent<FilterPaneProps, {}> {
           type: ExpandedType.TEMPORAL
         }}
         onFunctionChange={onFunctionChange}
-      /> ;
+      />;
     let filterComponent;
     if (isRangeFilter(filter)) {
       if (fieldDef.type === ExpandedType.TEMPORAL) {
@@ -162,10 +164,14 @@ class FilterPaneBase extends React.PureComponent<FilterPaneProps, {}> {
     let styleName, text;
     if (item && !canDrop) {
       styleName = 'placeholder-disabled';
-      text = 'Cannot drop a field here';
+      // Korean
+      // text = 'Cannot drop a field here';
+      text = '여기 올릴 수 없습니다';
     } else {
       styleName = isOver ? 'placeholder-over' : item ? 'placeholder-active' : 'placeholder';
-      text = 'Drop a field here';
+      // Korean
+      // text = 'Drop a field here';
+      text = '변수를 여기 올리세요';
     }
     return (
       <span styleName={styleName}>

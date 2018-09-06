@@ -102,9 +102,9 @@ class EncodingShelfBase extends React.PureComponent<
               //   <span onClick={this.toggleCustomizer} ref={this.fieldHandler}>
               //     {channelName}{' '} <i className={'fa fa-caret-down'} />
               //   </span> :
-                <span>
-                  {channelName}
-                </span>
+              <span>
+                {channelName}
+              </span>
             }
 
             {this.state.customizerIsOpened &&
@@ -226,7 +226,9 @@ class EncodingShelfBase extends React.PureComponent<
     const {item, isOver} = this.props;
     return (
       <span styleName={isOver ? 'placeholder-over' : item ? 'placeholder-active' : 'placeholder'}>
-        Drop a field here
+        {/* Korean */}
+        {/* Drop a field here */}
+        변수를 여기 올리세요
       </span>
     );
   }

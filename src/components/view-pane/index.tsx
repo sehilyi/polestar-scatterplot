@@ -53,9 +53,13 @@ export interface ViewPaneProps extends ActionHandler<Action> {
   schema: Schema;
 }
 
-const NO_PLOT_MESSAGE = `No specified visualization yet. ` +
-  `Start exploring by dragging a field to encoding pane ` +
-  `on the left or examining univariate summaries below.`;
+// Korean
+// const NO_PLOT_MESSAGE = `No specified visualization yet. ` +
+//   `Start exploring by dragging a field to encoding pane ` +
+//   `on the left or examining univariate summaries below.`;
+const NO_PLOT_MESSAGE = `아직 정의된 시각화가 없습니다. ` +
+  `인코딩 패널에 변수를 드래그해서 시각화를 시작하세요. ` +
+  ``;
 
 const GROUP_BY_LABEL: {[K in ShelfGroupBy]: string} = {
   auto: 'Automatic',
@@ -97,7 +101,9 @@ class ViewPaneBase extends React.PureComponent<ViewPaneProps, {}> {
       return (
         <div styleName="view-pane">
           <div className="pane" id="specified-view" styleName={collapseRelatedViews ? 'view-pane-specific-stretch' : 'view-pane-specific'}>
-            <h2>Specified View</h2>
+            {/* Korean */}
+            {/* <h2>Specified View</h2> */}
+            <h2>사용자 정의 시각화</h2>
             {/* <div styleName='transition-progress-bg'>
               <div styleName='transition-progress'></div>
             </div> */}

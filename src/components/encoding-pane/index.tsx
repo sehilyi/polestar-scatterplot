@@ -9,7 +9,7 @@ import {FilterAction} from '../../actions';
 import {ActionHandler} from '../../actions/index';
 import {createDispatchHandler} from '../../actions/redux-action';
 import {ResultAsyncAction} from '../../actions/result';
-import {ShelfAction, SPEC_CLEAR} from '../../actions/shelf';
+import {ShelfAction, SPEC_CLEAR, FILTER_CLEAR} from '../../actions/shelf';
 import {ShelfUnitSpec, State} from '../../models';
 import {VoyagerConfig} from '../../models/config';
 import {ShelfFieldDef} from '../../models/shelf';
@@ -51,8 +51,13 @@ class EncodingPanelBase extends React.PureComponent<EncodingPanelProps, {}> {
     const {anyEncodings} = specPreview || spec;
 
     const positionShelves = ['x', 'y'].map(this.encodingShelf, this);
+    // Korean
     const facetShelves = ['row', 'column'].slice(1, 2).map(this.encodingShelf, this);
+    // const facetShelves = ['row', '열'].slice(1, 2).map(this.encodingShelf, this);
+    // Korean
     const nonPositionShelves = ['size', 'color', 'shape', 'detail', 'text'].slice(1, 2).map(this.encodingShelf, this);
+    // const nonPositionShelves = ['size', '색깔', 'shape', 'detail', 'text'].slice(1, 2).map(this.encodingShelf, this);
+
     const wildcardShelvesGroup = wildcards !== 'disabled' && (
       <div styleName="shelf-group">
         <h3>Wildcard Shelves</h3>
@@ -67,11 +72,15 @@ class EncodingPanelBase extends React.PureComponent<EncodingPanelProps, {}> {
         <a className="right" onClick={this.onClear}>
           <i className="fa fa-eraser" />
           {' '}
-          Clear
+          {/* Korean */}
+          {/* Clear */}
+          초기화
         </a>
 
         <h2>
-          Encoding
+          {/* Korean */}
+          {/* Encoding */}
+          인코딩
           {specPreview && ' Preview'}
         </h2>
 
@@ -83,12 +92,16 @@ class EncodingPanelBase extends React.PureComponent<EncodingPanelProps, {}> {
           <div className="right">
             {this.markPicker()}
           </div>
-          <h3>Mark</h3>
+          {/* Korean */}
+          {/* <h3>Mark</h3> */}
+          <h3>마크</h3>
           {nonPositionShelves}
         </div>
 
         <div styleName="shelf-group">
-          <h3>Facet</h3>
+          {/* Korean */}
+          {/* <h3>Facet</h3> */}
+          <h3>분할</h3>
           {facetShelves}
         </div>
 
@@ -96,7 +109,9 @@ class EncodingPanelBase extends React.PureComponent<EncodingPanelProps, {}> {
         {wildcardShelvesGroup}
 
         <div styleName="shelf-group">
-          <h3>Filter</h3>
+          {/* Korean */}
+          {/* <h3>Filter</h3> */}
+          <h3>필터</h3>
           {this.filterPane()}
         </div>
       </div>
@@ -168,6 +183,7 @@ class EncodingPanelBase extends React.PureComponent<EncodingPanelProps, {}> {
 
   private onClear() {
     this.props.handleAction({type: SPEC_CLEAR});
+    this.props.handleAction({type: FILTER_CLEAR});
   }
 }
 

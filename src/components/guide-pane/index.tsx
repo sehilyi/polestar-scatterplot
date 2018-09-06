@@ -45,7 +45,8 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
         <h2 className="H2-in-guideline">
           <i className="fa fa-bolt" aria-hidden="true" />
           {' '}
-          Recommendations
+          {/* Recommendations */}
+          추천 시각화
           {/* {' (' + list.length + ')'} */}
         </h2>
 

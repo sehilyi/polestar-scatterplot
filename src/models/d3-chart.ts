@@ -407,14 +407,27 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
       .attr('opacity', 0)
       .transition()
       .duration(isTransition ? id === 'AGGREGATE_POINTS' ? AggregateStages[0].duration : id === 'ENCODING_DENSITY' ? DensityPlotStages[1].duration : 0 : 0)
-      .delay(isTransition && id === 'ENCODING_DENSITY' ? DensityPlotStages[0].delay : 0)
+      .delay(isTransition && id === 'ENCODING_DENSITY' ? DensityPlotStages[0].delay + DensityPlotStages[0].duration : 0)
       .attr('opacity', 1)
   }
 
   return colorScale;
 }
 
+export function getDefaultPointAttrs(){
+  return {
+    fill: '#4c78a8',
+    opacity: 1.0,
+    stroke: '#4c78a8',
+    stroke_width: 2,
+    width: 6,
+    height: 6,
+    rx: 6,
+    ry: 6,
+  };
+}
 export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
+  if(typeof spec == 'undefined') return getDefaultPointAttrs();
 
   const isDensity = isDensityPlot(spec);
   let isRemoveFill = false;
