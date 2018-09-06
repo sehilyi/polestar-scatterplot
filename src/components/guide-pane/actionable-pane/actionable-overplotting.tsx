@@ -170,53 +170,41 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
   }
   private previewPane(data: ActionPaneData) {
     const vegaReady = typeof this.props.mainSpec != 'undefined';
-    const {expandedAction} = this.state;
+    // const {expandedAction} = this.state;
+    let expandedAction = 'NONE';
     const {studySetting} = this.props;
-    // if (!data.isPaneUsing) return null;
     if (!vegaReady) return null;
     const {isPaneUsing} = data;
+    // study setting
+    const isTextShow = studySetting.condition.indexOf('T') != -1;
+    const isAniShow = studySetting.condition.indexOf('A') != -1;
     return (
       <div styleName={expandedAction == data.id ? 'guide-preview-expand' : 'guide-preview'} key={data.actionItem.title}>
         <div styleName='transition-progress-bg'>
           <div styleName='transition-progress'></div>
-          <div onClick={isPaneUsing ? this.onExpand.bind(this, data.id) : null} styleName={isPaneUsing ? 'expand-button' : 'expand-button-disabled'}>
+          {/* <div onClick={isPaneUsing ? this.onExpand.bind(this, data.id) : null} styleName={isPaneUsing ? 'expand-button' : 'expand-button-disabled'}>
             <i className={expandedAction == data.id ? "fa fa-compress" : 'fa fa-expand'} aria-hidden="true" />
-          </div>
-          {/* TODO: Remove when design decided */}
-          {/* <p styleName='left-buttons'>
-            <i className='fa fa-play' styleName='top-button-right' aria-hidden='true'
-              onClick={data.onTransition.bind(this)} />
-            <i className="fa fa-expand" styleName='top-button' aria-hidden="true"
-              onClick={this.onExpand.bind(this, data.id)}
-            />
-          </p>
-          <p styleName='right-buttons'>
-            <i className="fa fa-check" styleName='top-button-right' aria-hidden="true"
-              onClick={data.onAction.bind(this)} />
-          </p> */}
+          </div> */}
         </div>
-        <div className={expandedAction == data.id ? studySetting.condition.indexOf('A') == -1 ? 'preview-expand-notimeline' : 'preview-expand' : 'preview'}
+        <div className={expandedAction == data.id ? !isAniShow ? 'preview-expand-notimeline' : 'preview-expand' : 'preview'}
           styleName={'guide-preview-inner'}
           ref={this.vegaLiteWrapperRefHandler}>
           <p styleName='preview-title'>
-            {/* <i className={data.actionItem.faIcon} aria-hidden='true' /> */}
-            {' '}
             {data.actionItem.title}
           </p>
-          <p styleName={studySetting.condition.indexOf('T') != -1 ? 'preview-score' : 'hidden'}>{data.actionItem.subtitle}</p>
-          {
-            isPaneUsing ?
-              data.renderPreview.bind(this)() :
-              this.renderReasonsForNoPreview(data.actionItem.noPreviewDesc)
+          <p styleName={isTextShow ? 'preview-score' : 'hidden'}>{data.actionItem.subtitle}</p>
+          {isPaneUsing ?
+            data.renderPreview.bind(this)() :
+            this.renderReasonsForNoPreview(data.actionItem.noPreviewDesc)
           }
           {/* <p styleName={studySetting.condition.indexOf('T') != -1 && data.actionItem.subsubtitle != '' ? 'preview-subscore' : 'hidden'}>{'(' + (isColorUsed(this.props.mainSpec) ? getColorField(this.props.mainSpec).colorField.field : this.getDefaultSmallSizedNominalFieldName() + data.actionItem.subsubtitle)}</p> */}
-          <ul styleName={studySetting.condition.indexOf('T') != -1 ? 'preview-desc' : 'hidden'} className='fa-ul'>
+          <ul styleName={isTextShow ? 'preview-desc' : 'hidden'} className='fa-ul'>
             <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' /><p dangerouslySetInnerHTML={{__html: data.actionItem.pros}} /></li>
             <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' /><p dangerouslySetInnerHTML={{__html: data.actionItem.cons}} /></li>
           </ul>
         </div>
         <div styleName={'bottom-button'}>
-          <div onClick={!isPaneUsing ? null : data.onTransition.bind(this)} styleName={studySetting.condition.indexOf('A') == -1 ? 'hidden' : !isPaneUsing ? 'disabled-button' : 'transition-button'} >
+          <div onClick={!isPaneUsing ? null : data.onTransition.bind(this)} styleName={!isAniShow ? 'hidden' : !isPaneUsing ? 'disabled-button' : 'transition-button'} >
             <i className='fa fa-play' aria-hidden='true' />
           </div>
           <div onClick={!isPaneUsing ? null : data.onAction.bind(this)} styleName={!isPaneUsing ? 'disabled-button' : 'apply-button'}>

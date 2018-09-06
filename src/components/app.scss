@@ -221,16 +221,14 @@
     text-align: left;
   }
 
-  // .preview .chart, .preview .marks {
-  //   width: 100px !important;
-  //   height: 100px !important;
-  //   min-height: 100px;
-  // }
   .preview .chart, .preview .marks {
-    width: 160px !important;
-    height: 160px !important;
-    min-height: 160px;
-    // display: flex;
+    // this is when with timeline
+    // width: 160px !important;
+    // height: 160px !important;
+    // min-height: 160px;
+    width: 220px !important;
+    height: 220px !important;
+    min-height: 220px;
   }
   .preview .timeline {
     display: none;
@@ -273,7 +271,6 @@
   // }
   .d3-chart .grid line, .d3-chart .grid path {
     stroke: rgb(221, 221, 221);
-    // shape-rendering: crispEdges;
     stroke-width: 1px;
   }
   .d3-chart .grid text {
@@ -281,7 +278,6 @@
   }
   .d3-chart .axis path, .d3-chart .axis line {
     stroke-width: 1px;
-    // shape-rendering: crispEdges;
   }
   .d3-chart .axis text {
     stroke-width: 0px;

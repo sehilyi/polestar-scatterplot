@@ -5,17 +5,11 @@ $grid-margin-double: 4px;
 
 .ac-root {
   position: relative;
-  // background: #f0efef;
   padding: $grid-margin;
-  // padding-bottom: 0px;
-  // border-top: 1px solid #D4D4D4;
-  // max-height: 800px;
-  // overflow: auto;
 }
 
 .preview-desc hl{
   background: #fff8004d;
-  // font-size: 19px;
 }
 .guide-previews {
   align-content: center;
@@ -23,7 +17,7 @@ $grid-margin-double: 4px;
   flex-wrap: wrap;
   display: grid;
   grid-gap: 2px;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
 }
 
 .guide-previews-hidden {
@@ -33,14 +27,12 @@ $grid-margin-double: 4px;
 
 .guide-preview {
   margin: $grid-margin;
-  background: white; //#fcfcfc;
-  // width: 125px;
+  background: white;
   display: block;
   text-align: center;
   border: #dedede solid 1px;
   flex-grow: 1;
   position: relative;
-  // box-shadow: 0 0 2px 0 rgba(0,0,0,0.1);
 }
 .guide-preview-expand {
   @extend .guide-preview;
@@ -54,18 +46,12 @@ $grid-margin-double: 4px;
   margin-bottom: 20px;
 }
 
-// .preview-larg .chart {
-//   margin-top: -7px;
-//   margin-bottom: -7px;
-// }
-
 .hidden {
   display: none;
 }
 
 .transition-progress-bg {
   height: 3px;
-  // background: #e8e8e8;
 }
 .transition-progress {
   height: 100%;
@@ -122,7 +108,6 @@ $grid-margin-double: 4px;
   padding-top: 7px;
   cursor: pointer;
   &:hover{
-    // color: #277dfc;
     background: #f0f0f0;
   }
 }
@@ -136,7 +121,6 @@ $grid-margin-double: 4px;
   color: #38425d;
   cursor: pointer;
   &:hover{
-    // color: #277dfc;
     background: #f0f0f0;
   }
 }
@@ -183,7 +167,6 @@ $grid-margin-double: 4px;
 .top-button {
   color: #a5a2a2;
   padding: 4px;
-  // padding-top: 0px;
   vertical-align: middle;
   font-size: 10px !important;
   &:hover{
@@ -193,7 +176,6 @@ $grid-margin-double: 4px;
 
 .top-button-right {
   @extend .top-button;
-  // margin-right: 8px;
 }
 
 .pros {
@@ -220,7 +202,6 @@ $grid-margin-double: 4px;
   text-align: start;
   white-space: pre-line;
   line-height: 18px;
-  padding-top: 10px;
 }
 
 .preview-desc li {
@@ -253,9 +234,7 @@ $grid-margin-double: 4px;
 .ignore-button {
   padding: 10px;
   margin: $grid-margin;
-  // margin-bottom: $grid-margin-double;
   background: #fcfcfc;
-  // width: 100%;
   display: block;
   text-align: center;
   border: #dedede solid 1px;
