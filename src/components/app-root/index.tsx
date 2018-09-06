@@ -30,7 +30,7 @@ export interface AppRootProps extends ActionHandler<DatasetAsyncAction> {
 
 class AppRootBase extends React.PureComponent<AppRootProps, {}> {
   public render() {
-    const IS_DEBUG: boolean = false;
+    const IS_DEBUG: boolean = true;
     const {dataset, config} = this.props;
     const {hideHeader, hideFooter} = config;
     let bottomPane, footer;
@@ -46,7 +46,7 @@ class AppRootBase extends React.PureComponent<AppRootProps, {}> {
             <DataPane />
             <SplitPane split="vertical" defaultSize={235} minSize={200} maxSize={350}>
               <EncodingPane />
-              <SplitPane split="vertical" defaultSize={520} minSize={300} maxSize={1000} primary="second">
+              <SplitPane split="vertical" defaultSize={410} minSize={410} maxSize={410} primary="second">
                 <SplitPane split="horizontal" defaultSize={'50%'} primary='first' >
                   <ViewPane />
                   <LastBookmark />

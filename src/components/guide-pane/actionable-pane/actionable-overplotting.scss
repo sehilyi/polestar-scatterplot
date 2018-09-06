@@ -9,7 +9,8 @@ $grid-margin-double: 4px;
 }
 
 .preview-desc hl{
-  background: #fff8004d;
+  // background: #fff8004d;
+  font-weight: bold;
 }
 .guide-previews {
   align-content: center;
@@ -17,7 +18,7 @@ $grid-margin-double: 4px;
   flex-wrap: wrap;
   display: grid;
   grid-gap: 2px;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 }
 
 .guide-previews-hidden {
@@ -202,6 +203,7 @@ $grid-margin-double: 4px;
   text-align: start;
   white-space: pre-line;
   line-height: 18px;
+  padding-left: 35px !important;
 }
 
 .preview-desc li {
