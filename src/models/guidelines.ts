@@ -137,7 +137,7 @@ export const ACTIONABLE_POINT_SIZE: GuideActionItem = {
   noPreviewDesc: '밀도 플롯에는 사용할 수 없습니다.',
   faIcon: 'fa fa-compress',
   pros: '<hl>점의 색상</hl>을 비교적 잘 구분할 수 있음.',
-  cons: '점이 <hl>밀집된 정도</hl>를 확인하기 어려움.</br><hl>겹쳐진 점이 많은</hl> 경우에는 적합하지 않음.'
+  cons: '점이 <hl>밀집된 정도</hl>를 확인하기 어려움.</br><hl>동일한 좌표를 가진 점이 많은</hl> 경우에는 적합하지 않음.'
 }
 
 export const ACTIONABLE_POINT_OPACITY: GuideActionItem = {
