@@ -76,7 +76,6 @@ export function renderPoints(id: ActionableID, fromSpec: FacetedCompositeUnitSpe
   // to
   let diffOneof = id != 'NONE' && id != 'NONE2' ? getFilterForTransition(fromSpec.transform, spec.transform) : null;
   renderScatterplot(id, spec, data, schema, isTransition, diffOneof, isSkipColorOfAggregatePoints(id, fromSpec));
-  // console.log(diffOneof);
 }
 
 export function getFilterForTransition(a1: any[], a2: any[]) {
@@ -236,17 +235,17 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
     .attr('height', attr.height)
     .attr('stroke-width', attr.stroke_width);
 
-  if (isTransition && id === 'ENCODING_DENSITY') {
-    points = points.transition().duration(DensityPlotStages[1].duration).delay(DensityPlotStages[0].delay);
-  }
+  // if (isTransition && id === 'ENCODING_DENSITY') {
+  //   points = points.transition().duration(DensityPlotStages[1].duration).delay(DensityPlotStages[0].delay);
+  // }
 
   points
     .attr('opacity', attr.opacity);
 
-  if (isTransition && id === 'ENCODING_DENSITY') {
-    points = points.transition().duration(DensityPlotStages[2].duration).delay(DensityPlotStages[1].delay);
-  }
-  else if (isTransition && id === 'AGGREGATE_POINTS') {
+  // if (isTransition && id === 'ENCODING_DENSITY') {
+  //   points = points.transition().duration(DensityPlotStages[2].duration).delay(DensityPlotStages[1].delay);
+  // }
+  if (isTransition && id === 'AGGREGATE_POINTS') {
     points = points.transition().duration(AggregateStages[1].duration).delay(!isSkipColorOfAggregatePoints(id, spec) ? AggregateStages[0].delay : 0);
   }
 
@@ -265,11 +264,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
         y(d[yField]) + (-attr.height / 2.0 + CHART_MARGIN.top);
     });
 
-  // console.log(filter);
-  // console.log(id);
   if (!isNullOrUndefined(filter) && id === 'FILTER') {
-    // console.log('FILTER:');
-    // console.log(filter.oneOf);
     points
       .filter(function (d) {return (filter.oneOf as string[]).indexOf(d[filter.field]) == -1;})
       .transition().duration(isTransition ? FilterStages[0].duration : 0)
@@ -410,7 +405,9 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
     legendRoot
       .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * numOfChart - CHART_PADDING.right, CHART_MARGIN.top))
       .attr('opacity', 0)
-      .transition().duration(isTransition && id === 'AGGREGATE_POINTS' ? AggregateStages[0].duration : 0)
+      .transition()
+      .duration(isTransition ? id === 'AGGREGATE_POINTS' ? AggregateStages[0].duration : id === 'ENCODING_DENSITY' ? DensityPlotStages[1].duration : 0 : 0)
+      .delay(isTransition && id === 'ENCODING_DENSITY' ? DensityPlotStages[0].delay : 0)
       .attr('opacity', 1)
   }
 

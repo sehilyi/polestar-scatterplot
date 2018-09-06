@@ -23,7 +23,7 @@ import {COLOR, X, Y, SIZE} from 'vega-lite/build/src/channel';
 import {Scale} from 'vega-lite/build/src/scale';
 import {Transform} from 'vega-lite/build/src/transform';
 import {QUANTITATIVE} from '../../../node_modules/vega-lite/build/src/type';
-import {SQUARE} from 'vega-lite/build/src/mark';
+import {SQUARE, CIRCLE} from 'vega-lite/build/src/mark';
 
 export function shelfSpecFieldAutoAddReducer(
   shelfSpec: Readonly<ShelfUnitSpec>, action: SpecFieldAutoAdd, schema: Schema
@@ -100,7 +100,8 @@ export function shelfSpecReducer(
       delete shelfSpec.encoding.x.fn;
       delete shelfSpec.encoding.y.fn;
       return {
-        ...shelfSpec
+        ...shelfSpec,
+        mark: CIRCLE
       };
     }
     case SPEC_UNAGGREGATE_POINTS_BY_COLOR: {
