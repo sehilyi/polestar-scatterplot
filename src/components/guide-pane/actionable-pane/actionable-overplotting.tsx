@@ -14,7 +14,7 @@ import {QUANTITATIVE, NOMINAL} from '../../../../node_modules/vega-lite/build/sr
 import {Schema, toTransforms, ShelfFilter} from '../../../models';
 import {COLOR, COLUMN} from '../../../../node_modules/vega-lite/build/src/channel';
 import {FieldPicker} from './actionable-common-ui/field-picker';
-import {startTimeline, renderPoints} from '../../../models/d3-chart';
+import {startTimeline, renderPoints, getPointAttrs} from '../../../models/d3-chart';
 import {OneOfFilter} from 'vega-lite/build/src/filter';
 import {NumberAdjuster} from './actionable-common-ui/number-adjuster';
 import {ToggleSwitcher} from './actionable-common-ui/toggle-switcher';
@@ -44,7 +44,6 @@ export interface ActionPaneData {
   actionItem: GuideActionItem;
   renderPreview: () => void;
   onTransition: () => void;
-  onAction: () => void;
 }
 
 export class ActionableOverplottingBase extends React.PureComponent<ActionableOverplottingProps, ActionableOverplottingState>{
@@ -71,12 +70,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         <div styleName={triggeredAction == 'NONE' ? 'guide-previews' : 'guide-previews-hidden'}>
           {actionPanes}
         </div>
-        {/* <div className='fa-gray' styleName='ignore-button'>
-          <a onClick={this.onIgnore.bind(this)}>
-            <i className='fa fa-eye-slash' aria-hidden='true' />
-            {' '} Ignore This Guideline...
-            </a>
-        </div> */}
         <div styleName={triggeredAction == 'NONE' ? 'back-button-hidden' : 'back-button'}
           onClick={this.onBackButton.bind(this)}>
           <i className='fa fa-chevron-circle-left' aria-hidden='true' />
@@ -92,7 +85,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             filters={this.props.filters}
             schema={this.props.schema}
             disableThreshold={1000}
-            defaultField={DEFAULT_NONE_USED_STR}//this.getDefaultSmallSizedNominalFieldName()}
+            defaultField={DEFAULT_NONE_USED_STR}
             pickedFieldAction={this.aggregateByFieldAction}
           />
         </div>
@@ -136,8 +129,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             fields={[DEFAULT_NONE_USED_STR].concat(this.getNominalFieldNames())}
             filters={this.props.filters}
             schema={this.props.schema}
-            disableThreshold={10}
-            defaultField={DEFAULT_NONE_USED_STR}//this.getDefaultSmallSizedNominalFieldName()}
+            disableThreshold={20}
+            defaultField={DEFAULT_NONE_USED_STR}
             pickedFieldAction={this.separateByFieldAction}
           />
         </div>
@@ -147,9 +140,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             title={ACTIONABLE_POINT_SIZE.title}
             subtitle={!isTextShow ? '' : ACTIONABLE_POINT_SIZE.subtitle}
             min={1}
-            max={60}
+            max={100}
             step={1}
-            defaultNumber={DEFAULT_CHANGE_POINT_SIZE}
+            defaultNumber={getPointAttrs(this.props.mainSpec).width}
             adjustedNumberAction={this.changePointSizeAction}
           />
         </div>
@@ -161,7 +154,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             min={0}
             max={1}
             step={0.01}
-            defaultNumber={0.3}
+            defaultNumber={getPointAttrs(this.props.mainSpec).opacity}
             adjustedNumberAction={this.changePointOpacityAction}
           />
         </div>
@@ -207,7 +200,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           <div onClick={!isPaneUsing ? null : data.onTransition.bind(this)} styleName={!isAniShow ? 'hidden' : !isPaneUsing ? 'disabled-button' : 'transition-button'} >
             <i className='fa fa-play' aria-hidden='true' />
           </div>
-          <div onClick={!isPaneUsing ? null : data.onAction.bind(this)} styleName={!isPaneUsing ? 'disabled-button' : 'apply-button'}>
+          <div onClick={!isPaneUsing ? null : this.onTriggerAction.bind(this, data.id)} styleName={!isPaneUsing ? 'disabled-button' : 'apply-button'}>
             {/* TRNASLATION: Apply */}
             <i className="fa fa-sliders" aria-hidden="true" />{' ' + '세부 설정'}
           </div>
@@ -267,31 +260,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     return /*!isRowOrColumnUsed(this.props.mainSpec) && */ this.isThereSmallSizedNominalField();
   }
 
-  private onFilterClick() {
-    this.setState({triggeredAction: 'FILTER'});
-  }
-  private onChangePointSizeClick() {
-    this.changePointSizeAction(DEFAULT_CHANGE_POINT_SIZE);
-    this.setState({triggeredAction: 'CHANGE_POINT_SIZE'});
-  }
-  private onChangeOpacityClick() {
-    this.changePointOpacityAction(0.3);
-    this.setState({triggeredAction: 'CHANGE_POINT_OPACITY'});
-  }
-  private onRemoveFillColorClick() {
-    // this.removeFillColorAction(false);
-    this.setState({triggeredAction: 'REMOVE_FILL_COLOR'});
-  }
-  private onAggregatePointsClick() {
-    // this.aggregateByFieldAction(this.getDefaultSmallSizedNominalFieldName());
-    this.setState({triggeredAction: 'AGGREGATE_POINTS'});
-  }
-  private onSeparateGraphClick() {
-    // this.separateByFieldAction(this.getDefaultSmallSizedNominalFieldName());
-    this.setState({triggeredAction: 'SEPARATE_GRAPH'});
-  }
-  private onEncodingDensityClick() {
-    this.setState({triggeredAction: 'ENCODING_DENSITY'});
+  private onTriggerAction(id: ActionableID) {
+    this.setState({triggeredAction: id});
   }
 
   changePointOpacityAction = (adjusted: number) => {
@@ -612,7 +582,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
 
     spec.mark = SQUARE;
 
-    console.log(spec);
     return {spec};
   }
   private renderEncodingDensityPreview() {
@@ -734,7 +703,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       actionItem: ACTIONABLE_FILTER_GENERAL,
       renderPreview: this.renderFilterPreview,
       onTransition: this.onFilterTransition,
-      onAction: this.onFilterClick
     }
     const PANE_POINT_SIZE: ActionPaneData = {
       id: 'CHANGE_POINT_SIZE',
@@ -742,7 +710,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       actionItem: ACTIONABLE_POINT_SIZE,
       renderPreview: this.renderChangePointSizePreview,
       onTransition: this.onChangePointSizeTransition,
-      onAction: this.onChangePointSizeClick
     }
     const PANE_POINT_OPACITY: ActionPaneData = {
       id: 'CHANGE_POINT_OPACITY',
@@ -750,7 +717,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       actionItem: ACTIONABLE_POINT_OPACITY,
       renderPreview: this.renderChangeOpacityPreview,
       onTransition: this.onChangeOpacityTransition,
-      onAction: this.onChangeOpacityClick
     };
     const PANE_REMOVE_FILL_COLOR: ActionPaneData = {
       id: 'REMOVE_FILL_COLOR',
@@ -758,7 +724,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       actionItem: ACTIONABLE_REMOVE_FILL_COLOR,
       renderPreview: this.renderRemoveFillColorPreview,
       onTransition: this.onRemoveFillColorTransition,
-      onAction: this.onRemoveFillColorClick
     }
     const PANE_AGGREGATE: ActionPaneData = {
       id: 'AGGREGATE_POINTS',
@@ -766,7 +731,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       actionItem: ACTIONABLE_AGGREGATE,
       renderPreview: this.renderAggregatePreview,
       onTransition: this.onAggregateTransition,
-      onAction: this.onAggregatePointsClick
     }
     const PANE_ENCODING_DENSITY: ActionPaneData = {
       id: 'ENCODING_DENSITY',
@@ -774,7 +738,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       actionItem: ACTIONABLE_ENCODING_DENSITY,
       renderPreview: this.renderEncodingDensityPreview,
       onTransition: this.onEncodingDensityTransition,
-      onAction: this.onEncodingDensityClick
     }
     const PANE_SEPARATE_GRAPH: ActionPaneData = {
       id: 'SEPARATE_GRAPH',
@@ -782,7 +745,6 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       actionItem: ACTIONABLE_SEPARATE_GRAPH,
       renderPreview: this.renderSeparateGraphPreview,
       onTransition: this.onSeparateGraphTransition,
-      onAction: this.onSeparateGraphClick
     }
     let seed = 1;
     const paneData: ActionPaneData[] = GET_RAMDOM_ORDERED_ACTIONS([
