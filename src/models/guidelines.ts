@@ -150,8 +150,8 @@ export const ACTIONABLE_POINT_OPACITY: GuideActionItem = {
 }
 
 export const ACTIONABLE_REMOVE_FILL_COLOR: GuideActionItem = {
-  title: '점 중앙색 제거',
-  subtitle: '점 중앙을 투명하게 하여 겹치는 면적을 최소화합니다.',
+  title: '외곽선으로 점 그리기',
+  subtitle: '점을 외곽선으로 표현하여 겹치는 면적을 최소화합니다.',
   noPreviewDesc: '밀도 플롯에는 사용할 수 없습니다.',
   faIcon: 'fa fa-circle-o',
   pros: '<hl>점의 색상</hl>을 잘 구분할 수 있음.',
