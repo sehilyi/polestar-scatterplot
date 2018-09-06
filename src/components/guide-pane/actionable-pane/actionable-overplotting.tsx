@@ -73,6 +73,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         <div styleName={triggeredAction == 'NONE' ? 'back-button-hidden' : 'back-button'}
           onClick={this.onBackButton.bind(this)}>
           <i className='fa fa-chevron-left' aria-hidden='true' />
+          {/* Korean */}
+          {/* {' '} Back */}
           {' '} 돌아가기
         </div>
         {/* Detail Actions */}
