@@ -128,7 +128,7 @@ export const ACTIONABLE_FILTER_GENERAL: GuideActionItem = {
   noPreviewDesc: '필터에 사용할 범주형 변수가 남아있지 않습니다. 필터를 제거하세요.',
   faIcon: 'fa fa-filter',
   pros: '<hl>점의 색상</hl>을 잘 구분할 수 있음.',
-  cons: '<hl>필요 없는 데이터</hl>를 미리 정의해야 함.</br>점이 <hl>밀집된 정도</hl>를 확인하기 어려움.'
+  cons: '<hl>필요 없는 데이터</hl>를 미리 정의해야 함.</br>점이 <hl>밀집된 정도</hl>를 구분하기 어려움.'
 }
 
 export const ACTIONABLE_POINT_SIZE: GuideActionItem = {
@@ -137,7 +137,7 @@ export const ACTIONABLE_POINT_SIZE: GuideActionItem = {
   noPreviewDesc: '밀도 플롯에는 사용할 수 없습니다.',
   faIcon: 'fa fa-compress',
   pros: '<hl>점의 색상</hl>을 비교적 잘 구분할 수 있음.',
-  cons: '점이 <hl>밀집된 정도</hl>를 확인하기 어려움.</br><hl>동일한 좌표를 가진 점이 많은</hl> 경우에는 적합하지 않음.'
+  cons: '점이 <hl>밀집된 정도</hl>를 구분하기 어려움.</br><hl>동일한 좌표를 가진 점이 많은</hl> 경우에는 적합하지 않음.'
 }
 
 export const ACTIONABLE_POINT_OPACITY: GuideActionItem = {
@@ -145,7 +145,7 @@ export const ACTIONABLE_POINT_OPACITY: GuideActionItem = {
   subtitle: '점의 투명도를 조절하여 겹쳐진 점이 보이도록 합니다.',
   noPreviewDesc: '밀도 플롯에는 사용할 수 없습니다.',
   faIcon: 'fa fa-tint',
-  pros: '점이 <hl>밀집된 정도</hl>를 잘 확인할 수 있음.',
+  pros: '점이 <hl>밀집된 정도</hl>를 잘 구분할 수 있음.',
   cons: '<hl>점의 색상</hl>을 구분하기 어려움.</br><hl>동떨어진 점</hl>은 확인하기 어려움.'
 }
 
@@ -155,7 +155,7 @@ export const ACTIONABLE_REMOVE_FILL_COLOR: GuideActionItem = {
   noPreviewDesc: '밀도 플롯에는 사용할 수 없습니다.',
   faIcon: 'fa fa-circle-o',
   pros: '<hl>점의 색상</hl>을 잘 구분할 수 있음.',
-  cons: '점이 <hl>밀집된 정도</hl>를 확인하기 어려움.</br><hl>겹쳐진 점이 많은</hl> 경우에는 적합하지 않음.'
+  cons: '점이 <hl>밀집된 정도</hl>를 구분하기 어려움.</br><hl>겹쳐진 점이 많은</hl> 경우에는 적합하지 않음.'
 }
 
 export const ACTIONABLE_AGGREGATE: GuideActionItem = {
@@ -164,7 +164,7 @@ export const ACTIONABLE_AGGREGATE: GuideActionItem = {
   noPreviewDesc: '밀도 플롯에는 사용할 수 없습니다.',
   faIcon: 'fa fa-object-group',
   pros: '<hl>점의 색상</hl>을 잘 구분할 수 있음.</br><hl>겹쳐진 점이 많은</hl> 경우에 적합함.',
-  cons: '점이 <hl>밀집된 정도</hl>를 확인하기 어려움.'
+  cons: '점이 <hl>밀집된 정도</hl>를 구분하기 어려움.'
 }
 
 export const ACTIONABLE_ENCODING_DENSITY: GuideActionItem = {
@@ -172,7 +172,7 @@ export const ACTIONABLE_ENCODING_DENSITY: GuideActionItem = {
   subtitle: '모든 데이터를 개별 점으로 표현하는 대신 구간별 점의 개수를 색상의 명도로 표현합니다.',
   noPreviewDesc: '색상이 사용된 상태에서는 사용할 수 없습니다',
   faIcon: 'fa fa-th',
-  pros: '점이 <hl>밀집된 정도</hl>를 잘 확인할 수 있음.',
+  pros: '점이 <hl>밀집된 정도</hl>를 잘 구분할 수 있음.',
   cons: '범주형 변수에 <hl>색상</hl>을 적용할 수 없음.</br><hl>동떨어진 점</hl>은 확인하기 어려움.'
 }
 
@@ -182,7 +182,7 @@ export const ACTIONABLE_SEPARATE_GRAPH: GuideActionItem = {
   noPreviewDesc: '',
   faIcon: 'fa fa-clone',
   pros: '<hl>점의 색상</hl>을 잘 구분할 수 있음.',
-  cons: '점이 <hl>밀집된 정도</hl>를 확인하기 어려움.</br>차트를 그리기 위한 <hl>충분한 공간</hl>이 필요함.'
+  cons: '점이 <hl>밀집된 정도</hl>를 구분하기 어려움.</br>차트를 그리기 위한 <hl>충분한 공간</hl>이 필요함.'
 }
 
 export const AggregateStages: TransitionAttr[] = [
