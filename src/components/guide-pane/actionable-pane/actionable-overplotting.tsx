@@ -143,8 +143,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         <div styleName={triggeredAction == 'CHANGE_POINT_SIZE' ? '' : 'hidden'}>
           <NumberAdjuster
             id={this.props.item.id + 'CHANGE_POINT_SIZE'}
-            title={ACTIONABLE_FILTER_GENERAL.title}
-            subtitle={ACTIONABLE_FILTER_GENERAL.subtitle}
+            title={ACTIONABLE_POINT_SIZE.title}
+            subtitle={ACTIONABLE_POINT_SIZE.subtitle}
             min={1}
             max={60}
             step={1}
@@ -374,7 +374,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         type: SPEC_TO_DENSITY_PLOT
       })
     }
-    else{
+    else {
       this.props.handleAction({
         type: SPEC_TO_REMOVE_DENSITY_PLOT
       })
