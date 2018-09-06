@@ -64,6 +64,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     const {triggeredAction} = this.state;
     const paneData = this.getPaneData();
     const actionPanes = paneData.map(this.previewPane, this);
+    const isTextShow = this.props.studySetting.condition.indexOf('T') != -1;
 
     return (
       <div styleName='ac-root' className='styled-scroll'>
@@ -86,7 +87,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           <FieldPicker
             id={this.props.item.id + 'AGGREGATE_POINTS'}
             title={ACTIONABLE_AGGREGATE.title}
-            subtitle={ACTIONABLE_AGGREGATE.subtitle}
+            subtitle={!isTextShow ? '' : ACTIONABLE_AGGREGATE.subtitle}
             fields={[DEFAULT_NONE_USED_STR].concat(this.getNominalFieldNames())}
             filters={this.props.filters}
             schema={this.props.schema}
@@ -99,7 +100,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           <FilterAdjuster
             id={this.props.item.id + 'FILTER'}
             title={ACTIONABLE_FILTER_GENERAL.title}
-            subtitle={ACTIONABLE_FILTER_GENERAL.subtitle}
+            subtitle={!isTextShow ? '' : ACTIONABLE_FILTER_GENERAL.subtitle}
             fields={this.getNominalFieldNames()}
             filters={this.props.filters}
             schema={this.props.schema}
@@ -113,7 +114,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           <ToggleSwitcher
             id={this.props.item.id + 'ENCODING_DENSITY'}
             title={ACTIONABLE_ENCODING_DENSITY.title}
-            subtitle={ACTIONABLE_ENCODING_DENSITY.subtitle}
+            subtitle={!isTextShow ? '' : ACTIONABLE_ENCODING_DENSITY.subtitle}
             defaultIsOn={isDensityPlot(this.props.mainSpec)}
             toggleAction={this.encodeDensity}
           />
@@ -122,7 +123,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           <ToggleSwitcher
             id={this.props.item.id + 'REMOVE_FILL_COLOR'}
             title={ACTIONABLE_REMOVE_FILL_COLOR.title}
-            subtitle={ACTIONABLE_REMOVE_FILL_COLOR.subtitle}
+            subtitle={!isTextShow ? '' : ACTIONABLE_REMOVE_FILL_COLOR.subtitle}
             defaultIsOn={this.getIsOnRemoveFillColor()}
             toggleAction={this.removeFillColorAction}
           />
@@ -131,7 +132,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           <FieldPicker
             id={this.props.item.id + 'SEPARATE_GRAPH'}
             title={ACTIONABLE_SEPARATE_GRAPH.title}
-            subtitle={ACTIONABLE_SEPARATE_GRAPH.subtitle}
+            subtitle={!isTextShow ? '' : ACTIONABLE_SEPARATE_GRAPH.subtitle}
             fields={[DEFAULT_NONE_USED_STR].concat(this.getNominalFieldNames())}
             filters={this.props.filters}
             schema={this.props.schema}
@@ -144,7 +145,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           <NumberAdjuster
             id={this.props.item.id + 'CHANGE_POINT_SIZE'}
             title={ACTIONABLE_POINT_SIZE.title}
-            subtitle={ACTIONABLE_POINT_SIZE.subtitle}
+            subtitle={!isTextShow ? '' : ACTIONABLE_POINT_SIZE.subtitle}
             min={1}
             max={60}
             step={1}
@@ -156,7 +157,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           <NumberAdjuster
             id={this.props.item.id + 'CHANGE_POINT_OPACITY'}
             title={ACTIONABLE_POINT_OPACITY.title}
-            subtitle={ACTIONABLE_POINT_OPACITY.subtitle}
+            subtitle={!isTextShow ? '' : ACTIONABLE_POINT_OPACITY.subtitle}
             min={0}
             max={1}
             step={0.01}

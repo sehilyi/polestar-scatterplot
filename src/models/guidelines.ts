@@ -125,7 +125,7 @@ export interface GuideActionItem {
 
 export const ACTIONABLE_FILTER_GENERAL: GuideActionItem = {
   title: '카테고리로 필터',
-  subtitle: '',//'관심 없는 데이터를 제거해 시각화에 사용되는 점들의 개수를 줄입니다',
+  subtitle: '관심 없는 데이터를 제거해 시각화에 사용되는 점들의 개수를 줄입니다',
   subsubtitle: ' 기준 필터 결과)',
   noPreviewDesc: '필터에 사용할 범주형 변수가 남아있지 않습니다. 필터를 제거하세요.',
   faIcon: 'fa fa-filter',
@@ -145,7 +145,7 @@ export const ACTIONABLE_POINT_SIZE: GuideActionItem = {
 
 export const ACTIONABLE_POINT_OPACITY: GuideActionItem = {
   title: '점 투명도 조절',
-  subtitle: '',//'점의 투명도를 조절해서 다른 점들로 인해 가려진 점들도 보이도록 합니다',
+  subtitle: '점의 투명도를 조절해서 다른 점들로 인해 가려진 점들도 보이도록 합니다',
   subsubtitle: '',
   noPreviewDesc: '밀도 플롯에는 사용할 수 없습니다',
   faIcon: 'fa fa-tint',
@@ -155,7 +155,7 @@ export const ACTIONABLE_POINT_OPACITY: GuideActionItem = {
 
 export const ACTIONABLE_REMOVE_FILL_COLOR: GuideActionItem = {
   title: '점 중앙색 제거',
-  subtitle: '',//'점 중앙을 투명하게 해서 서로 겹치는 면적을 줄입니다',
+  subtitle: '점 중앙을 투명하게 해서 서로 겹치는 면적을 줄입니다',
   subsubtitle: '',
   noPreviewDesc: '밀도 플롯에는 사용할 수 없습니다',
   faIcon: 'fa fa-circle-o',
@@ -174,7 +174,7 @@ export const ACTIONABLE_REMOVE_FILL_COLOR: GuideActionItem = {
 
 export const ACTIONABLE_AGGREGATE: GuideActionItem = {
   title: '카테고리로 점 합치기(평균)',
-  subtitle: '',//'카테고리에 따른 평균 좌표를 계산해 카테고리별로 점들을 합칩니다',
+  subtitle: '카테고리에 따른 평균 좌표를 계산해 카테고리별로 점들을 합칩니다',
   subsubtitle: ' 기준 합친 결과)',
   noPreviewDesc: '밀도 플롯에는 사용할 수 없습니다',
   faIcon: 'fa fa-object-group',
@@ -184,7 +184,7 @@ export const ACTIONABLE_AGGREGATE: GuideActionItem = {
 
 export const ACTIONABLE_ENCODING_DENSITY: GuideActionItem = {
   title: '밀도 플롯',
-  subtitle: '',//'구간별 점들의 개수를 색깔의 강도로 표현합니다',
+  subtitle: '구간별 점들의 개수를 색깔의 강도로 표현합니다',
   subsubtitle: '',
   noPreviewDesc: '색깔이 사용된 상태에서는 사용할 수 없습니다',
   faIcon: 'fa fa-th',
@@ -194,7 +194,7 @@ export const ACTIONABLE_ENCODING_DENSITY: GuideActionItem = {
 
 export const ACTIONABLE_SEPARATE_GRAPH: GuideActionItem = {
   title: '차트 분리',
-  subtitle: '',//'카테고리에 따라 차트를 여러개로 분리합니다',
+  subtitle: '카테고리에 따라 차트를 여러개로 분리합니다',
   subsubtitle: ' 기준 분리한 결과)',
   noPreviewDesc: '',
   faIcon: 'fa fa-clone',
