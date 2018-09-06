@@ -72,8 +72,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         </div>
         <div styleName={triggeredAction == 'NONE' ? 'back-button-hidden' : 'back-button'}
           onClick={this.onBackButton.bind(this)}>
-          <i className='fa fa-chevron-circle-left' aria-hidden='true' />
-          {' '} Back
+          <i className='fa fa-chevron-left' aria-hidden='true' />
+          {' '} 돌아가기
         </div>
         {/* Detail Actions */}
         <div styleName={triggeredAction == 'AGGREGATE_POINTS' ? '' : 'hidden'}>
@@ -171,10 +171,12 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     // study setting
     const isTextShow = studySetting.condition.indexOf('T') != -1;
     const isAniShow = studySetting.condition.indexOf('A') != -1;
+    //
     return (
       <div styleName={expandedAction == data.id ? 'guide-preview-expand' : 'guide-preview'} key={data.actionItem.title}>
         <div styleName='transition-progress-bg'>
           <div styleName='transition-progress'></div>
+          {/* Remove Expand button for study */}
           {/* <div onClick={isPaneUsing ? this.onExpand.bind(this, data.id) : null} styleName={isPaneUsing ? 'expand-button' : 'expand-button-disabled'}>
             <i className={expandedAction == data.id ? "fa fa-compress" : 'fa fa-expand'} aria-hidden="true" />
           </div> */}
@@ -201,8 +203,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             <i className='fa fa-play' aria-hidden='true' />
           </div>
           <div onClick={!isPaneUsing ? null : this.onTriggerAction.bind(this, data.id)} styleName={!isPaneUsing ? 'disabled-button' : 'apply-button'}>
-            {/* TRNASLATION: Apply */}
-            <i className="fa fa-sliders" aria-hidden="true" />{' ' + '세부 설정'}
+            <i className="fa fa-sliders" aria-hidden="true" />{' ' + '설정'}
           </div>
         </div>
       </div>

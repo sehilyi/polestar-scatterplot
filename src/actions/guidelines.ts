@@ -1,10 +1,13 @@
 import {GuidelineItemTypes, GuidelineItemActionableCategories, ActionableID, GuidelineItemOverPlotting} from "../models/guidelines";
-import {ReduxAction} from "./redux-action";
+import {ReduxAction, PlainReduxAction} from "./redux-action";
 import {DateTime} from "vega-lite/build/src/datetime";
 
 export type GuidelineAction = GuidelineRemoveItem | GuidelineAddItem | ActionableSelectCategories | GuidelineShowIndicator |
   GuidelineHideIndicator | GuidelineToggleIgnoreItem | GuidelineToggleIsExpanded | ActionableTriggerInterface |
-  ActionableModifyOneOfCategories | GuidelineSetUserActionType | ActionableAdjustPointSize | ActionableAdjustPointOpacity | ActionableChangeFilled;
+  ActionableModifyOneOfCategories | GuidelineSetUserActionType | ActionableAdjustPointSize | ActionableAdjustPointOpacity | ActionableChangeFilled | GuidelineClear;
+
+export const GUIDELINE_CLEAR = 'GUIDELINE_CLEAR';
+export type GuidelineClear = PlainReduxAction<typeof GUIDELINE_CLEAR>;
 
 export const GUIDELINE_ADD_ITEM = 'GUIDELINE_ADD_ITEM';
 export type GuidelineAddItem = ReduxAction<typeof GUIDELINE_ADD_ITEM, {

@@ -20,7 +20,7 @@ import {FilterPane} from '../filter-pane';
 import * as styles from './encoding-pane.scss';
 import {EncodingShelf} from './encoding-shelf';
 import {MarkPicker} from './mark-picker';
-import {GuidelineAction} from '../../actions/guidelines';
+import {GuidelineAction, GUIDELINE_CLEAR} from '../../actions/guidelines';
 import {checkGuideline} from '../../models/guidelines';
 
 interface EncodingPanelProps extends ActionHandler<ShelfAction | ResultAsyncAction | FilterAction | GuidelineAction> {
@@ -184,6 +184,7 @@ class EncodingPanelBase extends React.PureComponent<EncodingPanelProps, {}> {
   private onClear() {
     this.props.handleAction({type: SPEC_CLEAR});
     this.props.handleAction({type: FILTER_CLEAR});
+    this.props.handleAction({type: GUIDELINE_CLEAR});
   }
 }
 
