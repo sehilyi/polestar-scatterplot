@@ -52,7 +52,7 @@ class EncodingPanelBase extends React.PureComponent<EncodingPanelProps, {}> {
 
     const positionShelves = ['x', 'y'].map(this.encodingShelf, this);
     // Korean
-    const facetShelves = ['row', 'column'].slice(1, 2).map(this.encodingShelf, this);
+    const facetShelves = ['row', 'column'].slice(2, 2).map(this.encodingShelf, this);
     // const facetShelves = ['row', '열'].slice(1, 2).map(this.encodingShelf, this);
     // Korean
     const nonPositionShelves = ['size', 'color', 'shape', 'detail', 'text'].slice(1, 2).map(this.encodingShelf, this);
@@ -98,22 +98,22 @@ class EncodingPanelBase extends React.PureComponent<EncodingPanelProps, {}> {
           {nonPositionShelves}
         </div>
 
-        <div styleName="shelf-group">
+        {/* <div styleName="shelf-group"> */}
           {/* Korean */}
           {/* <h3>Facet</h3> */}
-          <h3>분할</h3>
+          {/* <h3>분할</h3>
           {facetShelves}
-        </div>
+        </div> */}
 
         {/* TODO: correctly highlight field in the wildcard */}
         {wildcardShelvesGroup}
 
-        <div styleName="shelf-group">
+        {/* <div styleName="shelf-group"> */}
           {/* Korean */}
           {/* <h3>Filter</h3> */}
-          <h3>필터</h3>
+          {/* <h3>필터</h3>
           {this.filterPane()}
-        </div>
+        </div> */}
       </div>
     );
   }

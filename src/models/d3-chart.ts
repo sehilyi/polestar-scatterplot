@@ -716,7 +716,7 @@ export function renderAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, sch
       .classed('label', true)
       .attr('transform', 'rotate(-90)')
       .attr('x', -CHART_SIZE.width / 2)
-      .attr('y', -50)
+      .attr('y', -40)
       .attr('dy', '.71em')
       .style('font-weight', 'bold')
       .style('font-family', 'sans-serif')
