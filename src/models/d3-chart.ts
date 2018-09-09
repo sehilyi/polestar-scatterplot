@@ -223,7 +223,7 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
     points = points.transition().duration(PointOpacityStages[0].duration);
   }
   else if (isTransition && id === 'SEPARATE_GRAPH') {
-    points = points.transition().duration(SeperateGraphStages[0].duration);
+    points = points.transition().duration(SeperateGraphStages[0].duration).delay(SeperateGraphStages[0].delay + SeperateGraphStages[0].duration);
   }
 
   points
@@ -414,7 +414,7 @@ export function renderLegend(id: ActionableID, attr: PointAttr, field: string, t
   return colorScale;
 }
 
-export function getDefaultPointAttrs(){
+export function getDefaultPointAttrs() {
   return {
     fill: '#4c78a8',
     opacity: 1.0,
@@ -427,7 +427,7 @@ export function getDefaultPointAttrs(){
   };
 }
 export function getPointAttrs(spec: FacetedCompositeUnitSpec): PointAttr {
-  if(typeof spec == 'undefined') return getDefaultPointAttrs();
+  if (typeof spec == 'undefined') return getDefaultPointAttrs();
 
   const isDensity = isDensityPlot(spec);
   let isRemoveFill = false;
@@ -667,7 +667,7 @@ export function renderAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, sch
       .classed('grid', true)
       .attr('transform', translate(CHART_MARGIN.left, CHART_SIZE.height + CHART_MARGIN.top))
       .call(xGrid)
-      .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
+      .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0).delay(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].delay + SeperateGraphStages[0].duration: 0)
       .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * i + CHART_MARGIN.left,
         CHART_SIZE.height + CHART_MARGIN.top))
 
@@ -675,7 +675,7 @@ export function renderAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, sch
       .classed('grid', true)
       .attr('transform', 'translate(' + (CHART_MARGIN.left) + ',' + (CHART_MARGIN.top) + ')')
       .call(yGrid)
-      .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
+      .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0).delay(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].delay + SeperateGraphStages[0].duration : 0)
       .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * i + CHART_MARGIN.left, CHART_MARGIN.top))
 
 
@@ -687,7 +687,7 @@ export function renderAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, sch
       .call(xAxis)
 
     xaxis
-      .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
+      .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0).delay(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].delay + SeperateGraphStages[0].duration: 0)
       .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * i + CHART_MARGIN.left, CHART_SIZE.height + CHART_MARGIN.top));
 
     xaxis.append('text')
@@ -709,7 +709,7 @@ export function renderAxes(id: ActionableID, spec: FacetedCompositeUnitSpec, sch
       .call(yAxis)
 
     yaxis
-      .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0)
+      .transition().duration(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].duration : 0).delay(isTransition && id == 'SEPARATE_GRAPH' ? SeperateGraphStages[0].delay + SeperateGraphStages[0].duration: 0)
       .attr('transform', translate((CHART_MARGIN.left + CHART_SIZE.width + CHART_MARGIN.right + CHART_PADDING.right) * i + CHART_MARGIN.left, CHART_MARGIN.top))
 
     yaxis.append('text')
