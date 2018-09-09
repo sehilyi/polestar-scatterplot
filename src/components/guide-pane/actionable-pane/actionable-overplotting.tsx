@@ -184,6 +184,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           </div> */}
         </div>
         <div className={expandedAction == data.id ? !isAniShow ? 'preview-expand-notimeline' : 'preview-expand' : 'preview'}
+          onClick={!isPaneUsing ? null : this.onTriggerAction.bind(this, data.id)}
+          onMouseEnter={!isPaneUsing || !isAniShow ? null : data.onTransition.bind(this)}
           styleName={'guide-preview-inner'}
           ref={this.vegaLiteWrapperRefHandler}>
           <p styleName='preview-title'>
@@ -201,9 +203,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           </ul>
         </div>
         <div styleName={'bottom-button'}>
-          <div onClick={!isPaneUsing ? null : data.onTransition.bind(this)} styleName={!isAniShow ? 'hidden' : !isPaneUsing ? 'disabled-button' : 'transition-button'} >
+          {/* <div onClick={!isPaneUsing ? null : data.onTransition.bind(this)} styleName={!isAniShow ? 'hidden' : !isPaneUsing ? 'disabled-button' : 'transition-button'} >
             <i className='fa fa-play' aria-hidden='true' />
-          </div>
+          </div> */}
           <div onClick={!isPaneUsing ? null : this.onTriggerAction.bind(this, data.id)} styleName={!isPaneUsing ? 'disabled-button' : 'apply-button'}>
             <i className="fa fa-sliders" aria-hidden="true" />{' ' + '설정'}
           </div>
