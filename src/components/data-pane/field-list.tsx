@@ -130,7 +130,7 @@ class FieldListBase extends React.PureComponent<FieldListProps, {}> {
         parentId={{type: FieldParentType.FIELD_LIST}}
         caretShow={true}
         popupComponent={popupComponent}
-        onDoubleClick={this.onAdd}
+        // onDoubleClick={this.onAdd}
         onAdd={this.onAdd}
         schema={schema}
       />
