@@ -620,7 +620,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
       column: {
         field,
         type: NOMINAL
-      }
+      },
+      color: {field, type: NOMINAL}
     }
 
     return {spec};
