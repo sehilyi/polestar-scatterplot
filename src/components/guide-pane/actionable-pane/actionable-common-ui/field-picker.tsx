@@ -49,11 +49,15 @@ export class FieldPickerBase extends React.PureComponent<FieldPickerProps, Field
               onChange={this.toggleRadio.bind(this, option)}
             />
             {'' + option}
-            {length > disableThreshold ? ' - 카테고리가 너무 많습니다. 필터 후 사용하세요.' : ''}
+            {/* Korean */}
+            {/* {length > disableThreshold ? ' - 카테고리가 너무 많습니다. 필터 후 사용하세요.' : ''} */}
+            {length > disableThreshold ? ' - There are too many categories. Fiter categories in advance.' : ''}
           </label>
           {isNone ? null :
             <span>
-              {'(' + length + ' 카테고리)'}
+              {/* Korean */}
+              {/* {'(' + length + ' 카테고리)'} */}
+              {'(' + length + ' Categories)'}
             </span>
           }
         </div>

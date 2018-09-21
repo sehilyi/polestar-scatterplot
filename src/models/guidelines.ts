@@ -18,7 +18,9 @@ export type GuideState = "WARN" | "TIP" | "DONE" | "IGNORE";
 export type guidelineIds = "NEW_CHART_BINNED_SCATTERPLOT" | "GUIDELINE_TOO_MANY_COLOR_CATEGORIES" | "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES" |
   "GUIDELINE_OVER_PLOTTING" | "GUIDELINE_NONE";
 export type GuidelineItemTypes = GuidelineItemOverPlotting | GuidelineItemActionableCategories | GuidelineItem;
-export const DEFAULT_NONE_USED_STR = "사용 안함";
+// Korean
+// export const DEFAULT_NONE_USED_STR = "사용 안함";
+export const DEFAULT_NONE_USED_STR = "None";
 
 //Thresholds
 export const CATEGORY_THRESHOLD = 10;
@@ -120,6 +122,12 @@ export interface GuideActionItem {
   faIcon?: string;
   pros?: string;
   cons?: string;
+
+  enTitle?: string;
+  enSubtitle?: string;
+  enNoPreviewDesc?: string;
+  enPros?: string;
+  enCons?: string;
 }
 
 export const ACTIONABLE_FILTER_GENERAL: GuideActionItem = {
@@ -128,7 +136,13 @@ export const ACTIONABLE_FILTER_GENERAL: GuideActionItem = {
   noPreviewDesc: '필터에 사용할 범주형 변수가 남아있지 않습니다. 필터를 제거하세요.',
   faIcon: 'fa fa-filter',
   pros: '<hl>점의 색상</hl>을 잘 구분할 수 있음.',
-  cons: '<hl>필요 없는 데이터</hl>를 미리 정의해야 함.</br>점이 <hl>밀집된 정도</hl>를 구분하기 어려움.'
+  cons: '<hl>필요 없는 데이터</hl>를 미리 정의해야 함.</br>점이 <hl>밀집된 정도</hl>를 구분하기 어려움.',
+
+  enTitle: 'Filter By Category',
+  enSubtitle: 'You can reduce the overlapped area by filtering data of no interests',
+  enNoPreviewDesc: 'There is no remaining nominal fields to filter.',
+  enPros: 'Can easily distinguish the <hl>color of points</hl>.',
+  enCons: '<hl>Data of no interests</hl> should be predetermined.</br>Hard to distinguish the <hl>density levels of points</hl>.',
 }
 
 export const ACTIONABLE_POINT_SIZE: GuideActionItem = {
@@ -137,7 +151,13 @@ export const ACTIONABLE_POINT_SIZE: GuideActionItem = {
   noPreviewDesc: '밀도 플롯에는 사용할 수 없습니다.',
   faIcon: 'fa fa-compress',
   pros: '<hl>점의 색상</hl>을 비교적 잘 구분할 수 있음.',
-  cons: '점이 <hl>밀집된 정도</hl>를 구분하기 어려움.</br><hl>동일한 좌표를 가진 점이 많은</hl> 경우에는 적합하지 않음.'
+  cons: '점이 <hl>밀집된 정도</hl>를 구분하기 어려움.</br><hl>동일한 좌표를 가진 점이 많은</hl> 경우에는 적합하지 않음.',
+
+  enTitle: 'Change Point Size',
+  enSubtitle: 'You can reduce the overlapped area by reducing the size of points',
+  enNoPreviewDesc: 'You cannot use this recommendation in density plots',
+  enPros: 'Can distinguish the <hl>color of points</hl>.',
+  enCons: 'Hard to distinguish the <hl>density levels of points</hl>.</br>Not proper to use when too many points are placed at the <hl>exact same positions</hl>.',
 }
 
 export const ACTIONABLE_POINT_OPACITY: GuideActionItem = {
@@ -146,7 +166,13 @@ export const ACTIONABLE_POINT_OPACITY: GuideActionItem = {
   noPreviewDesc: '밀도 플롯에는 사용할 수 없습니다.',
   faIcon: 'fa fa-tint',
   pros: '점이 <hl>밀집된 정도</hl>를 잘 구분할 수 있음.',
-  cons: '<hl>점의 색상</hl>을 구분하기 어려움.</br><hl>동떨어진 점</hl>은 확인하기 어려움.'
+  cons: '<hl>점의 색상</hl>을 구분하기 어려움.</br><hl>동떨어진 점</hl>은 확인하기 어려움.',
+
+  enTitle: 'Change Point Opacity',
+  enSubtitle: 'You can see through the overlapped area by reducing the opacity levels of points',
+  enNoPreviewDesc: 'You cannot use this recommendation in density plots',
+  enPros: 'Can easily distinguish the <hl>desity levels of points</hl>.',
+  enCons: 'Hard to distinguish the <hl>color of points</hl>.</br>Hard to find <hl>a point</hl> placed <hl>far away</hl> from others.',
 }
 
 export const ACTIONABLE_REMOVE_FILL_COLOR: GuideActionItem = {
@@ -155,7 +181,13 @@ export const ACTIONABLE_REMOVE_FILL_COLOR: GuideActionItem = {
   noPreviewDesc: '밀도 플롯에는 사용할 수 없습니다.',
   faIcon: 'fa fa-circle-o',
   pros: '<hl>점의 색상</hl>을 잘 구분할 수 있음.',
-  cons: '점이 <hl>밀집된 정도</hl>를 구분하기 어려움.</br><hl>겹쳐진 점이 많은</hl> 경우에는 적합하지 않음.'
+  cons: '점이 <hl>밀집된 정도</hl>를 구분하기 어려움.</br><hl>겹쳐진 점이 많은</hl> 경우에는 적합하지 않음.',
+
+  enTitle: 'Represent Points By Outline',
+  enSubtitle: 'You can reduce the overlapped area by making the center of points transparent',
+  enNoPreviewDesc: 'You cannot use this recommendation in density plots',
+  enPros: 'Can distinguish the <hl>color of points</hl>.',
+  enCons: 'Hard to distinguish the <hl>density levels of points</hl>.</br>Not proper when <hl>too many points are overlapped</hl>.',
 }
 
 export const ACTIONABLE_AGGREGATE: GuideActionItem = {
@@ -164,7 +196,13 @@ export const ACTIONABLE_AGGREGATE: GuideActionItem = {
   noPreviewDesc: '밀도 플롯에는 사용할 수 없습니다.',
   faIcon: 'fa fa-object-group',
   pros: '<hl>점의 색상</hl>을 잘 구분할 수 있음.</br><hl>겹쳐진 점이 많은</hl> 경우에 적합함.',
-  cons: '점이 <hl>밀집된 정도</hl>를 구분하기 어려움.'
+  cons: '점이 <hl>밀집된 정도</hl>를 구분하기 어려움.',
+
+  enTitle: 'Aggregate Points To Mean Position',
+  enSubtitle: 'You can reduce the number of points by aggregating points to mean position by categories',
+  enNoPreviewDesc: 'You cannot use this recommendation in density plots',
+  enPros: 'Can easily distinguish the <hl>color of points</hl>.</br>Proper to use when <hl>too many points are overlapped</hl>.',
+  enCons: 'Hard to distinguish the <hl>density levels of points</hl>.',
 }
 
 export const ACTIONABLE_ENCODING_DENSITY: GuideActionItem = {
@@ -173,7 +211,13 @@ export const ACTIONABLE_ENCODING_DENSITY: GuideActionItem = {
   noPreviewDesc: '색상이 사용된 상태에서는 사용할 수 없습니다',
   faIcon: 'fa fa-th',
   pros: '점이 <hl>밀집된 정도</hl>를 잘 구분할 수 있음.',
-  cons: '범주형 변수에 <hl>색상</hl>을 적용할 수 없음.</br><hl>동떨어진 점</hl>은 확인하기 어려움.'
+  cons: '범주형 변수에 <hl>색상</hl>을 적용할 수 없음.</br><hl>동떨어진 점</hl>은 확인하기 어려움.',
+
+  enTitle: 'Represent Density of Points Using Color',
+  enSubtitle: 'You can reduce the number of overlapped points by encoding the density levels of binned positions using color',
+  enNoPreviewDesc: 'You cannot use this recommendation when color is already used',
+  enPros: 'Can easily distinguish the <hl>level of density</hl>.',
+  enCons: 'Cannot represent a nominal field using <hl>color</hl>.</br>Hard to find <hl>a point</hl> placed <hl>far away</hl> from others.',
 }
 
 export const ACTIONABLE_SEPARATE_GRAPH: GuideActionItem = {
@@ -182,7 +226,13 @@ export const ACTIONABLE_SEPARATE_GRAPH: GuideActionItem = {
   noPreviewDesc: '',
   faIcon: 'fa fa-clone',
   pros: '<hl>점의 색상</hl>을 잘 구분할 수 있음.',
-  cons: '점이 <hl>밀집된 정도</hl>를 구분하기 어려움.</br>차트를 그리기 위한 <hl>충분한 공간</hl>이 필요함.'
+  cons: '점이 <hl>밀집된 정도</hl>를 구분하기 어려움.</br>차트를 그리기 위한 <hl>충분한 공간</hl>이 필요함.',
+
+  enTitle: 'Separate Graph By Category',
+  enSubtitle: 'You can reduce the number of overlapped points per graph by separating a graph by categories',
+  enNoPreviewDesc: '',
+  enPros: 'Can easily distinguish the <hl>color of points</hl>.',
+  enCons: 'Hard to distinguish the <hl>density levels of points</hl>.</br>Need <hl>sufficient space</hl> to represent multiple graphs.',
 }
 
 export const AggregateStages: TransitionAttr[] = [

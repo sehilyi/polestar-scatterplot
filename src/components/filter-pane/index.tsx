@@ -165,13 +165,13 @@ class FilterPaneBase extends React.PureComponent<FilterPaneProps, {}> {
     if (item && !canDrop) {
       styleName = 'placeholder-disabled';
       // Korean
-      // text = 'Cannot drop a field here';
-      text = '여기 올릴 수 없습니다';
+      text = 'Cannot drop a field here';
+      // text = '여기 올릴 수 없습니다';
     } else {
       styleName = isOver ? 'placeholder-over' : item ? 'placeholder-active' : 'placeholder';
       // Korean
-      // text = 'Drop a field here';
-      text = '변수를 여기 올리세요';
+      text = 'Drop a field here';
+      // text = '변수를 여기 올리세요';
     }
     return (
       <span styleName={styleName}>

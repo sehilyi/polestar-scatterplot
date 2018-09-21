@@ -22,8 +22,8 @@ export class DataPaneBase extends React.PureComponent<DataPanelProps, {}> {
     const fields = fieldCount > 0 ? (
       <div styleName="data-pane-section">
         {/* Korean */}
-        {/* <h3>Fields</h3> */}
-        <h3>변수</h3>
+        <h3>Fields</h3>
+        {/* <h3>변수</h3> */}
         <FieldList />
       </div>) : null;
 
@@ -36,8 +36,8 @@ export class DataPaneBase extends React.PureComponent<DataPanelProps, {}> {
     return (
       <div className="pane" styleName="data-pane">
         {/* Korean */}
-        {/* <h2 styleName="data-pane-title">Data</h2> */}
-        <h2 styleName="data-pane-title">데이터</h2>
+        <h2 styleName="data-pane-title">Data</h2>
+        {/* <h2 styleName="data-pane-title">데이터</h2> */}
         <div>
           <span styleName="current-dataset">
             <i className="fa fa-database" />

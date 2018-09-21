@@ -35,8 +35,8 @@ export class LastBookmarkBase extends React.PureComponent<LastBookmarkProps, {}>
     return (
       <div styleName="preview-pane">
         {/* Korean */}
-        {/* <h2><i className="fa fa-thumb-tack" aria-hidden="true" /> Pinned View</h2> */}
-        <h2><i className="fa fa-thumb-tack" aria-hidden="true" /> 즐겨찾기</h2>
+        <h2><i className="fa fa-thumb-tack" aria-hidden="true" /> Pinned View</h2>
+        {/* <h2><i className="fa fa-thumb-tack" aria-hidden="true" /> 즐겨찾기</h2> */}
         {this.renderLastBookmark()}
       </div>
     );

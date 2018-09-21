@@ -29,7 +29,7 @@ export function GET_RAMDOM_ORDERED_ACTIONS(array: any[], seed: number) {
   const _6 = array[5];
   const _7 = array[6];
 
-  if (seed == 1) return [_1, _5, _7, _3, _6, _4, _2];
+  if (seed == 1) return [_3, _5, _6, _7, _2, _4, _1];
   else if (seed == 2) return [_6, _2, _7, _5, _1, _3, _4];
   else if (seed == 3) return [_5, _2, _4, _7, _6, _1, _3];
   else if (seed == 4) return [_1, _7, _6, _4, _3, _5, _2];

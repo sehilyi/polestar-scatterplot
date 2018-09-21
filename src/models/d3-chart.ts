@@ -175,7 +175,9 @@ export function renderScatterplot(id: ActionableID, spec: FacetedCompositeUnitSp
   // render legend
   let colorScale: any;
   if (isLegend) {
-    colorScale = renderLegend(id, attr, isDensity ? '개수 ' : colorField.field, colorField.type, schema, getNumberOfGraphs(spec, schema, data), isTransition && !isSkip1APStage, isDensity, maxCount, data);
+    // Korean
+    colorScale = renderLegend(id, attr, isDensity ? 'Count ' : colorField.field, colorField.type, schema, getNumberOfGraphs(spec, schema, data), isTransition && !isSkip1APStage, isDensity, maxCount, data);
+    // colorScale = renderLegend(id, attr, isDensity ? '개수 ' : colorField.field, colorField.type, schema, getNumberOfGraphs(spec, schema, data), isTransition && !isSkip1APStage, isDensity, maxCount, data);
     // console.log(id + ':');
     // console.log(colorScale);
   }

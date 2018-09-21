@@ -227,8 +227,8 @@ class EncodingShelfBase extends React.PureComponent<
     return (
       <span styleName={isOver ? 'placeholder-over' : item ? 'placeholder-active' : 'placeholder'}>
         {/* Korean */}
-        {/* Drop a field here */}
-        변수를 여기 올리세요
+        Drop a field here
+        {/* 변수를 여기 올리세요 */}
       </span>
     );
   }

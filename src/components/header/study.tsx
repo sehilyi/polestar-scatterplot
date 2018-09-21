@@ -39,7 +39,7 @@ export class StudyBase extends React.PureComponent<StudyProps, {}> {
       <div styleName='right'>
         {'Study Setting '}
 
-        {!studySetting.isConditionSelected ?
+        {!studySetting.isConditionSelected || true ?
           <select value={studySetting.condition} onChange={this.onConditionChange}>
             {conOptions}
           </select>
@@ -48,7 +48,7 @@ export class StudyBase extends React.PureComponent<StudyProps, {}> {
             {conOptions}
           </select>
         }
-        {!studySetting.isSeedSelected ?
+        {!studySetting.isSeedSelected || true ?
           <select value={studySetting.actionOrderSeed} onChange={this.onSeedChange}>
             {seedOptions}
           </select>
@@ -60,7 +60,7 @@ export class StudyBase extends React.PureComponent<StudyProps, {}> {
 
         <CopyToClipboard
           text={this.props.studySetting.log}>
-          <i title='Copy' className='fa fa-clipboard' styleName='clipboard'/>
+          <i title='Copy' className='fa fa-clipboard' styleName='clipboard' />
         </CopyToClipboard>
       </div>
     );

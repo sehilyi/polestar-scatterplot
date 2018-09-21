@@ -38,7 +38,9 @@ export class ToggleSwitcherBase extends React.PureComponent<ToggleSwitcherProps,
           <h3>{subtitle}</h3> :
           null
         }
-        <div styleName='state'>{isOn ? ' 적용' : ' 미적용'}</div>
+        {/* Korean */}
+        {/* <div styleName='state'>{isOn ? ' 적용' : ' 미적용'}</div> */}
+        <div styleName='state'>{isOn ? ' Applied' : ' Not Applied'}</div>
         <div styleName='slider'>
           <label styleName="switch">
             <input type="checkbox" checked={isOn} onClick={this.onCheck.bind(this)} />

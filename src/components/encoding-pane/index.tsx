@@ -73,14 +73,14 @@ class EncodingPanelBase extends React.PureComponent<EncodingPanelProps, {}> {
           <i className="fa fa-eraser" />
           {' '}
           {/* Korean */}
-          {/* Clear */}
-          초기화
+          Clear
+          {/* 초기화 */}
         </a>
 
         <h2>
           {/* Korean */}
-          {/* Encoding */}
-          인코딩
+          Encoding
+          {/* 인코딩 */}
           {specPreview && ' Preview'}
         </h2>
 
@@ -93,8 +93,8 @@ class EncodingPanelBase extends React.PureComponent<EncodingPanelProps, {}> {
             {this.markPicker()}
           </div>
           {/* Korean */}
-          {/* <h3>Mark</h3> */}
-          <h3>마크</h3>
+          <h3>Mark</h3>
+          {/* <h3>마크</h3> */}
           {nonPositionShelves}
         </div>
 

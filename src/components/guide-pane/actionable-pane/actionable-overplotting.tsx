@@ -74,15 +74,15 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           onClick={this.onBackButton.bind(this)}>
           <i className='fa fa-chevron-left' aria-hidden='true' />
           {/* Korean */}
-          {/* {' '} Back */}
-          {' '} 돌아가기
+          {' '} Back
+          {/* {' '} 돌아가기 */}
         </div>
         {/* Detail Actions */}
         <div styleName={triggeredAction == 'AGGREGATE_POINTS' ? '' : 'hidden'}>
           <FieldPicker
             id={this.props.item.id + 'AGGREGATE_POINTS'}
-            title={ACTIONABLE_AGGREGATE.title}
-            subtitle={!isTextShow ? '' : ACTIONABLE_AGGREGATE.subtitle}
+            title={ACTIONABLE_AGGREGATE.enTitle}
+            subtitle={!isTextShow ? '' : ACTIONABLE_AGGREGATE.enSubtitle}
             fields={[DEFAULT_NONE_USED_STR].concat(this.getNominalFieldNames())}
             filters={this.props.filters}
             schema={this.props.schema}
@@ -94,8 +94,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         <div styleName={triggeredAction == 'FILTER' ? '' : 'hidden'}>
           <FilterAdjuster
             id={this.props.item.id + 'FILTER'}
-            title={ACTIONABLE_FILTER_GENERAL.title}
-            subtitle={!isTextShow ? '' : ACTIONABLE_FILTER_GENERAL.subtitle}
+            title={ACTIONABLE_FILTER_GENERAL.enTitle}
+            subtitle={!isTextShow ? '' : ACTIONABLE_FILTER_GENERAL.enSubtitle}
             fields={this.getNominalFieldNames()}
             filters={this.props.filters}
             schema={this.props.schema}
@@ -108,8 +108,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         <div styleName={triggeredAction == 'ENCODING_DENSITY' ? '' : 'hidden'}>
           <ToggleSwitcher
             id={this.props.item.id + 'ENCODING_DENSITY'}
-            title={ACTIONABLE_ENCODING_DENSITY.title}
-            subtitle={!isTextShow ? '' : ACTIONABLE_ENCODING_DENSITY.subtitle}
+            title={ACTIONABLE_ENCODING_DENSITY.enTitle}
+            subtitle={!isTextShow ? '' : ACTIONABLE_ENCODING_DENSITY.enSubtitle}
             defaultIsOn={isDensityPlot(this.props.mainSpec)}
             toggleAction={this.encodeDensity}
           />
@@ -117,8 +117,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         <div styleName={triggeredAction == 'REMOVE_FILL_COLOR' ? '' : 'hidden'}>
           <ToggleSwitcher
             id={this.props.item.id + 'REMOVE_FILL_COLOR'}
-            title={ACTIONABLE_REMOVE_FILL_COLOR.title}
-            subtitle={!isTextShow ? '' : ACTIONABLE_REMOVE_FILL_COLOR.subtitle}
+            title={ACTIONABLE_REMOVE_FILL_COLOR.enTitle}
+            subtitle={!isTextShow ? '' : ACTIONABLE_REMOVE_FILL_COLOR.enSubtitle}
             defaultIsOn={this.getIsOnRemoveFillColor()}
             toggleAction={this.removeFillColorAction}
           />
@@ -126,8 +126,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         <div styleName={triggeredAction == 'SEPARATE_GRAPH' ? '' : 'hidden'}>
           <FieldPicker
             id={this.props.item.id + 'SEPARATE_GRAPH'}
-            title={ACTIONABLE_SEPARATE_GRAPH.title}
-            subtitle={!isTextShow ? '' : ACTIONABLE_SEPARATE_GRAPH.subtitle}
+            title={ACTIONABLE_SEPARATE_GRAPH.enTitle}
+            subtitle={!isTextShow ? '' : ACTIONABLE_SEPARATE_GRAPH.enSubtitle}
             fields={[DEFAULT_NONE_USED_STR].concat(this.getNominalFieldNames())}
             filters={this.props.filters}
             schema={this.props.schema}
@@ -139,8 +139,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         <div styleName={triggeredAction == 'CHANGE_POINT_SIZE' ? '' : 'hidden'}>
           <NumberAdjuster
             id={this.props.item.id + 'CHANGE_POINT_SIZE'}
-            title={ACTIONABLE_POINT_SIZE.title}
-            subtitle={!isTextShow ? '' : ACTIONABLE_POINT_SIZE.subtitle}
+            title={ACTIONABLE_POINT_SIZE.enTitle}
+            subtitle={!isTextShow ? '' : ACTIONABLE_POINT_SIZE.enSubtitle}
             min={1}
             max={100}
             step={1}
@@ -151,8 +151,8 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
         <div styleName={triggeredAction == 'CHANGE_POINT_OPACITY' ? '' : 'hidden'}>
           <NumberAdjuster
             id={this.props.item.id + 'CHANGE_POINT_OPACITY'}
-            title={ACTIONABLE_POINT_OPACITY.title}
-            subtitle={!isTextShow ? '' : ACTIONABLE_POINT_OPACITY.subtitle}
+            title={ACTIONABLE_POINT_OPACITY.enTitle}
+            subtitle={!isTextShow ? '' : ACTIONABLE_POINT_OPACITY.enSubtitle}
             min={0}
             max={1}
             step={0.01}
@@ -175,7 +175,7 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
     const isAniShow = studySetting.condition.indexOf('A') != -1;
     //
     return (
-      <div styleName={expandedAction == data.id ? 'guide-preview-expand' : 'guide-preview'} key={data.actionItem.title}>
+      <div styleName={expandedAction == data.id ? 'guide-preview-expand' : 'guide-preview'} key={data.actionItem.enTitle}>
         <div styleName='transition-progress-bg'>
           <div styleName='transition-progress'></div>
           {/* Remove Expand button for study */}
@@ -189,17 +189,17 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           styleName={'guide-preview-inner'}
           ref={this.vegaLiteWrapperRefHandler}>
           <p styleName='preview-title'>
-            {data.actionItem.title}
+            {data.actionItem.enTitle}
           </p>
-          <p styleName={isTextShow ? 'preview-score' : 'hidden'}>{data.actionItem.subtitle}</p>
+          <p styleName={isTextShow ? 'preview-score' : 'hidden'}>{data.actionItem.enSubtitle}</p>
           {isPaneUsing ?
             data.renderPreview.bind(this)() :
-            this.renderReasonsForNoPreview(data.actionItem.noPreviewDesc)
+            this.renderReasonsForNoPreview(data.actionItem.enNoPreviewDesc)
           }
           {/* <p styleName={studySetting.condition.indexOf('T') != -1 && data.actionItem.subsubtitle != '' ? 'preview-subscore' : 'hidden'}>{'(' + (isColorUsed(this.props.mainSpec) ? getColorField(this.props.mainSpec).colorField.field : this.getDefaultSmallSizedNominalFieldName() + data.actionItem.subsubtitle)}</p> */}
           <ul styleName={isTextShow ? 'preview-desc' : 'hidden'} className='fa-ul'>
-            <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' /><p dangerouslySetInnerHTML={{__html: data.actionItem.pros}} /></li>
-            <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' /><p dangerouslySetInnerHTML={{__html: data.actionItem.cons}} /></li>
+            <li><i className='fa-li fa fa-thumbs-o-up' styleName='pros' aria-hidden='true' /><p dangerouslySetInnerHTML={{__html: data.actionItem.enPros}} /></li>
+            <li><i className='fa-li fa fa-thumbs-o-down' styleName='cons' aria-hidden='true' /><p dangerouslySetInnerHTML={{__html: data.actionItem.enCons}} /></li>
           </ul>
         </div>
         <div styleName={'bottom-button'}>
@@ -207,7 +207,9 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
             <i className='fa fa-play' aria-hidden='true' />
           </div> */}
           <div onClick={!isPaneUsing ? null : this.onTriggerAction.bind(this, data.id)} styleName={!isPaneUsing ? 'disabled-button' : 'apply-button'}>
-            <i className="fa fa-sliders" aria-hidden="true" />{' ' + '설정'}
+            {/* Korean */}
+            {/* <i className="fa fa-sliders" aria-hidden="true" />{' ' + '설정'} */}
+            <i className="fa fa-sliders" aria-hidden="true" />{' ' + 'Configure'}
           </div>
         </div>
       </div>
