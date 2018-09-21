@@ -183,7 +183,7 @@ export const ACTIONABLE_REMOVE_FILL_COLOR: GuideActionItem = {
   pros: '<hl>점의 색상</hl>을 잘 구분할 수 있음.',
   cons: '점이 <hl>밀집된 정도</hl>를 구분하기 어려움.</br><hl>겹쳐진 점이 많은</hl> 경우에는 적합하지 않음.',
 
-  enTitle: 'Represent Points By Outline',
+  enTitle: 'Represent Points Using Outlines',
   enSubtitle: 'You can reduce the overlapped area by making the center of points transparent',
   enNoPreviewDesc: 'You cannot use this recommendation in density plots',
   enPros: 'Can distinguish the <hl>color of points</hl>.',
