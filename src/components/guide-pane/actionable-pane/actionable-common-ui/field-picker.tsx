@@ -51,7 +51,7 @@ export class FieldPickerBase extends React.PureComponent<FieldPickerProps, Field
             {'' + option}
             {/* Korean */}
             {/* {length > disableThreshold ? ' - 카테고리가 너무 많습니다. 필터 후 사용하세요.' : ''} */}
-            {length > disableThreshold ? ' - Too many categories.' : ''}
+            {length > disableThreshold ? ' - Too many categories' : ''}
           </label>
           {isNone ? null :
             <span>

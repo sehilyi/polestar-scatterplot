@@ -312,6 +312,18 @@ export class ActionableOverplottingBase extends React.PureComponent<ActionableOv
           replace: true
         }
       });
+
+      this.props.handleAction({
+        type: SPEC_FIELD_ADD,
+        payload: {
+          shelfId: {channel: COLOR},
+          fieldDef: {
+            field: picked,
+            type: NOMINAL
+          },
+          replace: true
+        }
+      });
     }
   }
   aggregateByFieldAction = (picked: string) => {
