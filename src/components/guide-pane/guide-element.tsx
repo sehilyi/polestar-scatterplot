@@ -9,14 +9,12 @@ import * as ignore from '../../../images/ignore.png';
 import {GuidelineItemTypes, GuidelineItemActionableCategories, isAllowedScatterplot, getGuidedSpec, GuidelineItem, Guidelines} from '../../models/guidelines';
 import {ActionHandler} from '../../actions';
 import {GuidelineAction, GUIDELINE_SHOW_RECT_INDICATOR, GUIDELINE_HIDE_INDICATOR, GUIDELINE_TOGGLE_IGNORE_ITEM, GUIDELINE_TOGGLE_ISEXPANDED} from '../../actions/guidelines';
-import {ActionableCategory} from './actionable-pane/actionable-category';
 import {Schema, ShelfUnitSpec, ShelfFilter, filterIndexOf, filterHasField} from '../../models';
 import {InlineData} from 'vega-lite/build/src/data';
 import {FacetedCompositeUnitSpec} from 'vega-lite/build/src/spec';
 import {Themes} from '../../models/theme/theme';
 import {OneOfFilter} from '../../../node_modules/vega-lite/build/src/filter';
 import {COLOR, SHAPE} from '../../../node_modules/vega-lite/build/src/channel';
-import {ActionableNewVis} from './actionable-pane/actionable-new-vis';
 import {ActionableOverplotting} from './actionable-pane/actionable-overplotting';
 import {showContourInD3Chart, hideContourInD3Chart} from '../../models/d3-chart';
 import {StudySetting} from '../../models/study';
@@ -67,49 +65,6 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
 
     return (
       <div styleName={this.state.isExpanded ? "expanded" : "guideline"}>
-        {/* <div styleName="guide-header">
-          <img styleName={guideState == "WARN" ? 'icon-show' : 'icon-hide'} src={warn} />
-          <img styleName={guideState == "TIP" ? 'icon-show' : 'icon-hide'} src={tip} />
-          <img styleName={guideState == "DONE" ? 'icon-show' : 'icon-hide'} src={done} />
-          <div styleName="guide-label" className="hover-background">
-            <span styleName={guideState == "WARN" || guideState == "TIP" ? "guide-category" : guideState == "DONE" ? "guide-category-done" : "guide-category-ignore"}
-              onMouseEnter={this.onShowIndicator}
-              onMouseLeave={this.onHideIndicator}>
-              <span styleName={this.props.item.noneIndicator ? null : "guide-hover-highlighter"}>
-                {title + ' '}
-                {this.props.item.noneIndicator ? null : <i className="fa fa-question" styleName="fa-dim" aria-hidden="true" />}
-              </span>
-            </span>
-            <span styleName={guideState == "WARN" || guideState == "TIP" ? "guide-title" : guideState == "DONE" ? "guide-title-done" : "guide-title-ignore"}>{subtitle}</span>
-          </div>
-          <span styleName="decision-button">
-            {guideState != "IGNORE" ?
-              <a onClick={this.onOpenGuide}>
-                <i className="fa fa-caret-down fa-gray" aria-hidden="true" />
-              </a>
-              : null
-            }
-            <a onClick={this.onIgnore}>
-              <i className="fa fa-eye-slash fa-gray" aria-hidden="true" />
-            </a>
-          </span>
-        </div>
-        <div styleName="splitter" />
-        {content != '' ?
-          <div styleName={'guide-content'}>
-            <h2>Why Is This Matter?</h2>
-            <span styleName="guide-content-text">
-              In some graphs, especially those that use data points or lines to encode data, multiple objects can end up <span
-                styleName='guide-content-text-hl'
-                onMouseEnter={this.onShowContour}
-                onMouseLeave={this.onHideContour}>
-                sharing the same space, positioned on top of one another
-                </span>
-              . This makes it difficult or impossible to see the individual values, which in turn makes analysis of the data difficult.
-            </span>
-          </div>
-          : null
-        } */}
         <div styleName="actionable-pane">
           {this.renderActionablePane()}
         </div>
@@ -133,73 +88,6 @@ export class GuideElementBase extends React.PureComponent<GuideElementProps, Gui
             // for vega preview
             data={data}
             mainSpec={getGuidedSpec(mainSpec, guidelines, schema)}
-            theme={theme}
-          />
-        );
-      }
-      case "GUIDELINE_TOO_MANY_COLOR_CATEGORIES": {
-        let field = spec.encoding.color.field.toString();
-        const domainWithFilter = (filterHasField(filters, field) ?
-          (filters[filterIndexOf(filters, field)] as OneOfFilter).oneOf :
-          schema.domain({field}));
-        const domain = schema.domain({field});
-
-        return (
-          <ActionableCategory
-            item={item as GuidelineItemActionableCategories}
-            field={field}
-            channel={COLOR}
-            domain={domain}
-            domainWithFilter={domainWithFilter}
-            spec={spec}
-            schema={schema}
-            handleAction={handleAction}
-            isSelectionUsing={true}
-
-            // for vega preview
-            data={data}
-            mainSpec={mainSpec}
-            theme={theme}
-            filters={filters}
-          />
-        );
-      }
-      case "GUIDELINE_TOO_MANY_SHAPE_CATEGORIES": {
-        let field = spec.encoding.shape.field.toString();
-        const domainWithFilter = (filterHasField(filters, field) ?
-          (filters[filterIndexOf(filters, field)] as OneOfFilter).oneOf :
-          schema.domain({field}));
-        const domain = schema.domain({field});
-
-        return (
-          <ActionableCategory
-            item={item as GuidelineItemActionableCategories}
-            field={field}
-            channel={SHAPE}
-            domain={domain}
-            domainWithFilter={domainWithFilter}
-            spec={spec}
-            schema={schema}
-            handleAction={handleAction}
-            isSelectionUsing={false}
-
-            // for vega preview
-            data={data}
-            mainSpec={mainSpec}
-            theme={theme}
-            filters={filters}
-          />
-        );
-      }
-      case "NEW_CHART_BINNED_SCATTERPLOT": {
-        return (
-          <ActionableNewVis
-            item={item}
-            handleAction={handleAction}
-
-            // for vega preview
-            data={data}
-            mainSpec={mainSpec}
             theme={theme}
           />
         );

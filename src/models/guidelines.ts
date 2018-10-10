@@ -39,7 +39,7 @@ export interface GuidelineItem {
   title?: string;
   subtitle: string;
   content?: string;
-  guideState: GuideState; //TODO: move to state
+  guideState: GuideState; //TODO: move to state?
   noneIndicator?: boolean;
 }
 
@@ -65,7 +65,6 @@ export const DEFAULT_GUIDELINES: Guidelines = {
   position: {x: 0, y: 0}
 }
 
-// TODO: should we consider too many categories?
 export const GUIDELINE_OVER_PLOTTING: GuidelineItemOverPlotting = {
   id: 'GUIDELINE_OVER_PLOTTING',
   title: 'Is Your Chart Too Cluttered?',

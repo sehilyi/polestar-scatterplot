@@ -48,7 +48,6 @@ export class GuidePaneBase extends React.PureComponent<GuidePaneProps, {}> {
           {/* Korean */}
           Recommendations
           {/* 추천 시각화 */}
-          {/* {' (' + list.length + ')'} */}
         </h2>
 
         <div styleName="guide-group">
