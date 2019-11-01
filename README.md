@@ -1,3 +1,7 @@
+The __PoleStar-Scatterplot__ is a visualization tool that help people explore their data using scatterplots with clutter reduction recommendations. This interface is designed and implemented to investigate the different representation methodsㅡ**graphical previews, animated transitions, and textual descriptions**ㅡfor describing visual encoding recommendations through a controlled user study. Details about the study results can be found in [our EuroVis paper](http://hcil.snu.ac.kr/research/previews-animated-transitions-textual-descriptions). This repository is based on __Voyager 2__ (https://github.com/vega/voyager).
+
+---
+
 # Voyager 2
 
 Voyager 2 is a data exploration tool that blends manual and automated chart specification. Voyager 2 combines PoleStar, a traditional chart specification tool inspired by Tableau and Polaris (research project that led to the birth of Tableau), with two partial chart specification interfaces: (1) *wildcards* let users specify multiple charts in parallel,(2) *related views* suggest visualizations relevant to the currently specified chart.  With Voyager 2, we aim to  help analysts engage in both breadth-oriented exploration and depth-oriented question answering.
