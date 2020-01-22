@@ -1,4 +1,8 @@
+# PoleStar-Scatterplot
+
 The __PoleStar-Scatterplot__ is a visualization tool that help people explore their data using scatterplots with clutter reduction recommendations. This interface is designed and implemented to investigate the effectiveness of three different representation methodsㅡ**graphical previews, animated transitions, and textual descriptions**ㅡfor describing visual encoding recommendations through a controlled user study. Details about the study results can be found in [our EuroVis paper](http://hcil.snu.ac.kr/research/previews-animated-transitions-textual-descriptions). This repository is based on __Voyager 2__ (https://github.com/vega/voyager).
+
+![polestar](https://user-images.githubusercontent.com/9922882/72881390-06d64e80-3d44-11ea-84e5-fe02eaf4123e.png)
 
 ---
 
