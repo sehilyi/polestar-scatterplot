@@ -47,7 +47,7 @@
     "isomorphic-fetch": "^2.2.1",
     "moment": "^2.18.1",
     "normalize-scss": "^6.0.0",
-    "papaparse": "^4.3.5",
+    "papaparse": "^5.2.0",
     "rc-slider": "^8.2.0",
     "re-reselect": "0.6.2",
     "react": "15.6.2",
